@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatMeetingStart } from '@/lib/datetime'
-import { Plus, Clock, ListChecks, CalendarClock } from 'lucide-react'
+import { Plus, Clock, ListChecks, CalendarClock, Upload } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,10 +24,19 @@ export default async function AgendasPage() {
             Build and reorder meeting agendas with drag and drop.
           </p>
         </div>
-        <Link href="/agendas/new" className={buttonVariants()}>
-          <Plus className="h-4 w-4" />
-          New agenda
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/agendas/import"
+            className={buttonVariants({ variant: 'outline' })}
+          >
+            <Upload className="h-4 w-4" />
+            Import CSV
+          </Link>
+          <Link href="/agendas/new" className={buttonVariants()}>
+            <Plus className="h-4 w-4" />
+            New agenda
+          </Link>
+        </div>
       </div>
 
       {agendas.length === 0 ? (

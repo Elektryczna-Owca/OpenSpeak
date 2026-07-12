@@ -1,54 +1,20 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import {
+  checkOrdering,
+  checkSubItem,
+  optionalLabel,
+  optionalMinutes,
+  requiredMinutes,
+} from '@/lib/item-times'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
-
-// Minutes are allowed at half-minute (30-second) accuracy: whole minutes or
-// minute-and-a-half, nothing finer.
-const HALF_MINUTE = 'Use whole or half minutes (e.g. 10 or 10.5)'
-
-// Optional minutes field: empty/absent form value → null, otherwise 0.5–600.
-const optionalMinutes = z.preprocess(
-  v => (v === '' || v === null || v === undefined ? null : v),
-  z.coerce.number().min(0.5).max(600).multipleOf(0.5, HALF_MINUTE).nullable(),
-)
-
-// Optional short text field: empty/absent → null.
-const optionalLabel = z.preprocess(
-  v => (v === '' || v === null || v === undefined ? null : v),
-  z.string().max(100).nullable(),
-)
-
-// Enforces min ≤ expected ≤ max on a related trio, attaching errors to the
-// min/max paths. `expected` may be null (feature disabled) — callers guard that.
-function checkOrdering(
-  ctx: z.RefinementCtx,
-  min: number | null,
-  expected: number,
-  max: number | null,
-  minPath: string,
-  maxPath: string,
-) {
-  if (min != null && min > expected) {
-    ctx.addIssue({ code: 'custom', path: [minPath], message: 'Min cannot exceed expected time' })
-  }
-  if (max != null && max < expected) {
-    ctx.addIssue({ code: 'custom', path: [maxPath], message: 'Max cannot be less than expected time' })
-  }
-  if (min != null && max != null && min > max) {
-    ctx.addIssue({ code: 'custom', path: [maxPath], message: 'Max cannot be less than min' })
-  }
-}
 
 const ItemSchema = z
   .object({
     title: z.string().min(1, 'Title is required').max(200),
-    durationMinutes: z.coerce
-      .number()
-      .min(0.5)
-      .max(600)
-      .multipleOf(0.5, HALF_MINUTE),
+    durationMinutes: requiredMinutes,
     minMinutes: optionalMinutes,
     maxMinutes: optionalMinutes,
     personId: z
@@ -70,27 +36,7 @@ const ItemSchema = z
       'minMinutes',
       'maxMinutes',
     )
-
-    // Sub-item is enabled by setting its expected time; a label or min/max
-    // without an expected time is incomplete.
-    if (data.subExpectedMinutes == null) {
-      if (data.subMinMinutes != null || data.subMaxMinutes != null || data.subLabel != null) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['subExpectedMinutes'],
-          message: 'Set an expected time for the sub-item',
-        })
-      }
-    } else {
-      checkOrdering(
-        ctx,
-        data.subMinMinutes,
-        data.subExpectedMinutes,
-        data.subMaxMinutes,
-        'subMinMinutes',
-        'subMaxMinutes',
-      )
-    }
+    checkSubItem(ctx, data)
   })
 
 export type ItemFormState = {

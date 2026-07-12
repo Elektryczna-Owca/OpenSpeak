@@ -55,6 +55,14 @@ model AgendaItem {
   @@index([personId])
 }
 
+model Template {
+  id        String   @id @default(cuid())
+  name      String
+  csv       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model MeetingRun {
   id        String       @id @default(cuid())
   agendaId  String

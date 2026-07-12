@@ -2,10 +2,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { startRunAction } from '@/actions/run-actions'
-import { MeetingRunner } from '@/components/meeting-runner'
+import { MeetingDisplay } from '@/components/meeting-display'
 import { formatElapsed } from '@/lib/timer-color'
 import { buttonVariants, Button } from '@/components/ui/button'
-import { ChevronLeft, Play } from 'lucide-react'
+import { ChevronLeft, Play, Smartphone } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,12 +31,24 @@ export default async function RunPage({
 
   if (openRun && openSegment) {
     return (
-      <MeetingRunner
+      <MeetingDisplay
         agendaId={agenda.id}
         agendaTitle={agenda.title}
         runId={openRun.id}
         items={agenda.items}
-        segment={openSegment}
+        initialState={{
+          endedAt: null,
+          segment: {
+            itemId: openSegment.itemId,
+            kind: openSegment.kind,
+            subIndex: openSegment.subIndex,
+            label: openSegment.label,
+            minMinutes: openSegment.minMinutes,
+            expectedMinutes: openSegment.expectedMinutes,
+            maxMinutes: openSegment.maxMinutes,
+            startedAt: openSegment.startedAt.toISOString(),
+          },
+        }}
       />
     )
   }
@@ -48,13 +60,22 @@ export default async function RunPage({
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
-      <Link
-        href={`/agendas/${agenda.id}`}
-        className="flex items-center gap-1 self-start text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ChevronLeft className="h-4 w-4" />
-        {agenda.title}
-      </Link>
+      <div className="flex w-full items-center justify-between">
+        <Link
+          href={`/agendas/${agenda.id}`}
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          {agenda.title}
+        </Link>
+        <Link
+          href={`/agendas/${agenda.id}/control`}
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <Smartphone className="h-4 w-4" />
+          Control page
+        </Link>
+      </div>
 
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight">{agenda.title}</h1>

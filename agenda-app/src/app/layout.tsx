@@ -31,10 +31,18 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <header className="border-b">
-          <div className="mx-auto flex h-14 max-w-4xl items-center px-4">
+          <div className="mx-auto flex h-14 max-w-4xl items-center gap-6 px-4">
             <Link href="/agendas" className="font-semibold tracking-tight">
               Agenda
             </Link>
+            <nav className="flex items-center gap-4 text-sm text-muted-foreground">
+              <Link href="/agendas" className="hover:text-foreground">
+                Agendas
+              </Link>
+              <Link href="/templates" className="hover:text-foreground">
+                Templates
+              </Link>
+            </nav>
           </div>
         </header>
         <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8">

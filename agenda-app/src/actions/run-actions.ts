@@ -40,6 +40,11 @@ function segmentSnapshot(item: AgendaItem, next: NextSegment) {
   }
 }
 
+function revalidateRunPages(agendaId: string) {
+  revalidatePath(`/agendas/${agendaId}/run`)
+  revalidatePath(`/agendas/${agendaId}/control`)
+}
+
 export async function startRunAction(agendaId: string) {
   const open = await prisma.meetingRun.findFirst({
     where: { agendaId, endedAt: null },
@@ -64,7 +69,7 @@ export async function startRunAction(agendaId: string) {
       },
     })
   }
-  revalidatePath(`/agendas/${agendaId}/run`)
+  revalidateRunPages(agendaId)
 }
 
 export async function advanceRunAction(runId: string, next: NextSegment | null) {
@@ -90,7 +95,7 @@ export async function advanceRunAction(runId: string, next: NextSegment | null) 
       where: { id: runId },
       data: { endedAt: now },
     })
-    revalidatePath(`/agendas/${run.agendaId}/run`)
+    revalidateRunPages(run.agendaId)
     redirect(`/agendas/${run.agendaId}/runs/${runId}`)
   }
 
@@ -103,7 +108,7 @@ export async function advanceRunAction(runId: string, next: NextSegment | null) 
       where: { id: runId },
       data: { endedAt: now },
     })
-    revalidatePath(`/agendas/${run.agendaId}/run`)
+    revalidateRunPages(run.agendaId)
     redirect(`/agendas/${run.agendaId}/runs/${runId}`)
   }
 
@@ -115,5 +120,5 @@ export async function advanceRunAction(runId: string, next: NextSegment | null) 
       startedAt: now,
     },
   })
-  revalidatePath(`/agendas/${run.agendaId}/run`)
+  revalidateRunPages(run.agendaId)
 }
