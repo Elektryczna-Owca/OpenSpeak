@@ -18,17 +18,29 @@ import {
 } from '@dnd-kit/sortable'
 import { reorderItemsAction } from '@/actions/item-actions'
 import { AgendaItemCard } from './agenda-item-card'
-import type { AgendaItem } from '@/generated/prisma/client'
+import type { AgendaItem, Person } from '@/generated/prisma/client'
 
 export function AgendaBoard({
   agendaId,
   initialItems,
+  people,
 }: {
   agendaId: string
   initialItems: AgendaItem[]
+  people: Person[]
 }) {
   const [items, setItems] = useState(initialItems)
   const [, startTransition] = useTransition()
+
+  // initialItems gets a new reference when the server component re-renders
+  // after revalidatePath (e.g. an item is added/deleted). useState only reads
+  // its argument on mount, so adjust state during render to stay in sync —
+  // React's documented pattern, and avoids stale lists without an effect.
+  const [prevInitialItems, setPrevInitialItems] = useState(initialItems)
+  if (initialItems !== prevInitialItems) {
+    setPrevInitialItems(initialItems)
+    setItems(initialItems)
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -70,7 +82,7 @@ export function AgendaBoard({
       >
         <div className="flex flex-col gap-3">
           {items.map(item => (
-            <AgendaItemCard key={item.id} item={item} />
+            <AgendaItemCard key={item.id} item={item} people={people} />
           ))}
         </div>
       </SortableContext>

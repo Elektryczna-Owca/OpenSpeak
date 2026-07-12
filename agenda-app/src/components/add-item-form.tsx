@@ -5,9 +5,17 @@ import { addItemAction, type ItemFormState } from '@/actions/item-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { PersonSelect } from '@/components/person-select'
 import { Plus } from 'lucide-react'
+import type { Person } from '@/generated/prisma/client'
 
-export function AddItemForm({ agendaId }: { agendaId: string }) {
+export function AddItemForm({
+  agendaId,
+  people,
+}: {
+  agendaId: string
+  people: Person[]
+}) {
   const formRef = useRef<HTMLFormElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
   const action = addItemAction.bind(null, agendaId)
@@ -63,6 +71,9 @@ export function AddItemForm({ agendaId }: { agendaId: string }) {
             </p>
           )}
         </div>
+        {people.length > 0 && (
+          <PersonSelect id="personId" people={people} className="sm:w-40" />
+        )}
         <Button type="submit" disabled={pending}>
           <Plus className="h-4 w-4" />
           Add

@@ -4,13 +4,20 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { GripVertical, Clock, Pencil, Trash2 } from 'lucide-react'
+import { GripVertical, Clock, Pencil, Trash2, User } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { deleteItemAction } from '@/actions/item-actions'
 import { ItemEditDialog } from './item-edit-dialog'
-import type { AgendaItem } from '@/generated/prisma/client'
+import type { AgendaItem, Person } from '@/generated/prisma/client'
 
-export function AgendaItemCard({ item }: { item: AgendaItem }) {
+export function AgendaItemCard({
+  item,
+  people,
+}: {
+  item: AgendaItem
+  people: Person[]
+}) {
+  const assignee = people.find(p => p.id === item.personId)
   const [editOpen, setEditOpen] = useState(false)
   const [, startTransition] = useTransition()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -37,6 +44,10 @@ export function AgendaItemCard({ item }: { item: AgendaItem }) {
           </button>
           <div className="flex-1 min-w-0">
             <h3 className="font-medium truncate">{item.title}</h3>
+            <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
+              <User className="h-3.5 w-3.5 shrink-0" />
+              {assignee ? assignee.name : 'Unassigned'}
+            </p>
           </div>
           <div className="flex items-center gap-1 text-sm text-muted-foreground whitespace-nowrap">
             <Clock className="h-4 w-4" />
@@ -66,7 +77,12 @@ export function AgendaItemCard({ item }: { item: AgendaItem }) {
           </Button>
         </CardContent>
       </Card>
-      <ItemEditDialog item={item} open={editOpen} onOpenChange={setEditOpen} />
+      <ItemEditDialog
+        item={item}
+        people={people}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
     </>
   )
 }

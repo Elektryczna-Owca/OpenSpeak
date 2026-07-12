@@ -13,14 +13,17 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import type { AgendaItem } from '@/generated/prisma/client'
+import { PersonSelect } from '@/components/person-select'
+import type { AgendaItem, Person } from '@/generated/prisma/client'
 
 export function ItemEditDialog({
   item,
+  people,
   open,
   onOpenChange,
 }: {
   item: AgendaItem
+  people: Person[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
@@ -76,6 +79,13 @@ export function ItemEditDialog({
               </p>
             )}
           </div>
+          {people.length > 0 && (
+            <PersonSelect
+              id={`personId-${item.id}`}
+              people={people}
+              defaultValue={item.personId}
+            />
+          )}
           <DialogFooter>
             <Button
               type="button"

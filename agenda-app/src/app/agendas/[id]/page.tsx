@@ -7,7 +7,7 @@ import { AgendaForm } from '@/components/agenda-form'
 import { DeleteAgendaButton } from '@/components/delete-agenda-button'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ChevronLeft, Clock, ListChecks } from 'lucide-react'
+import { ChevronLeft, Clock, ListChecks, Users } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +21,7 @@ export default async function AgendaPage({
     where: { id },
     include: {
       items: { orderBy: { position: 'asc' } },
+      people: { orderBy: { name: 'asc' } },
     },
   })
 
@@ -52,7 +53,7 @@ export default async function AgendaPage({
         </CardContent>
       </Card>
 
-      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
         <span className="flex items-center gap-1">
           <ListChecks className="h-4 w-4" />
           {agenda.items.length} {agenda.items.length === 1 ? 'item' : 'items'}
@@ -61,11 +62,23 @@ export default async function AgendaPage({
           <Clock className="h-4 w-4" />
           {totalMin} min total
         </span>
+        <Link
+          href={`/agendas/${agenda.id}/people`}
+          className="flex items-center gap-1 hover:text-foreground"
+        >
+          <Users className="h-4 w-4" />
+          {agenda.people.length}{' '}
+          {agenda.people.length === 1 ? 'participant' : 'participants'}
+        </Link>
       </div>
 
-      <AgendaBoard agendaId={agenda.id} initialItems={agenda.items} />
+      <AgendaBoard
+        agendaId={agenda.id}
+        initialItems={agenda.items}
+        people={agenda.people}
+      />
 
-      <AddItemForm agendaId={agenda.id} />
+      <AddItemForm agendaId={agenda.id} people={agenda.people} />
     </div>
   )
 }
