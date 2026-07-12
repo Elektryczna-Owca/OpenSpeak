@@ -15,6 +15,7 @@ model Agenda {
   timezone    String?
   items       AgendaItem[]
   people      Person[]
+  runs        MeetingRun[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 }
@@ -46,9 +47,40 @@ model AgendaItem {
   subExpectedMinutes Float?
   subMaxMinutes      Float?
   position           Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  runSegments        RunSegment[]
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
 
   @@index([agendaId, position])
   @@index([personId])
+}
+
+model MeetingRun {
+  id        String       @id @default(cuid())
+  agendaId  String
+  agenda    Agenda       @relation(fields: [agendaId], references: [id], onDelete: Cascade)
+  startedAt DateTime     @default(now())
+  endedAt   DateTime?
+  segments  RunSegment[]
+
+  @@index([agendaId])
+}
+
+model RunSegment {
+  id              String      @id @default(cuid())
+  runId           String
+  run             MeetingRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  itemId          String?
+  item            AgendaItem? @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  kind            String // 'item' (the item itself / intro) | 'sub' (one participant)
+  subIndex        Int? // 1-based participant number when kind='sub'
+  label           String // snapshot: item title, or "<subLabel|Sub-item> <n>"
+  minMinutes      Float? // threshold snapshots taken at segment creation
+  expectedMinutes Float?
+  maxMinutes      Float?
+  position        Int // order within the run
+  startedAt       DateTime
+  endedAt         DateTime?
+
+  @@index([runId, position])
 }
