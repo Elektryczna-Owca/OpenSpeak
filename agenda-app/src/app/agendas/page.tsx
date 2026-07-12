@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Plus, Clock, ListChecks } from 'lucide-react'
+import { formatMeetingStart } from '@/lib/datetime'
+import { Plus, Clock, ListChecks, CalendarClock } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,7 +60,7 @@ export default async function AgendasPage() {
                       </CardDescription>
                     )}
                   </CardHeader>
-                  <CardContent className="flex gap-4 text-sm text-muted-foreground">
+                  <CardContent className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                     <span className="flex items-center gap-1">
                       <ListChecks className="h-4 w-4" />
                       {agenda.items.length} {agenda.items.length === 1 ? 'item' : 'items'}
@@ -68,6 +69,12 @@ export default async function AgendasPage() {
                       <Clock className="h-4 w-4" />
                       {totalMin} min
                     </span>
+                    {agenda.startAt && agenda.timezone && (
+                      <span className="flex items-center gap-1">
+                        <CalendarClock className="h-4 w-4" />
+                        {formatMeetingStart(agenda.startAt, agenda.timezone)}
+                      </span>
+                    )}
                   </CardContent>
                 </Card>
               </Link>

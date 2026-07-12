@@ -10,10 +10,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { TimezoneSelect } from '@/components/timezone-select'
+import { utcToZonedWallInput } from '@/lib/datetime'
 
 type Props =
   | { mode: 'create' }
-  | { mode: 'edit'; id: string; defaultTitle: string; defaultDescription: string | null }
+  | {
+      mode: 'edit'
+      id: string
+      defaultTitle: string
+      defaultDescription: string | null
+      defaultStartAt: string | null
+      defaultTimezone: string | null
+    }
 
 export function AgendaForm(props: Props) {
   const action =
@@ -24,6 +33,13 @@ export function AgendaForm(props: Props) {
     action,
     {},
   )
+
+  const defaultTimezone =
+    props.mode === 'edit' ? props.defaultTimezone : null
+  const defaultStartInput =
+    props.mode === 'edit' && props.defaultStartAt && props.defaultTimezone
+      ? utcToZonedWallInput(new Date(props.defaultStartAt), props.defaultTimezone)
+      : ''
 
   return (
     <form action={formAction} className="space-y-4">
@@ -57,6 +73,27 @@ export function AgendaForm(props: Props) {
             {state.errors.description[0]}
           </p>
         )}
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="startAt">Start (optional)</Label>
+          <Input
+            id="startAt"
+            name="startAt"
+            type="datetime-local"
+            defaultValue={defaultStartInput}
+            aria-invalid={!!state.errors?.startAt}
+          />
+          {state.errors?.startAt && (
+            <p className="text-sm text-destructive">{state.errors.startAt[0]}</p>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <TimezoneSelect id="timezone" defaultValue={defaultTimezone} />
+          {state.errors?.timezone && (
+            <p className="text-sm text-destructive">{state.errors.timezone[0]}</p>
+          )}
+        </div>
       </div>
       <Button type="submit" disabled={pending}>
         {props.mode === 'create' ? 'Create agenda' : 'Save changes'}

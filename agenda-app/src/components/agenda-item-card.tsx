@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { GripVertical, Clock, Pencil, Trash2, User } from 'lucide-react'
+import { GripVertical, Clock, Pencil, Trash2, User, CornerDownRight } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { deleteItemAction } from '@/actions/item-actions'
 import { ItemEditDialog } from './item-edit-dialog'
@@ -48,10 +48,28 @@ export function AgendaItemCard({
               <User className="h-3.5 w-3.5 shrink-0" />
               {assignee ? assignee.name : 'Unassigned'}
             </p>
+            {item.subExpectedMinutes != null && (
+              <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
+                <CornerDownRight className="h-3.5 w-3.5 shrink-0" />
+                {item.subLabel || 'Sub-item'}: {item.subExpectedMinutes} min
+                {(item.subMinMinutes != null || item.subMaxMinutes != null) && (
+                  <span className="text-muted-foreground/70">
+                    {' · '}
+                    {item.subMinMinutes ?? '—'}–{item.subMaxMinutes ?? '—'}
+                  </span>
+                )}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-1 text-sm text-muted-foreground whitespace-nowrap">
             <Clock className="h-4 w-4" />
             {item.durationMinutes} min
+            {(item.minMinutes != null || item.maxMinutes != null) && (
+              <span className="text-muted-foreground/70">
+                {' · '}
+                {item.minMinutes ?? '—'}–{item.maxMinutes ?? '—'}
+              </span>
+            )}
           </div>
           <Button
             variant="ghost"

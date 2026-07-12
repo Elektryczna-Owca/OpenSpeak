@@ -11,6 +11,8 @@ model Agenda {
   id          String       @id @default(cuid())
   title       String
   description String?
+  startAt     DateTime?
+  timezone    String?
   items       AgendaItem[]
   people      Person[]
   createdAt   DateTime     @default(now())
@@ -35,9 +37,15 @@ model AgendaItem {
   agenda          Agenda   @relation(fields: [agendaId], references: [id], onDelete: Cascade)
   personId        String?
   person          Person?  @relation(fields: [personId], references: [id], onDelete: SetNull)
-  title           String
-  durationMinutes Int
-  position        Int
+  title              String
+  durationMinutes    Float
+  minMinutes         Float?
+  maxMinutes         Float?
+  subLabel           String?
+  subMinMinutes      Float?
+  subExpectedMinutes Float?
+  subMaxMinutes      Float?
+  position           Int
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

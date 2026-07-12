@@ -7,7 +7,8 @@ import { AgendaForm } from '@/components/agenda-form'
 import { DeleteAgendaButton } from '@/components/delete-agenda-button'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ChevronLeft, Clock, ListChecks, Users } from 'lucide-react'
+import { formatMeetingStart } from '@/lib/datetime'
+import { CalendarClock, ChevronLeft, Clock, ListChecks, Users } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -45,10 +46,13 @@ export default async function AgendaPage({
       <Card>
         <CardContent className="p-6">
           <AgendaForm
+            key={agenda.updatedAt.toISOString()}
             mode="edit"
             id={agenda.id}
             defaultTitle={agenda.title}
             defaultDescription={agenda.description}
+            defaultStartAt={agenda.startAt?.toISOString() ?? null}
+            defaultTimezone={agenda.timezone}
           />
         </CardContent>
       </Card>
@@ -70,6 +74,12 @@ export default async function AgendaPage({
           {agenda.people.length}{' '}
           {agenda.people.length === 1 ? 'participant' : 'participants'}
         </Link>
+        {agenda.startAt && agenda.timezone && (
+          <span className="flex items-center gap-1">
+            <CalendarClock className="h-4 w-4" />
+            {formatMeetingStart(agenda.startAt, agenda.timezone)}
+          </span>
+        )}
       </div>
 
       <AgendaBoard
