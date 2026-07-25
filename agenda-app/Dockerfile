@@ -16,6 +16,14 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx prisma generate
 RUN npm run build
 
+# --- migrate-deps: prisma CLI + dotenv for `prisma migrate deploy` at startup.
+# Installed as a real npm tree so the CLI's transitive deps and .bin links exist;
+# versions are read from package.json to stay in sync with the app.
+FROM base AS migrate-deps
+COPY package.json ./
+RUN node -e "const p=require('./package.json');require('fs').writeFileSync('package.json',JSON.stringify({dependencies:{prisma:p.dependencies.prisma,dotenv:p.devDependencies.dotenv}}))" \
+ && npm install --omit=dev
+
 # --- runner: minimal production image ---
 FROM base AS runner
 ENV NODE_ENV=production
@@ -33,10 +41,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 # Prisma migrations + schema for `prisma migrate deploy` at startup.
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+# Merge the prisma CLI tree over the standalone bundle's trimmed node_modules.
+COPY --from=migrate-deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 
 USER nextjs
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node server.js"]
