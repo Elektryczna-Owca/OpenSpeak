@@ -128,6 +128,11 @@ export default async function RunPage({
 
       <div className="text-center">
         <h1 className="text-3xl font-semibold tracking-tight">{agenda.title}</h1>
+        {agenda.description && (
+          <p className="mx-auto mt-2 max-w-prose whitespace-pre-line text-muted-foreground">
+            {agenda.description}
+          </p>
+        )}
         <p className="mt-1 text-muted-foreground">
           {agenda.items.length} {agenda.items.length === 1 ? 'item' : 'items'} ·{' '}
           {totalMin} min
@@ -187,16 +192,6 @@ export default async function RunPage({
               </tr>
             </tfoot>
           </table>
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            The meeting is started from the{' '}
-            <Link
-              href={`/agendas/${agenda.id}/control`}
-              className="underline hover:text-foreground"
-            >
-              control page
-            </Link>
-            .
-          </p>
         </div>
       )}
 
