@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { MeetingDisplay } from '@/components/meeting-display'
+import { RunStartWatcher } from '@/components/run-start-watcher'
 import { formatElapsed } from '@/lib/timer-color'
 import { buttonVariants } from '@/components/ui/button'
 import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
@@ -107,6 +108,7 @@ export default async function RunPage({
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
+      <RunStartWatcher agendaId={agenda.id} />
       <div className="flex w-full items-center justify-between">
         <Link
           href={`/agendas/${agenda.id}`}

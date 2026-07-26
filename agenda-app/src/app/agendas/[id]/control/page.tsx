@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { startRunAction } from '@/actions/run-actions'
 import { MeetingControl } from '@/components/meeting-control'
+import { RunStartWatcher } from '@/components/run-start-watcher'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, MonitorPlay, Play } from 'lucide-react'
 
@@ -58,6 +59,7 @@ export default async function ControlPage({
 
   return (
     <div className="mx-auto flex max-w-sm flex-col items-center gap-6 py-6">
+      <RunStartWatcher agendaId={agenda.id} />
       <div className="flex w-full items-center justify-between">
         <Link
           href={`/agendas/${agenda.id}`}
