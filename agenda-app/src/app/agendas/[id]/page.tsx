@@ -8,7 +8,7 @@ import { DeleteAgendaButton } from '@/components/delete-agenda-button'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatMeetingStart } from '@/lib/datetime'
-import { CalendarClock, ChevronLeft, Clock, ListChecks, Play, Users } from 'lucide-react'
+import { CalendarClock, ChevronLeft, Clock, Download, ListChecks, Play, Users } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -41,6 +41,13 @@ export default async function AgendaPage({
           All agendas
         </Link>
         <div className="flex items-center gap-2">
+          <a
+            href={`/api/agendas/${agenda.id}/csv`}
+            className={buttonVariants({ variant: 'outline' })}
+          >
+            <Download className="h-4 w-4" />
+            Export CSV
+          </a>
           <Link href={`/agendas/${agenda.id}/run`} className={buttonVariants()}>
             <Play className="h-4 w-4" />
             Run meeting

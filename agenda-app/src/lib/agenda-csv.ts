@@ -87,6 +87,47 @@ const RowSchema = z
     checkSubItem(ctx, data)
   })
 
+export type SerializableAgendaItem = {
+  title: string
+  minMinutes: number | null
+  durationMinutes: number
+  maxMinutes: number | null
+  personName: string | null
+  subLabel: string | null
+  subMinMinutes: number | null
+  subExpectedMinutes: number | null
+  subMaxMinutes: number | null
+}
+
+const CSV_HEADER =
+  'title,min,expected,max,person,sub label,sub min,sub expected,sub max'
+
+function csvField(value: string | number | null): string {
+  if (value == null) return ''
+  const text = String(value)
+  return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
+}
+
+// Inverse of parseAgendaCsv: produces CSV that round-trips through it.
+export function serializeAgendaCsv(items: SerializableAgendaItem[]): string {
+  const rows = items.map(item =>
+    [
+      item.title,
+      item.minMinutes,
+      item.durationMinutes,
+      item.maxMinutes,
+      item.personName,
+      item.subLabel,
+      item.subMinMinutes,
+      item.subExpectedMinutes,
+      item.subMaxMinutes,
+    ]
+      .map(csvField)
+      .join(','),
+  )
+  return [CSV_HEADER, ...rows].join('\n') + '\n'
+}
+
 function normalizeHeader(cell: string): string {
   return cell.toLowerCase().replace(/[\s_-]+/g, '')
 }
