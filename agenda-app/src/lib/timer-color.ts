@@ -13,13 +13,13 @@ export function timerColorClass(
   maxMinutes: number | null,
 ): string {
   if (maxMinutes != null && elapsedSeconds >= maxMinutes * 60 - RED_WARNING_SECONDS) {
-    return 'text-red-600 dark:text-red-500'
+    return 'text-red-500'
   }
   if (expectedMinutes != null && elapsedSeconds >= expectedMinutes * 60) {
-    return 'text-amber-500'
+    return 'text-amber-400'
   }
   if (minMinutes != null && elapsedSeconds >= minMinutes * 60) {
-    return 'text-green-600 dark:text-green-500'
+    return 'text-green-500'
   }
   return 'text-foreground'
 }
@@ -32,15 +32,15 @@ export function segmentStatus(
   maxMinutes: number | null,
 ): { label: string; className: string } {
   if (maxMinutes != null && actualSeconds > maxMinutes * 60) {
-    return { label: 'over max', className: 'text-red-600 dark:text-red-500' }
+    return { label: 'over max', className: 'text-red-500' }
   }
   if (expectedMinutes != null && actualSeconds > expectedMinutes * 60) {
-    return { label: 'over expected', className: 'text-amber-500' }
+    return { label: 'over expected', className: 'text-amber-400' }
   }
   if (minMinutes != null && actualSeconds < minMinutes * 60) {
     return { label: 'under min', className: 'text-muted-foreground' }
   }
-  return { label: 'on time', className: 'text-green-600 dark:text-green-500' }
+  return { label: 'on time', className: 'text-green-500' }
 }
 
 export function formatElapsed(totalSeconds: number): string {
