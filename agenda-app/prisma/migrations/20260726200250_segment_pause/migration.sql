@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "RunSegment" ADD COLUMN     "pausedAt" TIMESTAMP(3),
+ADD COLUMN     "pausedSeconds" DOUBLE PRECISION NOT NULL DEFAULT 0;

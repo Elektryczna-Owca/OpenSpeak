@@ -27,7 +27,8 @@ export function MeetingDisplay({
   const router = useRouter()
   const { state } = useRunState(runId, initialState)
   const segment = state.segment
-  const elapsed = useElapsedSeconds(segment?.startedAt ?? null)
+  const elapsed = useElapsedSeconds(segment)
+  const paused = segment?.pausedAt != null
 
   // When the controller finishes the meeting, follow to the review page.
   useEffect(() => {
@@ -75,15 +76,24 @@ export function MeetingDisplay({
 
       <div className="text-center">
         <div
-          className={`font-mono text-8xl font-semibold tabular-nums transition-colors ${timerColorClass(
-            elapsed,
-            segment.minMinutes,
-            segment.expectedMinutes,
-            segment.maxMinutes,
-          )}`}
+          className={`font-mono text-8xl font-semibold tabular-nums transition-colors ${
+            paused
+              ? 'text-muted-foreground'
+              : timerColorClass(
+                  elapsed,
+                  segment.minMinutes,
+                  segment.expectedMinutes,
+                  segment.maxMinutes,
+                )
+          }`}
         >
           {formatElapsed(elapsed)}
         </div>
+        {paused && (
+          <p className="mt-1 text-lg font-medium tracking-wide text-muted-foreground uppercase">
+            Paused
+          </p>
+        )}
         <Thresholds segment={segment} />
       </div>
 

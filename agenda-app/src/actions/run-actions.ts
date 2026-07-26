@@ -72,6 +72,33 @@ export async function startRunAction(agendaId: string) {
   revalidateRunPages(agendaId)
 }
 
+// Pauses or resumes the timer on the current segment. Paused time accumulates
+// in pausedSeconds and is excluded from the elapsed time everywhere.
+export async function togglePauseAction(runId: string) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return
+  const segment = run.segments[0]
+  if (!segment || segment.endedAt) return
+
+  const now = new Date()
+  await prisma.runSegment.update({
+    where: { id: segment.id },
+    data:
+      segment.pausedAt === null
+        ? { pausedAt: now }
+        : {
+            pausedAt: null,
+            pausedSeconds:
+              segment.pausedSeconds +
+              (now.getTime() - segment.pausedAt.getTime()) / 1000,
+          },
+  })
+  revalidateRunPages(run.agendaId)
+}
+
 export async function advanceRunAction(runId: string, next: NextSegment | null) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },
@@ -86,7 +113,19 @@ export async function advanceRunAction(runId: string, next: NextSegment | null) 
   if (lastSegment && lastSegment.endedAt === null) {
     await prisma.runSegment.update({
       where: { id: lastSegment.id },
-      data: { endedAt: now },
+      // Advancing a paused segment ends the pause too, so pausedSeconds
+      // stays the segment's full pause total.
+      data: {
+        endedAt: now,
+        ...(lastSegment.pausedAt
+          ? {
+              pausedAt: null,
+              pausedSeconds:
+                lastSegment.pausedSeconds +
+                (now.getTime() - lastSegment.pausedAt.getTime()) / 1000,
+            }
+          : {}),
+      },
     })
   }
 

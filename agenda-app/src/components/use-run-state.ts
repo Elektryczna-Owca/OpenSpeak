@@ -25,16 +25,30 @@ export function useRunState(runId: string, initial: RunState) {
   return { state, refetch }
 }
 
-// Ticking elapsed-seconds counter for a segment that started at `startedAt`.
-export function useElapsedSeconds(startedAt: string | null) {
+// Ticking elapsed-seconds counter for the current segment. Paused time does
+// not count: while paused the counter freezes at the moment of the pause, and
+// previously accumulated pauses (pausedSeconds) are always subtracted.
+export function useElapsedSeconds(
+  segment: {
+    startedAt: string
+    pausedAt: string | null
+    pausedSeconds: number
+  } | null,
+) {
+  const startedAt = segment?.startedAt ?? null
+  const pausedAt = segment?.pausedAt ?? null
+  const pausedSeconds = segment?.pausedSeconds ?? 0
   const [elapsed, setElapsed] = useState(0)
   useEffect(() => {
     if (startedAt == null) return
     const startMs = Date.parse(startedAt)
-    const tick = () => setElapsed((Date.now() - startMs) / 1000)
+    const pausedMs = pausedAt != null ? Date.parse(pausedAt) : null
+    const tick = () =>
+      setElapsed(((pausedMs ?? Date.now()) - startMs) / 1000 - pausedSeconds)
     tick()
+    if (pausedMs != null) return // frozen while paused
     const interval = setInterval(tick, 500)
     return () => clearInterval(interval)
-  }, [startedAt])
+  }, [startedAt, pausedAt, pausedSeconds])
   return elapsed
 }

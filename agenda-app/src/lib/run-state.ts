@@ -12,6 +12,8 @@ export type RunSegmentState = {
   expectedMinutes: number | null
   maxMinutes: number | null
   startedAt: string
+  pausedAt: string | null
+  pausedSeconds: number
 }
 
 export type RunState = {

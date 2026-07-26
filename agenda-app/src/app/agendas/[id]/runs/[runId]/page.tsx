@@ -75,8 +75,11 @@ export default async function RunReviewPage({
           </thead>
           <tbody>
             {run.segments.map(segment => {
+              // Paused time doesn't count toward the item's actual duration.
               const actualSeconds = segment.endedAt
-                ? (segment.endedAt.getTime() - segment.startedAt.getTime()) / 1000
+                ? (segment.endedAt.getTime() - segment.startedAt.getTime()) /
+                    1000 -
+                  segment.pausedSeconds
                 : null
               const status =
                 actualSeconds != null

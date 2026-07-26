@@ -30,6 +30,8 @@ export async function GET(
             expectedMinutes: segment.expectedMinutes,
             maxMinutes: segment.maxMinutes,
             startedAt: segment.startedAt.toISOString(),
+            pausedAt: segment.pausedAt?.toISOString() ?? null,
+            pausedSeconds: segment.pausedSeconds,
           }
         : null,
   })

@@ -1,14 +1,18 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
-import { advanceRunAction, type NextSegment } from '@/actions/run-actions'
+import {
+  advanceRunAction,
+  togglePauseAction,
+  type NextSegment,
+} from '@/actions/run-actions'
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { Thresholds } from '@/components/meeting-display'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, MonitorPlay } from 'lucide-react'
+import { ChevronLeft, MonitorPlay, Pause, Play, Square } from 'lucide-react'
 import type { AgendaItem } from '@/generated/prisma/client'
 
 // Phone-sized remote control for a running meeting: big touch targets, the
@@ -30,7 +34,16 @@ export function MeetingControl({
   const [pending, startTransition] = useTransition()
   const { state, refetch } = useRunState(runId, initialState)
   const segment = state.segment
-  const elapsed = useElapsedSeconds(segment?.startedAt ?? null)
+  const elapsed = useElapsedSeconds(segment)
+  const paused = segment?.pausedAt != null
+  const [confirmingEnd, setConfirmingEnd] = useState(false)
+  const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (confirmTimer.current) clearTimeout(confirmTimer.current)
+    },
+    [],
+  )
 
   if (!segment || state.endedAt) return null
 
@@ -42,6 +55,26 @@ export function MeetingControl({
       await advanceRunAction(runId, target)
       await refetch()
     })
+  }
+
+  function togglePause() {
+    startTransition(async () => {
+      await togglePauseAction(runId)
+      await refetch()
+    })
+  }
+
+  // Lightweight confirm: the first tap arms the button for 3 seconds, the
+  // second tap actually ends the meeting.
+  function handleEndMeeting() {
+    if (!confirmingEnd) {
+      setConfirmingEnd(true)
+      confirmTimer.current = setTimeout(() => setConfirmingEnd(false), 3000)
+      return
+    }
+    if (confirmTimer.current) clearTimeout(confirmTimer.current)
+    setConfirmingEnd(false)
+    advance(null)
   }
 
   return (
@@ -76,15 +109,24 @@ export function MeetingControl({
 
       <div className="text-center">
         <div
-          className={`font-mono text-6xl font-semibold tabular-nums transition-colors ${timerColorClass(
-            elapsed,
-            segment.minMinutes,
-            segment.expectedMinutes,
-            segment.maxMinutes,
-          )}`}
+          className={`font-mono text-6xl font-semibold tabular-nums transition-colors ${
+            paused
+              ? 'text-muted-foreground'
+              : timerColorClass(
+                  elapsed,
+                  segment.minMinutes,
+                  segment.expectedMinutes,
+                  segment.maxMinutes,
+                )
+          }`}
         >
           {formatElapsed(elapsed)}
         </div>
+        {paused && (
+          <p className="mt-1 text-sm font-medium tracking-wide text-muted-foreground uppercase">
+            Paused
+          </p>
+        )}
         <Thresholds segment={segment} />
       </div>
 
@@ -96,6 +138,25 @@ export function MeetingControl({
           disabled={pending}
         >
           {nextLabel}
+        </Button>
+        <Button
+          size="lg"
+          variant="outline"
+          className="h-12 w-full"
+          onClick={togglePause}
+          disabled={pending}
+        >
+          {paused ? (
+            <>
+              <Play className="h-5 w-5" />
+              Resume
+            </>
+          ) : (
+            <>
+              <Pause className="h-5 w-5" />
+              Pause
+            </>
+          )}
         </Button>
         {inSubLoop && (
           <Button
@@ -115,6 +176,17 @@ export function MeetingControl({
           Up next: <span className="text-foreground">{nextItem.title}</span>
         </p>
       )}
+
+      <Button
+        size="sm"
+        variant={confirmingEnd ? 'destructive' : 'ghost'}
+        className={confirmingEnd ? 'mt-2' : 'mt-2 text-destructive hover:text-destructive'}
+        onClick={handleEndMeeting}
+        disabled={pending}
+      >
+        <Square className="h-4 w-4" />
+        {confirmingEnd ? 'Tap again to end' : 'End meeting'}
+      </Button>
     </div>
   )
 }

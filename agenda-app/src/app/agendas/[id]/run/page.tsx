@@ -65,6 +65,8 @@ export default async function RunPage({
             expectedMinutes: openSegment.expectedMinutes,
             maxMinutes: openSegment.maxMinutes,
             startedAt: openSegment.startedAt.toISOString(),
+            pausedAt: openSegment.pausedAt?.toISOString() ?? null,
+            pausedSeconds: openSegment.pausedSeconds,
           },
         }}
       />
