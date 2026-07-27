@@ -72,13 +72,13 @@ A production image is built from `agenda-app/Dockerfile`. It creates a minimal s
    ```bash
    docker run -d \
      --name openspeak \
-     -p 3000:3000 \
+     -p 3001:3001 \
      -e DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DBNAME" \
      --restart unless-stopped \
      openspeak
    ```
 
-The app listens on port 3000 inside the container. Put a reverse proxy (nginx, Caddy, Traefik, …) in front of it to handle TLS.
+The app listens on port 3001 inside the container. Put a reverse proxy (nginx, Caddy, Traefik, …) in front of it to handle TLS.
 
 Note: the `docker-compose.yml` in `agenda-app/` only provides the development database — it is not a production deployment. For production, use a managed PostgreSQL instance or run your own hardened Postgres server.
 
@@ -103,7 +103,7 @@ Software:
 
 Network:
 
-- Ports **80** and **443** open to the internet (the app itself listens on port 3000, bound to localhost only)
+- Ports **80** and **443** open to the internet (the app itself listens on port 3001, bound to localhost only)
 - A **domain name** pointing at the server (required for TLS certificates)
 
 If you build the Docker image on a separate machine and only run it on the server, the RAM requirement drops and Git/build tooling is not needed on the server.
@@ -137,8 +137,8 @@ docker network create openspeak
 docker run -d \
   --name openspeak-db \
   --network openspeak \
-  -e POSTGRES_USER=openspeak \
-  -e POSTGRES_PASSWORD=CHANGE_ME_STRONG_PASSWORD \
+  -e POSTGRES_USER=os \
+  -e POSTGRES_PASSWORD=os \
   -e POSTGRES_DB=openspeak \
   -v openspeak-pgdata:/var/lib/postgresql/data \
   --restart unless-stopped \
@@ -177,8 +177,8 @@ With **Option A** (PostgreSQL in Docker), attach the app to the `openspeak` netw
 docker run -d \
   --name openspeak-app \
   --network openspeak \
-  -p 127.0.0.1:3000:3000 \
-  -e DATABASE_URL="postgresql://openspeak:CHANGE_ME_STRONG_PASSWORD@openspeak-db:5432/openspeak" \
+  -p 127.0.0.1:3001:3001 \
+  -e DATABASE_URL="postgresql://os:os@openspeak-db:5432/openspeak" \
   --restart unless-stopped \
   openspeak
 ```
@@ -199,7 +199,7 @@ On startup the container automatically applies any pending database migrations, 
 
 ```bash
 docker logs openspeak-app
-curl -I http://127.0.0.1:3000
+curl -I http://127.0.0.1:3001
 ```
 
 The port is bound to `127.0.0.1`, so the app is only reachable through the reverse proxy set up next.
@@ -218,7 +218,7 @@ server {
     server_name openspeak.example.com;
 
     location / {
-        proxy_pass http://127.0.0.1:3000;
+        proxy_pass http://127.0.0.1:3001;
         proxy_http_version 1.1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
