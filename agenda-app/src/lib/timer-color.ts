@@ -1,8 +1,9 @@
 // Color logic for the meeting-run timer. Thresholds are the item's (or
 // sub-item's) min / expected / max times in minutes; elapsed is in seconds.
 //
-// Progression: neutral → green (min reached) → yellow (expected reached) →
-// red (30 seconds before max). Missing thresholds skip their stage.
+// Progression: white → green (min reached) → yellow (expected reached) →
+// red (30 seconds before max). Missing thresholds skip their stage. The
+// colors are fixed regardless of the color theme, like timing cards.
 
 export const RED_WARNING_SECONDS = 30
 
@@ -13,15 +14,15 @@ export function timerColorClass(
   maxMinutes: number | null,
 ): string {
   if (maxMinutes != null && elapsedSeconds >= maxMinutes * 60 - RED_WARNING_SECONDS) {
-    return 'text-(--timer-max)'
+    return 'text-red-500'
   }
   if (expectedMinutes != null && elapsedSeconds >= expectedMinutes * 60) {
-    return 'text-(--timer-expected)'
+    return 'text-yellow-400'
   }
   if (minMinutes != null && elapsedSeconds >= minMinutes * 60) {
-    return 'text-(--timer-min)'
+    return 'text-green-500'
   }
-  return 'text-foreground'
+  return 'text-white'
 }
 
 // Same thresholds, expressed as a status word for the post-meeting review.
