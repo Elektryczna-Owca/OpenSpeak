@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { PaletteSwitcher } from "@/components/palette-switcher";
 import Link from "next/link";
@@ -33,19 +33,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider
-          attribute="class"
-          themes={[
-            "sandy",
-            "olive",
-            "contrast-light",
-            "contrast-dark",
-            "midnight",
-            "frost",
-          ]}
-          defaultTheme="sandy"
-          enableSystem={false}
-        >
+        <ThemeProvider>
           <header className="border-b">
             <div className="mx-auto flex h-14 max-w-4xl items-center gap-6 px-4">
               <Link href="/agendas" className="font-semibold tracking-tight">
