@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
+import { QRCodeSVG } from 'qrcode.react'
 import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
 import type { AgendaItem } from '@/generated/prisma/client'
 
@@ -77,27 +78,42 @@ export function MeetingDisplay({
         )}
       </div>
 
-      <div className="text-center">
-        <div
-          className={`font-mono text-8xl font-semibold tabular-nums transition-colors ${
-            paused
-              ? 'text-muted-foreground'
-              : timerColorClass(
-                  elapsed,
-                  segment.minMinutes,
-                  segment.expectedMinutes,
-                  segment.maxMinutes,
-                )
-          }`}
-        >
-          {formatElapsed(elapsed)}
+      <div className="flex items-center gap-8">
+        <div className="text-center">
+          <div
+            className={`font-mono text-8xl font-semibold tabular-nums transition-colors ${
+              paused
+                ? 'text-muted-foreground'
+                : timerColorClass(
+                    elapsed,
+                    segment.minMinutes,
+                    segment.expectedMinutes,
+                    segment.maxMinutes,
+                  )
+            }`}
+          >
+            {formatElapsed(elapsed)}
+          </div>
+          {paused && (
+            <p className="mt-1 text-lg font-medium tracking-wide text-muted-foreground uppercase">
+              Paused
+            </p>
+          )}
+          <Thresholds segment={segment} />
         </div>
-        {paused && (
-          <p className="mt-1 text-lg font-medium tracking-wide text-muted-foreground uppercase">
-            Paused
-          </p>
+        {currentItem?.url && (
+          // Fixed white backdrop with a quiet zone so the code scans on
+          // every color theme.
+          <a
+            href={currentItem.url}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`Link for ${currentItem.title}`}
+            className="shrink-0 rounded-lg bg-white p-2"
+          >
+            <QRCodeSVG value={currentItem.url} size={112} marginSize={0} />
+          </a>
         )}
-        <Thresholds segment={segment} />
       </div>
 
       {currentIndex >= 0 && (

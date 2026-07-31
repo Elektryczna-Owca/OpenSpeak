@@ -14,6 +14,17 @@ import { z } from 'zod'
 const ItemSchema = z
   .object({
     title: z.string().min(1, 'Title is required').max(200),
+    url: z
+      .string()
+      .trim()
+      .max(2000, 'URL is too long')
+      .transform(v => (v === '' ? null : v))
+      .nullable()
+      .optional()
+      .refine(
+        v => v == null || URL.canParse(v),
+        'Enter a valid URL (including https://)',
+      ),
     durationMinutes: requiredMinutes,
     minMinutes: optionalMinutes,
     maxMinutes: optionalMinutes,
@@ -42,6 +53,7 @@ const ItemSchema = z
 export type ItemFormState = {
   errors?: {
     title?: string[]
+    url?: string[]
     durationMinutes?: string[]
     minMinutes?: string[]
     maxMinutes?: string[]
@@ -89,6 +101,7 @@ export async function addItemAction(
 ): Promise<ItemFormState> {
   const parsed = ItemSchema.safeParse({
     title: formData.get('title'),
+    url: formData.get('url'),
     durationMinutes: formData.get('durationMinutes'),
     minMinutes: formData.get('minMinutes'),
     maxMinutes: formData.get('maxMinutes'),
@@ -122,6 +135,7 @@ export async function updateItemAction(
 ): Promise<ItemFormState> {
   const parsed = ItemSchema.safeParse({
     title: formData.get('title'),
+    url: formData.get('url'),
     durationMinutes: formData.get('durationMinutes'),
     minMinutes: formData.get('minMinutes'),
     maxMinutes: formData.get('maxMinutes'),

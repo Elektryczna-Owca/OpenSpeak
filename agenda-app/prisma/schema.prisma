@@ -40,6 +40,7 @@ model AgendaItem {
   personId        String?
   person          Person?  @relation(fields: [personId], references: [id], onDelete: SetNull)
   title              String
+  url                String?
   durationMinutes    Float
   minMinutes         Float?
   maxMinutes         Float?

@@ -73,6 +73,26 @@ export function ItemEditDialog({
             )}
           </div>
           <div className="space-y-1.5">
+            <Label htmlFor={`url-${item.id}`}>
+              URL{' '}
+              <span className="font-normal text-muted-foreground">
+                (optional, shown as a QR code during the meeting)
+              </span>
+            </Label>
+            <Input
+              id={`url-${item.id}`}
+              name="url"
+              type="url"
+              placeholder="https://…"
+              maxLength={2000}
+              defaultValue={item.url ?? ''}
+              aria-invalid={!!state.errors?.url}
+            />
+            {state.errors?.url && (
+              <p className="text-sm text-destructive">{state.errors.url[0]}</p>
+            )}
+          </div>
+          <div className="space-y-1.5">
             <div className="grid grid-cols-3 gap-3">
               <div className="space-y-1.5">
                 <Label htmlFor={`min-${item.id}`}>Min (min)</Label>
