@@ -3,7 +3,13 @@ import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { formatElapsed, segmentStatus } from '@/lib/timer-color'
 import { buttonVariants } from '@/components/ui/button'
-import { ChevronLeft, Clock, CornerDownRight, Play } from 'lucide-react'
+import {
+  ChevronLeft,
+  Clock,
+  CornerDownRight,
+  Play,
+  Smartphone,
+} from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,9 +37,11 @@ export default async function RunReviewPage({
     timeZone: run.agenda.timezone ?? 'UTC',
   }).format(run.startedAt)
 
-  const totalSeconds = run.endedAt
-    ? (run.endedAt.getTime() - run.startedAt.getTime()) / 1000
-    : null
+  // For a still-running meeting this page is a "report so far": totals and
+  // the open segment are measured up to now (frozen at pausedAt while paused).
+  const now = new Date()
+  const totalSeconds =
+    ((run.endedAt ?? now).getTime() - run.startedAt.getTime()) / 1000
 
   return (
     <div className="space-y-6">
@@ -45,13 +53,23 @@ export default async function RunReviewPage({
           <ChevronLeft className="h-4 w-4" />
           {run.agenda.title}
         </Link>
-        <Link
-          href={`/agendas/${run.agenda.id}/run`}
-          className={buttonVariants({ variant: 'outline', size: 'sm' })}
-        >
-          <Play className="h-4 w-4" />
-          Run again
-        </Link>
+        {run.endedAt ? (
+          <Link
+            href={`/agendas/${run.agenda.id}/run`}
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            <Play className="h-4 w-4" />
+            Run again
+          </Link>
+        ) : (
+          <Link
+            href={`/agendas/${run.agenda.id}/control`}
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            <Smartphone className="h-4 w-4" />
+            Back to control
+          </Link>
+        )}
       </div>
 
       <div>
@@ -59,9 +77,8 @@ export default async function RunReviewPage({
         <p className="text-muted-foreground">{startedLabel}</p>
         <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
           <Clock className="h-4 w-4" />
-          {totalSeconds != null
-            ? `${formatElapsed(totalSeconds)} total`
-            : 'Still in progress'}
+          {formatElapsed(totalSeconds)}
+          {run.endedAt ? ' total' : ' so far — still in progress'}
         </p>
       </div>
 
@@ -79,20 +96,21 @@ export default async function RunReviewPage({
           <tbody>
             {run.segments.map(segment => {
               // Paused time doesn't count toward the item's actual duration.
-              const actualSeconds = segment.endedAt
-                ? (segment.endedAt.getTime() - segment.startedAt.getTime()) /
-                    1000 -
-                  segment.pausedSeconds
+              // An open segment is measured up to now so the in-progress
+              // report shows its elapsed time so far.
+              const actualSeconds =
+                ((segment.endedAt ?? segment.pausedAt ?? now).getTime() -
+                  segment.startedAt.getTime()) /
+                  1000 -
+                segment.pausedSeconds
+              const status = segment.endedAt
+                ? segmentStatus(
+                    actualSeconds,
+                    segment.minMinutes,
+                    segment.expectedMinutes,
+                    segment.maxMinutes,
+                  )
                 : null
-              const status =
-                actualSeconds != null
-                  ? segmentStatus(
-                      actualSeconds,
-                      segment.minMinutes,
-                      segment.expectedMinutes,
-                      segment.maxMinutes,
-                    )
-                  : null
               return (
                 <tr key={segment.id} className="border-b last:border-b-0">
                   <td className="p-3">
@@ -109,7 +127,7 @@ export default async function RunReviewPage({
                     </span>
                   </td>
                   <td className="p-3 font-mono tabular-nums">
-                    {actualSeconds != null ? formatElapsed(actualSeconds) : '—'}
+                    {formatElapsed(actualSeconds)}
                   </td>
                   <td className="p-3 text-muted-foreground">
                     {segment.expectedMinutes != null

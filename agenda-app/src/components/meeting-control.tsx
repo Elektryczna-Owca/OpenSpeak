@@ -13,7 +13,14 @@ import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { Thresholds } from '@/components/meeting-display'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, MonitorPlay, Pause, Play, Square } from 'lucide-react'
+import {
+  ChevronLeft,
+  FileText,
+  MonitorPlay,
+  Pause,
+  Play,
+  Square,
+} from 'lucide-react'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
 
 const personSelectClass =
@@ -100,13 +107,22 @@ export function MeetingControl({
           <ChevronLeft className="h-4 w-4" />
           {agendaTitle}
         </Link>
-        <Link
-          href={`/agendas/${agendaId}/run`}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <MonitorPlay className="h-4 w-4" />
-          Display
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/agendas/${agendaId}/runs/${runId}`}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <FileText className="h-4 w-4" />
+            Report
+          </Link>
+          <Link
+            href={`/agendas/${agendaId}/run`}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <MonitorPlay className="h-4 w-4" />
+            Display
+          </Link>
+        </div>
       </div>
 
       <div className="text-center">
