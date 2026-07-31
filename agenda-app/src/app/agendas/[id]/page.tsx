@@ -81,7 +81,7 @@ export default async function AgendaPage({
         </span>
         <Link
           href={`/agendas/${agenda.id}/people`}
-          className="flex items-center gap-1 hover:text-foreground"
+          className="flex items-center gap-1 text-primary underline underline-offset-4 decoration-primary/50 hover:decoration-primary"
         >
           <Users className="h-4 w-4" />
           {agenda.people.length}{' '}
