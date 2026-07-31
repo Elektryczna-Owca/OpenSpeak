@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
@@ -53,11 +54,23 @@ export function TimezoneSelect({
   defaultValue?: string | null
   className?: string
 }) {
-  const zones = supportedZones()
-  const selected = defaultValue || detectedZone()
-  // Make sure the selected zone is always an option (e.g. a stored zone missing
-  // from a trimmed runtime list).
-  const options = zones.includes(selected) ? zones : [selected, ...zones]
+  // The zone list and detected zone come from Intl, whose ICU data differs
+  // between Node and the browser (e.g. Africa/Asmera vs Africa/Asmara), so
+  // rendering them during SSR causes hydration mismatches. Render only the
+  // stored value on the server and fill in the browser's list after mount.
+  const [options, setOptions] = useState<string[]>(() =>
+    defaultValue ? [defaultValue] : ['UTC']
+  )
+  const [value, setValue] = useState<string>(defaultValue || 'UTC')
+
+  useEffect(() => {
+    const zones = supportedZones()
+    const selected = defaultValue || detectedZone()
+    // Make sure the selected zone is always an option (e.g. a stored zone
+    // missing from a trimmed runtime list).
+    setOptions(zones.includes(selected) ? zones : [selected, ...zones])
+    setValue(selected)
+  }, [defaultValue])
 
   return (
     <div className={cn('space-y-1.5', className)}>
@@ -65,7 +78,8 @@ export function TimezoneSelect({
       <select
         id={id}
         name="timezone"
-        defaultValue={selected}
+        value={value}
+        onChange={e => setValue(e.target.value)}
         className={selectClass}
       >
         {options.map(zone => (
