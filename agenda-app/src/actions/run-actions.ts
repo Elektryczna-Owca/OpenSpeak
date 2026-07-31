@@ -99,6 +99,35 @@ export async function togglePauseAction(runId: string) {
   revalidateRunPages(run.agendaId)
 }
 
+// Assigns a participant to the current open segment (e.g. records who
+// speaker 2 actually was), so the review page can show it.
+export async function assignSegmentPersonAction(
+  runId: string,
+  personId: string | null,
+) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return
+  const segment = run.segments[0]
+  if (!segment || segment.endedAt) return
+
+  if (personId) {
+    const person = await prisma.person.findFirst({
+      where: { id: personId, agendaId: run.agendaId },
+      select: { id: true },
+    })
+    if (!person) return
+  }
+
+  await prisma.runSegment.update({
+    where: { id: segment.id },
+    data: { personId },
+  })
+  revalidateRunPages(run.agendaId)
+}
+
 export async function advanceRunAction(runId: string, next: NextSegment | null) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },

@@ -17,7 +17,10 @@ export default async function RunReviewPage({
     where: { id: runId },
     include: {
       agenda: { select: { id: true, title: true, timezone: true } },
-      segments: { orderBy: { position: 'asc' } },
+      segments: {
+        orderBy: { position: 'asc' },
+        include: { person: { select: { name: true } } },
+      },
     },
   })
   if (!run || run.agendaId !== id) notFound()
@@ -98,6 +101,11 @@ export default async function RunReviewPage({
                         <CornerDownRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                       )}
                       {segment.label}
+                      {segment.person && (
+                        <span className="text-muted-foreground">
+                          — {segment.person.name}
+                        </span>
+                      )}
                     </span>
                   </td>
                   <td className="p-3 font-mono tabular-nums">

@@ -21,13 +21,20 @@ export default async function ControlPage({
     where: { id },
     include: {
       items: { orderBy: { position: 'asc' } },
+      people: { orderBy: { name: 'asc' } },
     },
   })
   if (!agenda) notFound()
 
   const openRun = await prisma.meetingRun.findFirst({
     where: { agendaId: id, endedAt: null },
-    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+    include: {
+      segments: {
+        orderBy: { position: 'desc' },
+        take: 1,
+        include: { person: { select: { name: true } } },
+      },
+    },
   })
   const openSegment = openRun?.segments[0]
 
@@ -38,12 +45,15 @@ export default async function ControlPage({
         agendaTitle={agenda.title}
         runId={openRun.id}
         items={agenda.items}
+        people={agenda.people}
         initialState={{
           endedAt: null,
           segment: {
             itemId: openSegment.itemId,
             kind: openSegment.kind,
             subIndex: openSegment.subIndex,
+            personId: openSegment.personId,
+            personName: openSegment.person?.name ?? null,
             label: openSegment.label,
             minMinutes: openSegment.minMinutes,
             expectedMinutes: openSegment.expectedMinutes,

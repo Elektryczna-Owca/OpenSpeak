@@ -7,6 +7,8 @@ export type RunSegmentState = {
   itemId: string | null
   kind: string
   subIndex: number | null
+  personId: string | null
+  personName: string | null
   label: string
   minMinutes: number | null
   expectedMinutes: number | null

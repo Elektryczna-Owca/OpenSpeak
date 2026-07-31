@@ -44,7 +44,13 @@ export default async function RunPage({
 
   const openRun = await prisma.meetingRun.findFirst({
     where: { agendaId: id, endedAt: null },
-    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+    include: {
+      segments: {
+        orderBy: { position: 'desc' },
+        take: 1,
+        include: { person: { select: { name: true } } },
+      },
+    },
   })
   const openSegment = openRun?.segments[0]
 
@@ -61,6 +67,8 @@ export default async function RunPage({
             itemId: openSegment.itemId,
             kind: openSegment.kind,
             subIndex: openSegment.subIndex,
+            personId: openSegment.personId,
+            personName: openSegment.person?.name ?? null,
             label: openSegment.label,
             minMinutes: openSegment.minMinutes,
             expectedMinutes: openSegment.expectedMinutes,

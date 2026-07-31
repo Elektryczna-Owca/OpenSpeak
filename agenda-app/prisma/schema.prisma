@@ -26,6 +26,7 @@ model Person {
   agenda    Agenda       @relation(fields: [agendaId], references: [id], onDelete: Cascade)
   name      String
   items     AgendaItem[]
+  segments  RunSegment[]
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 
@@ -82,6 +83,8 @@ model RunSegment {
   item            AgendaItem? @relation(fields: [itemId], references: [id], onDelete: SetNull)
   kind            String // 'item' (the item itself / intro) | 'sub' (one participant)
   subIndex        Int? // 1-based participant number when kind='sub'
+  personId        String? // participant assigned to this segment (e.g. who speaker 2 was)
+  person          Person?     @relation(fields: [personId], references: [id], onDelete: SetNull)
   label           String // snapshot: item title, or "<subLabel|Sub-item> <n>"
   minMinutes      Float? // threshold snapshots taken at segment creation
   expectedMinutes Float?

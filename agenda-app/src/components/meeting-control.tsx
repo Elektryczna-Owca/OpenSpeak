@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import {
   advanceRunAction,
+  assignSegmentPersonAction,
   togglePauseAction,
   type NextSegment,
 } from '@/actions/run-actions'
@@ -13,7 +14,10 @@ import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { Thresholds } from '@/components/meeting-display'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, MonitorPlay, Pause, Play, Square } from 'lucide-react'
-import type { AgendaItem } from '@/generated/prisma/client'
+import type { AgendaItem, Person } from '@/generated/prisma/client'
+
+const personSelectClass =
+  'h-10 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30'
 
 // Phone-sized remote control for a running meeting: big touch targets, the
 // same color-coded timer, and the Next / End buttons. The display page (and
@@ -23,12 +27,14 @@ export function MeetingControl({
   agendaTitle,
   runId,
   items,
+  people,
   initialState,
 }: {
   agendaId: string
   agendaTitle: string
   runId: string
   items: AgendaItem[]
+  people: Person[]
   initialState: RunState
 }) {
   const [pending, startTransition] = useTransition()
@@ -60,6 +66,13 @@ export function MeetingControl({
   function togglePause() {
     startTransition(async () => {
       await togglePauseAction(runId)
+      await refetch()
+    })
+  }
+
+  function assignPerson(personId: string | null) {
+    startTransition(async () => {
+      await assignSegmentPersonAction(runId, personId)
       await refetch()
     })
   }
@@ -103,9 +116,29 @@ export function MeetingControl({
         {inSubLoop && (
           <p className="mt-1 text-lg text-muted-foreground">
             {subLabel} {segment.subIndex}
+            {segment.personName && (
+              <span className="text-foreground"> — {segment.personName}</span>
+            )}
           </p>
         )}
       </div>
+
+      {inSubLoop && people.length > 0 && (
+        <select
+          aria-label={`Assign participant to ${subLabel.toLowerCase()} ${segment.subIndex}`}
+          value={segment.personId ?? ''}
+          onChange={e => assignPerson(e.target.value || null)}
+          disabled={pending}
+          className={personSelectClass}
+        >
+          <option value="">Unassigned</option>
+          {people.map(person => (
+            <option key={person.id} value={person.id}>
+              {person.name}
+            </option>
+          ))}
+        </select>
+      )}
 
       <div className="text-center">
         <div

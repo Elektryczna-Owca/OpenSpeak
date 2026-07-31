@@ -11,7 +11,13 @@ export async function GET(
   const { runId } = await params
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },
-    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+    include: {
+      segments: {
+        orderBy: { position: 'desc' },
+        take: 1,
+        include: { person: { select: { name: true } } },
+      },
+    },
   })
   if (!run) {
     return Response.json({ error: 'not found' }, { status: 404 })
@@ -25,6 +31,8 @@ export async function GET(
             itemId: segment.itemId,
             kind: segment.kind,
             subIndex: segment.subIndex,
+            personId: segment.personId,
+            personName: segment.person?.name ?? null,
             label: segment.label,
             minMinutes: segment.minMinutes,
             expectedMinutes: segment.expectedMinutes,

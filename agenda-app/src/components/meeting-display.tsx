@@ -70,6 +70,9 @@ export function MeetingDisplay({
         {inSubLoop && (
           <p className="mt-1 text-xl text-muted-foreground">
             {subLabel} {segment.subIndex}
+            {segment.personName && (
+              <span className="text-foreground"> — {segment.personName}</span>
+            )}
           </p>
         )}
       </div>
