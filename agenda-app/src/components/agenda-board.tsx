@@ -72,6 +72,10 @@ export function AgendaBoard({
 
   return (
     <DndContext
+      // Stable id: dnd-kit's default comes from a global counter that drifts
+      // between server and client, causing an aria-describedby hydration
+      // mismatch.
+      id="agenda-board"
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
