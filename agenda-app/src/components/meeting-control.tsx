@@ -19,9 +19,34 @@ import {
   MonitorPlay,
   Pause,
   Play,
+  SkipForward,
   Square,
 } from 'lucide-react'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
+
+// Lightweight confirm: the first tap arms the button for 3 seconds, the
+// second tap runs the action.
+function useTapConfirm() {
+  const [arming, setArming] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current)
+    },
+    [],
+  )
+  function tap(action: () => void) {
+    if (!arming) {
+      setArming(true)
+      timer.current = setTimeout(() => setArming(false), 3000)
+      return
+    }
+    if (timer.current) clearTimeout(timer.current)
+    setArming(false)
+    action()
+  }
+  return { arming, tap }
+}
 
 const personSelectClass =
   'h-10 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30'
@@ -49,23 +74,17 @@ export function MeetingControl({
   const segment = state.segment
   const elapsed = useElapsedSeconds(segment)
   const paused = segment?.pausedAt != null
-  const [confirmingEnd, setConfirmingEnd] = useState(false)
-  const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  useEffect(
-    () => () => {
-      if (confirmTimer.current) clearTimeout(confirmTimer.current)
-    },
-    [],
-  )
+  const skipConfirm = useTapConfirm()
+  const endConfirm = useTapConfirm()
 
   if (!segment || state.endedAt) return null
 
   const { currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel, endTarget } =
     computeRunTargets(items, segment)
 
-  function advance(target: NextSegment | null) {
+  function advance(target: NextSegment | null, skipCurrent = false) {
     startTransition(async () => {
-      await advanceRunAction(runId, target)
+      await advanceRunAction(runId, target, skipCurrent)
       await refetch()
     })
   }
@@ -82,19 +101,6 @@ export function MeetingControl({
       await assignSegmentPersonAction(runId, personId)
       await refetch()
     })
-  }
-
-  // Lightweight confirm: the first tap arms the button for 3 seconds, the
-  // second tap actually ends the meeting.
-  function handleEndMeeting() {
-    if (!confirmingEnd) {
-      setConfirmingEnd(true)
-      confirmTimer.current = setTimeout(() => setConfirmingEnd(false), 3000)
-      return
-    }
-    if (confirmTimer.current) clearTimeout(confirmTimer.current)
-    setConfirmingEnd(false)
-    advance(null)
   }
 
   return (
@@ -226,16 +232,35 @@ export function MeetingControl({
         </p>
       )}
 
-      <Button
-        size="sm"
-        variant={confirmingEnd ? 'destructive' : 'ghost'}
-        className={confirmingEnd ? 'mt-2' : 'mt-2 text-destructive hover:text-destructive'}
-        onClick={handleEndMeeting}
-        disabled={pending}
-      >
-        <Square className="h-4 w-4" />
-        {confirmingEnd ? 'Tap again to end' : 'End meeting'}
-      </Button>
+      <div className="mt-2 flex flex-col items-center gap-2">
+        <Button
+          variant={skipConfirm.arming ? 'destructive' : 'ghost'}
+          className={
+            skipConfirm.arming ? '' : 'text-muted-foreground hover:text-foreground'
+          }
+          onClick={() =>
+            // Skip the whole current item: mark its segment skipped and jump
+            // to the next item (or finish when this was the last one).
+            skipConfirm.tap(() => advance(endTarget, true))
+          }
+          disabled={pending}
+        >
+          <SkipForward className="h-4 w-4" />
+          {skipConfirm.arming ? 'Tap again to skip' : 'Skip agenda item'}
+        </Button>
+        <Button
+          size="sm"
+          variant={endConfirm.arming ? 'destructive' : 'ghost'}
+          className={
+            endConfirm.arming ? '' : 'text-destructive hover:text-destructive'
+          }
+          onClick={() => endConfirm.tap(() => advance(null))}
+          disabled={pending}
+        >
+          <Square className="h-4 w-4" />
+          {endConfirm.arming ? 'Tap again to end' : 'End meeting'}
+        </Button>
+      </div>
     </div>
   )
 }

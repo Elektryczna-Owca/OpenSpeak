@@ -128,7 +128,11 @@ export async function assignSegmentPersonAction(
   revalidateRunPages(run.agendaId)
 }
 
-export async function advanceRunAction(runId: string, next: NextSegment | null) {
+export async function advanceRunAction(
+  runId: string,
+  next: NextSegment | null,
+  skipCurrent = false,
+) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },
     include: {
@@ -146,6 +150,7 @@ export async function advanceRunAction(runId: string, next: NextSegment | null) 
       // stays the segment's full pause total.
       data: {
         endedAt: now,
+        skipped: skipCurrent,
         ...(lastSegment.pausedAt
           ? {
               pausedAt: null,

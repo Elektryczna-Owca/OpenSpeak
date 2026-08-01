@@ -93,6 +93,7 @@ model RunSegment {
   position        Int // order within the run
   startedAt       DateTime
   endedAt         DateTime?
+  skipped         Boolean   @default(false) // ended via "Skip agenda item"
   pausedAt        DateTime? // set while the timer is paused
   pausedSeconds   Float     @default(0) // accumulated pause time, excluded from elapsed
 
