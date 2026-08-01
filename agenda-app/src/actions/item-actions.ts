@@ -167,6 +167,21 @@ export async function updateItemAction(
   return { ok: true }
 }
 
+export async function assignItemPersonAction(itemId: string, personId: string) {
+  const existing = await prisma.agendaItem.findUnique({
+    where: { id: itemId },
+    select: { agendaId: true },
+  })
+  if (!existing) return
+  const resolved = await resolvePersonId(existing.agendaId, personId)
+  if (!resolved) return
+  await prisma.agendaItem.update({
+    where: { id: itemId },
+    data: { personId: resolved },
+  })
+  revalidatePath(`/agendas/${existing.agendaId}`)
+}
+
 export async function deleteItemAction(id: string) {
   const item = await prisma.agendaItem.delete({ where: { id } })
   await prisma.$executeRaw`

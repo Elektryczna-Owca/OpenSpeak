@@ -8,6 +8,7 @@ import { GripVertical, Clock, Pencil, Trash2, User, CornerDownRight } from 'luci
 import { useState, useTransition } from 'react'
 import { deleteItemAction } from '@/actions/item-actions'
 import { ItemEditDialog } from './item-edit-dialog'
+import { QuickAssignDialog } from './quick-assign-dialog'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
 
 export function AgendaItemCard({
@@ -19,6 +20,7 @@ export function AgendaItemCard({
 }) {
   const assignee = people.find(p => p.id === item.personId)
   const [editOpen, setEditOpen] = useState(false)
+  const [assignOpen, setAssignOpen] = useState(false)
   const [, startTransition] = useTransition()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id })
@@ -46,7 +48,19 @@ export function AgendaItemCard({
             <h3 className="font-medium truncate">{item.title}</h3>
             <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
               <User className="h-3.5 w-3.5 shrink-0" />
-              {assignee ? assignee.name : 'Unassigned'}
+              {assignee ? (
+                assignee.name
+              ) : people.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setAssignOpen(true)}
+                  className="truncate underline underline-offset-2 hover:text-foreground"
+                >
+                  Unassigned
+                </button>
+              ) : (
+                'Unassigned'
+              )}
             </p>
             {item.subExpectedMinutes != null && (
               <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
@@ -100,6 +114,12 @@ export function AgendaItemCard({
         people={people}
         open={editOpen}
         onOpenChange={setEditOpen}
+      />
+      <QuickAssignDialog
+        item={item}
+        people={people}
+        open={assignOpen}
+        onOpenChange={setAssignOpen}
       />
     </>
   )
