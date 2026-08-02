@@ -80,19 +80,28 @@ export function MeetingControl({
 
   if (!segment || state.endedAt) return null
 
-  const { currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel } =
-    computeRunTargets(items, segment)
+  const { currentItem, nextItem, inSubLoop, subLabel } = computeRunTargets(
+    items,
+    segment,
+  )
 
-  // The segment is closed but the run isn't: the previous item is finished
-  // and the next one waits for an explicit start.
+  // The segment is closed but the run isn't: the previous segment is finished
+  // and whatever comes next waits for an explicit start.
   const between = segment.endedAt != null
-  // The primary button finishes the whole item (instead of chaining into the
-  // next segment) whenever the current segment isn't part of a sub-item loop.
-  const finishesItem = !inSubLoop && currentItem?.subExpectedMinutes == null
   const finishedSeconds = segment.endedAt
     ? (Date.parse(segment.endedAt) - Date.parse(segment.startedAt)) / 1000 -
       segment.pausedSeconds
     : 0
+  // Between segments of an item with a sub-item loop, the primary next step
+  // stays within the item: sub 1 after the item's own slot, then sub n+1.
+  const nextSubTarget: NextSegment | null =
+    between && currentItem && currentItem.subExpectedMinutes != null
+      ? {
+          itemId: currentItem.id,
+          kind: 'sub',
+          subIndex: inSubLoop ? (segment.subIndex ?? 1) + 1 : 1,
+        }
+      : null
 
   function advance(target: NextSegment | null) {
     startTransition(async () => {
@@ -156,17 +165,37 @@ export function MeetingControl({
             <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
               Up next
             </p>
-            <h1 className="mt-1 text-xl font-semibold tracking-tight">
-              {nextItem?.title ?? 'All items finished'}
-            </h1>
-            {nextItem && (
-              <Thresholds
-                segment={{
-                  minMinutes: nextItem.minMinutes,
-                  expectedMinutes: nextItem.durationMinutes,
-                  maxMinutes: nextItem.maxMinutes,
-                }}
-              />
+            {nextSubTarget && currentItem ? (
+              <>
+                <h1 className="mt-1 text-xl font-semibold tracking-tight">
+                  {currentItem.title}
+                </h1>
+                <p className="mt-1 text-lg text-muted-foreground">
+                  {subLabel} {nextSubTarget.subIndex}
+                </p>
+                <Thresholds
+                  segment={{
+                    minMinutes: currentItem.subMinMinutes,
+                    expectedMinutes: currentItem.subExpectedMinutes,
+                    maxMinutes: currentItem.subMaxMinutes,
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <h1 className="mt-1 text-xl font-semibold tracking-tight">
+                  {nextItem?.title ?? 'All items finished'}
+                </h1>
+                {nextItem && (
+                  <Thresholds
+                    segment={{
+                      minMinutes: nextItem.minMinutes,
+                      expectedMinutes: nextItem.durationMinutes,
+                      maxMinutes: nextItem.maxMinutes,
+                    }}
+                  />
+                )}
+              </>
             )}
           </div>
           <p className="text-sm text-muted-foreground">
@@ -176,17 +205,44 @@ export function MeetingControl({
             </span>
           </p>
           <div className="flex w-full flex-col gap-3">
-            <Button
-              size="lg"
-              className="h-14 w-full text-lg"
-              onClick={() =>
-                advance(nextItem ? { itemId: nextItem.id, kind: 'item' } : null)
-              }
-              disabled={pending}
-            >
-              <Play className="h-5 w-5" />
-              {nextItem ? 'Start agenda item' : 'Finish meeting'}
-            </Button>
+            {nextSubTarget ? (
+              <>
+                <Button
+                  size="lg"
+                  className="h-14 w-full text-lg"
+                  onClick={() => advance(nextSubTarget)}
+                  disabled={pending}
+                >
+                  <Play className="h-5 w-5" />
+                  Start {subLabel.toLowerCase()} {nextSubTarget.subIndex}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 w-full"
+                  onClick={() =>
+                    advance(
+                      nextItem ? { itemId: nextItem.id, kind: 'item' } : null,
+                    )
+                  }
+                  disabled={pending}
+                >
+                  {nextItem ? 'Start next agenda item' : 'Finish meeting'}
+                </Button>
+              </>
+            ) : (
+              <Button
+                size="lg"
+                className="h-14 w-full text-lg"
+                onClick={() =>
+                  advance(nextItem ? { itemId: nextItem.id, kind: 'item' } : null)
+                }
+                disabled={pending}
+              >
+                <Play className="h-5 w-5" />
+                {nextItem ? 'Start agenda item' : 'Finish meeting'}
+              </Button>
+            )}
           </div>
         </>
       )}
@@ -251,25 +307,16 @@ export function MeetingControl({
 
       {!between && (
       <div className="flex w-full flex-col gap-3">
-        {finishesItem ? (
-          <Button
-            size="lg"
-            className="h-14 w-full text-lg"
-            onClick={() => finish(false)}
-            disabled={pending}
-          >
-            Finish agenda item
-          </Button>
-        ) : (
-          <Button
-            size="lg"
-            className="h-14 w-full text-lg"
-            onClick={() => advance(nextTarget)}
-            disabled={pending}
-          >
-            {nextLabel}
-          </Button>
-        )}
+        <Button
+          size="lg"
+          className="h-14 w-full text-lg"
+          onClick={() => finish(false)}
+          disabled={pending}
+        >
+          {inSubLoop
+            ? `Finish ${subLabel.toLowerCase()} ${segment.subIndex}`
+            : 'Finish agenda item'}
+        </Button>
         <Button
           size="lg"
           variant="outline"
@@ -289,17 +336,6 @@ export function MeetingControl({
             </>
           )}
         </Button>
-        {inSubLoop && (
-          <Button
-            size="lg"
-            variant="outline"
-            className="h-12 w-full"
-            onClick={() => finish(false)}
-            disabled={pending}
-          >
-            End {subLabel.toLowerCase()} round
-          </Button>
-        )}
       </div>
       )}
 

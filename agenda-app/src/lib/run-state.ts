@@ -1,4 +1,3 @@
-import type { NextSegment } from '@/actions/run-actions'
 import type { AgendaItem, RunSegment } from '@/generated/prisma/client'
 
 // The latest segment as served by /api/runs/[runId] — dates as ISO strings so
@@ -48,8 +47,8 @@ export type RunState = {
   segment: RunSegmentState | null
 }
 
-// Where the meeting goes from the current segment. The flow never advances
-// automatically — these are the targets for the manual Next / End buttons.
+// Locates the current segment within the agenda. Every transition is manual:
+// segments are finished and started explicitly from the control page.
 export function computeRunTargets(items: AgendaItem[], segment: RunSegmentState) {
   const currentIndex = items.findIndex(i => i.id === segment.itemId)
   const currentItem = currentIndex >= 0 ? items[currentIndex] : null
@@ -57,25 +56,5 @@ export function computeRunTargets(items: AgendaItem[], segment: RunSegmentState)
   const inSubLoop = segment.kind === 'sub'
   const subLabel = currentItem?.subLabel ?? 'Sub-item'
 
-  let nextTarget: NextSegment | null
-  let nextLabel: string
-  if (inSubLoop && currentItem) {
-    nextTarget = {
-      itemId: currentItem.id,
-      kind: 'sub',
-      subIndex: (segment.subIndex ?? 1) + 1,
-    }
-    nextLabel = `Next ${subLabel.toLowerCase()}`
-  } else if (currentItem && currentItem.subExpectedMinutes != null) {
-    nextTarget = { itemId: currentItem.id, kind: 'sub', subIndex: 1 }
-    nextLabel = `Start ${subLabel.toLowerCase()} 1`
-  } else if (nextItem) {
-    nextTarget = { itemId: nextItem.id, kind: 'item' }
-    nextLabel = 'Next item'
-  } else {
-    nextTarget = null
-    nextLabel = 'Finish meeting'
-  }
-
-  return { currentIndex, currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel }
+  return { currentIndex, currentItem, nextItem, inSubLoop, subLabel }
 }

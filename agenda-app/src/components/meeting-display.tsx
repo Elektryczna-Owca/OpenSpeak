@@ -48,10 +48,18 @@ export function MeetingDisplay({
   const { currentIndex, currentItem, nextItem, inSubLoop, subLabel } =
     computeRunTargets(items, segment)
 
-  // Segment closed but run still open: the controller finished an item and
-  // hasn't started the next one yet — feature the upcoming item, timer idle.
+  // Segment closed but run still open: the controller finished a segment and
+  // hasn't started the next one yet — feature what's up next, timer idle.
   const between = segment.endedAt != null
-  const shownItem = between ? nextItem : currentItem
+  // Between segments of an item with a sub-item loop, the item stays current
+  // and the next sub is what's up next.
+  const upNextSubIndex =
+    between && currentItem && currentItem.subExpectedMinutes != null
+      ? inSubLoop
+        ? (segment.subIndex ?? 1) + 1
+        : 1
+      : null
+  const shownItem = between && upNextSubIndex == null ? nextItem : currentItem
 
   // Planned start of the next item, from the printed agenda's schedule
   // (scheduled start + expected durations before it) — actual timing may drift.
@@ -88,9 +96,14 @@ export function MeetingDisplay({
         )}
         <h1 className="text-3xl font-semibold tracking-tight">
           {between
-            ? (nextItem?.title ?? 'All items finished')
+            ? (shownItem?.title ?? 'All items finished')
             : (currentItem?.title ?? segment.label)}
         </h1>
+        {between && upNextSubIndex != null && (
+          <p className="mt-1 text-xl text-muted-foreground">
+            {subLabel} {upNextSubIndex}
+          </p>
+        )}
         {!between && inSubLoop && (
           <p className="mt-1 text-xl text-muted-foreground">
             {subLabel} {segment.subIndex}
@@ -122,7 +135,15 @@ export function MeetingDisplay({
               Paused
             </p>
           )}
-          {between && nextItem ? (
+          {between && upNextSubIndex != null && currentItem ? (
+            <Thresholds
+              segment={{
+                minMinutes: currentItem.subMinMinutes,
+                expectedMinutes: currentItem.subExpectedMinutes,
+                maxMinutes: currentItem.subMaxMinutes,
+              }}
+            />
+          ) : between && nextItem ? (
             <Thresholds
               segment={{
                 minMinutes: nextItem.minMinutes,
@@ -151,7 +172,11 @@ export function MeetingDisplay({
 
       {currentIndex >= 0 && (
         <ol className="w-full max-w-md space-y-2">
-          {items.slice(between ? currentIndex + 1 : currentIndex).map((item, i) => (
+          {items
+            .slice(
+              between && upNextSubIndex == null ? currentIndex + 1 : currentIndex,
+            )
+            .map((item, i) => (
             <li
               key={item.id}
               className={
