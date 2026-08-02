@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
@@ -35,6 +35,16 @@ export function MeetingDisplay({
   const segment = state.segment
   const elapsed = useElapsedSeconds(segment)
   const paused = segment?.pausedAt != null
+  const [qrExpanded, setQrExpanded] = useState(false)
+
+  useEffect(() => {
+    if (!qrExpanded) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setQrExpanded(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [qrExpanded])
 
   // When the controller finishes the meeting, follow to the review page.
   useEffect(() => {
@@ -160,16 +170,17 @@ export function MeetingDisplay({
         </div>
         {shownItem?.url && (
           // Fixed white backdrop with a quiet zone so the code scans on
-          // every color theme.
-          <a
-            href={shownItem.url}
-            target="_blank"
-            rel="noreferrer"
-            aria-label={`Link for ${shownItem.title}`}
-            className="shrink-0 rounded-lg bg-white p-2"
+          // every color theme. Hover reveals the target URL; a click blows
+          // the code up to a full-page overlay for the audience to scan.
+          <button
+            type="button"
+            onClick={() => setQrExpanded(true)}
+            title={shownItem.url}
+            aria-label={`Show QR code for ${shownItem.title} full screen`}
+            className="shrink-0 cursor-zoom-in rounded-lg bg-white p-2"
           >
             <QRCodeSVG value={shownItem.url} size={112} marginSize={0} />
-          </a>
+          </button>
         )}
       </div>
 
@@ -210,6 +221,25 @@ export function MeetingDisplay({
             </li>
           ))}
         </ol>
+      )}
+
+      {qrExpanded && shownItem?.url && (
+        <button
+          type="button"
+          onClick={() => setQrExpanded(false)}
+          aria-label="Close full-screen QR code"
+          className="fixed inset-0 z-50 flex cursor-zoom-out flex-col items-center justify-center gap-8 bg-white"
+        >
+          <QRCodeSVG
+            value={shownItem.url}
+            size={512}
+            marginSize={0}
+            className="h-[min(80vw,72vh)] w-[min(80vw,72vh)]"
+          />
+          <span className="max-w-[90vw] truncate font-mono text-xl text-neutral-700">
+            {shownItem.url}
+          </span>
+        </button>
       )}
     </div>
   )
