@@ -179,6 +179,25 @@ export async function finishSegmentAction(runId: string, skipped = false) {
   revalidateRunPages(run.agendaId)
 }
 
+// Declares the whole item finished from the between-segments state (after a
+// sub-item round), so the run moves on to waiting for the next agenda item
+// without starting anything.
+export async function finishItemAction(runId: string) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return
+  const segment = run.segments[0]
+  if (!segment || !segment.endedAt) return // only meaningful between segments
+
+  await prisma.runSegment.update({
+    where: { id: segment.id },
+    data: { itemDone: true },
+  })
+  revalidateRunPages(run.agendaId)
+}
+
 export async function advanceRunAction(runId: string, next: NextSegment | null) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },

@@ -19,6 +19,7 @@ export type RunSegmentState = {
   pausedAt: string | null
   pausedSeconds: number
   skipped: boolean
+  itemDone: boolean
 }
 
 export function serializeSegment(
@@ -39,6 +40,7 @@ export function serializeSegment(
     pausedAt: segment.pausedAt?.toISOString() ?? null,
     pausedSeconds: segment.pausedSeconds,
     skipped: segment.skipped,
+    itemDone: segment.itemDone,
   }
 }
 

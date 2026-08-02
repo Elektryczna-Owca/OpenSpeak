@@ -94,6 +94,7 @@ model RunSegment {
   startedAt       DateTime
   endedAt         DateTime?
   skipped         Boolean   @default(false) // ended via "Skip agenda item"
+  itemDone        Boolean   @default(false) // whole item declared finished (no more subs)
   pausedAt        DateTime? // set while the timer is paused
   pausedSeconds   Float     @default(0) // accumulated pause time, excluded from elapsed
 

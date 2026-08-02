@@ -52,9 +52,12 @@ export function MeetingDisplay({
   // hasn't started the next one yet — feature what's up next, timer idle.
   const between = segment.endedAt != null
   // Between segments of an item with a sub-item loop, the item stays current
-  // and the next sub is what's up next.
+  // and the next sub is what's up next — until the item is declared finished.
   const upNextSubIndex =
-    between && currentItem && currentItem.subExpectedMinutes != null
+    between &&
+    !segment.itemDone &&
+    currentItem &&
+    currentItem.subExpectedMinutes != null
       ? inSubLoop
         ? (segment.subIndex ?? 1) + 1
         : 1

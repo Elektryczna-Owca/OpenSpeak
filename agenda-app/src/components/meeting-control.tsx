@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
   advanceRunAction,
   assignSegmentPersonAction,
+  finishItemAction,
   finishSegmentAction,
   togglePauseAction,
   type NextSegment,
@@ -93,9 +94,13 @@ export function MeetingControl({
       segment.pausedSeconds
     : 0
   // Between segments of an item with a sub-item loop, the primary next step
-  // stays within the item: sub 1 after the item's own slot, then sub n+1.
+  // stays within the item (sub 1 after the item's own slot, then sub n+1) —
+  // until the whole item is declared finished via finishItemAction.
   const nextSubTarget: NextSegment | null =
-    between && currentItem && currentItem.subExpectedMinutes != null
+    between &&
+    !segment.itemDone &&
+    currentItem &&
+    currentItem.subExpectedMinutes != null
       ? {
           itemId: currentItem.id,
           kind: 'sub',
@@ -113,6 +118,13 @@ export function MeetingControl({
   function finish(skipped: boolean) {
     startTransition(async () => {
       await finishSegmentAction(runId, skipped)
+      await refetch()
+    })
+  }
+
+  function finishItem() {
+    startTransition(async () => {
+      await finishItemAction(runId)
       await refetch()
     })
   }
@@ -220,14 +232,10 @@ export function MeetingControl({
                   size="lg"
                   variant="outline"
                   className="h-12 w-full"
-                  onClick={() =>
-                    advance(
-                      nextItem ? { itemId: nextItem.id, kind: 'item' } : null,
-                    )
-                  }
+                  onClick={finishItem}
                   disabled={pending}
                 >
-                  {nextItem ? 'Start next agenda item' : 'Finish meeting'}
+                  Finish agenda item
                 </Button>
               </>
             ) : (
