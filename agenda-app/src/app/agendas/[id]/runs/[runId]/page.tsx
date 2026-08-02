@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -43,6 +44,16 @@ export default async function RunReviewPage({
   const totalSeconds =
     ((run.endedAt ?? now).getTime() - run.startedAt.getTime()) / 1000
 
+  // Idle time after each segment: from its end until the next segment starts
+  // (or until the meeting ends / now for the last one). Since every item and
+  // sub-item is started explicitly, these gaps are real meeting time.
+  const gapsAfter = run.segments.map((segment, i) => {
+    if (!segment.endedAt) return 0
+    const gapEnd = run.segments[i + 1]?.startedAt ?? run.endedAt ?? now
+    return Math.max(0, (gapEnd.getTime() - segment.endedAt.getTime()) / 1000)
+  })
+  const betweenSeconds = gapsAfter.reduce((sum, gap) => sum + gap, 0)
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -79,6 +90,9 @@ export default async function RunReviewPage({
           <Clock className="h-4 w-4" />
           {formatElapsed(totalSeconds)}
           {run.endedAt ? ' total' : ' so far — still in progress'}
+          {betweenSeconds >= 1 && (
+            <> · {formatElapsed(betweenSeconds)} in between</>
+          )}
         </p>
       </div>
 
@@ -94,7 +108,7 @@ export default async function RunReviewPage({
             </tr>
           </thead>
           <tbody>
-            {run.segments.map(segment => {
+            {run.segments.map((segment, i) => {
               // Paused time doesn't count toward the item's actual duration.
               // An open segment is measured up to now so the in-progress
               // report shows its elapsed time so far.
@@ -114,7 +128,8 @@ export default async function RunReviewPage({
                     )
                   : null
               return (
-                <tr key={segment.id} className="border-b last:border-b-0">
+                <Fragment key={segment.id}>
+                <tr className="border-b last:border-b-0">
                   <td className="p-3">
                     <span className="flex items-center gap-1">
                       {segment.kind === 'sub' && (
@@ -149,6 +164,18 @@ export default async function RunReviewPage({
                     )}
                   </td>
                 </tr>
+                {gapsAfter[i] >= 1 && (
+                  <tr className="border-b text-muted-foreground last:border-b-0">
+                    <td className="p-3 pl-6 text-sm italic">In between</td>
+                    <td className="p-3 font-mono text-sm tabular-nums">
+                      {formatElapsed(gapsAfter[i])}
+                    </td>
+                    <td className="p-3">—</td>
+                    <td className="p-3">—</td>
+                    <td className="p-3"></td>
+                  </tr>
+                )}
+                </Fragment>
               )
             })}
           </tbody>
