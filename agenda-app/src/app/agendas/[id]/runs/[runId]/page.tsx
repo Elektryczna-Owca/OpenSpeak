@@ -162,8 +162,8 @@ export default async function RunReviewPage({
               )
             })}
             {betweenSeconds >= 1 && (
-              <tr className="border-b text-muted-foreground last:border-b-0">
-                <td className="p-3 italic">In between</td>
+              <tr className="border-b text-muted-foreground">
+                <td className="p-3 italic">Sum of in between times</td>
                 <td className="p-3 font-mono tabular-nums">
                   {formatElapsed(betweenSeconds)}
                 </td>
