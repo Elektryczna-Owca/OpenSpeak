@@ -13,6 +13,7 @@ import {
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
+import { useMaxTimeAlert } from '@/components/use-max-alert'
 import { Thresholds } from '@/components/meeting-display'
 import { Button } from '@/components/ui/button'
 import {
@@ -75,6 +76,7 @@ export function MeetingControl({
   const { state, refetch } = useRunState(runId, initialState)
   const segment = state.segment
   const elapsed = useElapsedSeconds(segment)
+  useMaxTimeAlert(segment, elapsed)
   const paused = segment?.pausedAt != null
   const skipConfirm = useTapConfirm()
   const endConfirm = useTapConfirm()
