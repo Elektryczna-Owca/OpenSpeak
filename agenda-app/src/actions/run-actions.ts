@@ -128,6 +128,18 @@ export async function assignSegmentPersonAction(
   revalidateRunPages(run.agendaId)
 }
 
+// Removes a finished run (and its segments, via cascade) from the history.
+// Open runs are never deleted — they drive a live meeting.
+export async function deleteRunAction(runId: string) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    select: { agendaId: true, endedAt: true },
+  })
+  if (!run || !run.endedAt) return
+  await prisma.meetingRun.delete({ where: { id: runId } })
+  revalidateRunPages(run.agendaId)
+}
+
 export async function advanceRunAction(
   runId: string,
   next: NextSegment | null,

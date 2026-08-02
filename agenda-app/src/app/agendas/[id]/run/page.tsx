@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { DeleteRunButton } from '@/components/delete-run-button'
 import { MeetingDisplay } from '@/components/meeting-display'
 import { RunStartWatcher } from '@/components/run-start-watcher'
 import { formatElapsed } from '@/lib/timer-color'
@@ -209,31 +210,34 @@ export default async function RunPage({
             Past runs
           </h2>
           <ul className="space-y-2">
-            {pastRuns.map(run => (
-              <li key={run.id}>
-                <Link
-                  href={`/agendas/${agenda.id}/runs/${run.id}`}
-                  className={buttonVariants({
-                    variant: 'outline',
-                    className: 'w-full justify-between',
-                  })}
-                >
-                  <span>
-                    {new Intl.DateTimeFormat('en-US', {
-                      dateStyle: 'medium',
-                      timeStyle: 'short',
-                      timeZone,
-                    }).format(run.startedAt)}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {run.endedAt &&
-                      formatElapsed(
-                        (run.endedAt.getTime() - run.startedAt.getTime()) / 1000,
-                      )}
-                  </span>
-                </Link>
-              </li>
-            ))}
+            {pastRuns.map(run => {
+              const startedLabel = new Intl.DateTimeFormat('en-US', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+                timeZone,
+              }).format(run.startedAt)
+              return (
+                <li key={run.id} className="flex items-center gap-1">
+                  <Link
+                    href={`/agendas/${agenda.id}/runs/${run.id}`}
+                    className={buttonVariants({
+                      variant: 'outline',
+                      className: 'min-w-0 flex-1 justify-between',
+                    })}
+                  >
+                    <span>{startedLabel}</span>
+                    <span className="text-muted-foreground">
+                      {run.endedAt &&
+                        formatElapsed(
+                          (run.endedAt.getTime() - run.startedAt.getTime()) /
+                            1000,
+                        )}
+                    </span>
+                  </Link>
+                  <DeleteRunButton id={run.id} label={startedLabel} />
+                </li>
+              )
+            })}
           </ul>
         </div>
       )}
