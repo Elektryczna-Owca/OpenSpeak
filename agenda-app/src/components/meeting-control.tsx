@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
   advanceRunAction,
   assignSegmentPersonAction,
+  finishSegmentAction,
   togglePauseAction,
   type NextSegment,
 } from '@/actions/run-actions'
@@ -79,12 +80,30 @@ export function MeetingControl({
 
   if (!segment || state.endedAt) return null
 
-  const { currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel, endTarget } =
+  const { currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel } =
     computeRunTargets(items, segment)
 
-  function advance(target: NextSegment | null, skipCurrent = false) {
+  // The segment is closed but the run isn't: the previous item is finished
+  // and the next one waits for an explicit start.
+  const between = segment.endedAt != null
+  // The primary button finishes the whole item (instead of chaining into the
+  // next segment) whenever the current segment isn't part of a sub-item loop.
+  const finishesItem = !inSubLoop && currentItem?.subExpectedMinutes == null
+  const finishedSeconds = segment.endedAt
+    ? (Date.parse(segment.endedAt) - Date.parse(segment.startedAt)) / 1000 -
+      segment.pausedSeconds
+    : 0
+
+  function advance(target: NextSegment | null) {
     startTransition(async () => {
-      await advanceRunAction(runId, target, skipCurrent)
+      await advanceRunAction(runId, target)
+      await refetch()
+    })
+  }
+
+  function finish(skipped: boolean) {
+    startTransition(async () => {
+      await finishSegmentAction(runId, skipped)
       await refetch()
     })
   }
@@ -131,6 +150,48 @@ export function MeetingControl({
         </div>
       </div>
 
+      {between && (
+        <>
+          <div className="text-center">
+            <p className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+              Up next
+            </p>
+            <h1 className="mt-1 text-xl font-semibold tracking-tight">
+              {nextItem?.title ?? 'All items finished'}
+            </h1>
+            {nextItem && (
+              <Thresholds
+                segment={{
+                  minMinutes: nextItem.minMinutes,
+                  expectedMinutes: nextItem.durationMinutes,
+                  maxMinutes: nextItem.maxMinutes,
+                }}
+              />
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {segment.skipped ? 'Skipped' : 'Finished'}: {segment.label} —{' '}
+            <span className="font-mono tabular-nums">
+              {formatElapsed(finishedSeconds)}
+            </span>
+          </p>
+          <div className="flex w-full flex-col gap-3">
+            <Button
+              size="lg"
+              className="h-14 w-full text-lg"
+              onClick={() =>
+                advance(nextItem ? { itemId: nextItem.id, kind: 'item' } : null)
+              }
+              disabled={pending}
+            >
+              <Play className="h-5 w-5" />
+              {nextItem ? 'Start agenda item' : 'Finish meeting'}
+            </Button>
+          </div>
+        </>
+      )}
+
+      {!between && (
       <div className="text-center">
         <h1 className="text-xl font-semibold tracking-tight">
           {currentItem?.title ?? segment.label}
@@ -144,8 +205,9 @@ export function MeetingControl({
           </p>
         )}
       </div>
+      )}
 
-      {inSubLoop && people.length > 0 && (
+      {!between && inSubLoop && people.length > 0 && (
         <select
           aria-label={`Assign participant to ${subLabel.toLowerCase()} ${segment.subIndex}`}
           value={segment.personId ?? ''}
@@ -162,6 +224,7 @@ export function MeetingControl({
         </select>
       )}
 
+      {!between && (
       <div className="text-center">
         <div
           className={`font-mono text-6xl font-semibold tabular-nums transition-colors ${
@@ -184,16 +247,29 @@ export function MeetingControl({
         )}
         <Thresholds segment={segment} />
       </div>
+      )}
 
+      {!between && (
       <div className="flex w-full flex-col gap-3">
-        <Button
-          size="lg"
-          className="h-14 w-full text-lg"
-          onClick={() => advance(nextTarget)}
-          disabled={pending}
-        >
-          {nextLabel}
-        </Button>
+        {finishesItem ? (
+          <Button
+            size="lg"
+            className="h-14 w-full text-lg"
+            onClick={() => finish(false)}
+            disabled={pending}
+          >
+            Finish agenda item
+          </Button>
+        ) : (
+          <Button
+            size="lg"
+            className="h-14 w-full text-lg"
+            onClick={() => advance(nextTarget)}
+            disabled={pending}
+          >
+            {nextLabel}
+          </Button>
+        )}
         <Button
           size="lg"
           variant="outline"
@@ -218,36 +294,39 @@ export function MeetingControl({
             size="lg"
             variant="outline"
             className="h-12 w-full"
-            onClick={() => advance(endTarget)}
+            onClick={() => finish(false)}
             disabled={pending}
           >
-            {endTarget ? 'End' : 'End & finish'}
+            End {subLabel.toLowerCase()} round
           </Button>
         )}
       </div>
+      )}
 
-      {nextItem && (
+      {!between && nextItem && (
         <p className="text-sm text-muted-foreground">
           Up next: <span className="text-foreground">{nextItem.title}</span>
         </p>
       )}
 
       <div className="mt-2 flex flex-col items-center gap-2">
+        {!between && (
         <Button
           variant={skipConfirm.arming ? 'destructive' : 'ghost'}
           className={
             skipConfirm.arming ? '' : 'text-muted-foreground hover:text-foreground'
           }
           onClick={() =>
-            // Skip the whole current item: mark its segment skipped and jump
-            // to the next item (or finish when this was the last one).
-            skipConfirm.tap(() => advance(endTarget, true))
+            // Skip the current item: mark its segment skipped and wait
+            // between items — the next one still starts explicitly.
+            skipConfirm.tap(() => finish(true))
           }
           disabled={pending}
         >
           <SkipForward className="h-4 w-4" />
           {skipConfirm.arming ? 'Tap again to skip' : 'Skip agenda item'}
         </Button>
+        )}
         <Button
           size="sm"
           variant={endConfirm.arming ? 'destructive' : 'ghost'}

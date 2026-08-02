@@ -40,6 +40,27 @@ function segmentSnapshot(item: AgendaItem, next: NextSegment) {
   }
 }
 
+// Stamps the end time, folding an in-flight pause into pausedSeconds so it
+// stays the segment's full pause total.
+function closeSegmentData(
+  segment: { pausedAt: Date | null; pausedSeconds: number },
+  now: Date,
+  skipped = false,
+) {
+  return {
+    endedAt: now,
+    skipped,
+    ...(segment.pausedAt
+      ? {
+          pausedAt: null,
+          pausedSeconds:
+            segment.pausedSeconds +
+            (now.getTime() - segment.pausedAt.getTime()) / 1000,
+        }
+      : {}),
+  }
+}
+
 function revalidateRunPages(agendaId: string) {
   revalidatePath(`/agendas/${agendaId}/run`)
   revalidatePath(`/agendas/${agendaId}/control`)
@@ -140,11 +161,25 @@ export async function deleteRunAction(runId: string) {
   revalidateRunPages(run.agendaId)
 }
 
-export async function advanceRunAction(
-  runId: string,
-  next: NextSegment | null,
-  skipCurrent = false,
-) {
+// Ends the current segment without starting anything — the run sits between
+// items until the controller starts the next one (or finishes the meeting).
+export async function finishSegmentAction(runId: string, skipped = false) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return
+  const segment = run.segments[0]
+  if (!segment || segment.endedAt) return
+
+  await prisma.runSegment.update({
+    where: { id: segment.id },
+    data: closeSegmentData(segment, new Date(), skipped),
+  })
+  revalidateRunPages(run.agendaId)
+}
+
+export async function advanceRunAction(runId: string, next: NextSegment | null) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },
     include: {
@@ -158,20 +193,7 @@ export async function advanceRunAction(
   if (lastSegment && lastSegment.endedAt === null) {
     await prisma.runSegment.update({
       where: { id: lastSegment.id },
-      // Advancing a paused segment ends the pause too, so pausedSeconds
-      // stays the segment's full pause total.
-      data: {
-        endedAt: now,
-        skipped: skipCurrent,
-        ...(lastSegment.pausedAt
-          ? {
-              pausedAt: null,
-              pausedSeconds:
-                lastSegment.pausedSeconds +
-                (now.getTime() - lastSegment.pausedAt.getTime()) / 1000,
-            }
-          : {}),
-      },
+      data: closeSegmentData(lastSegment, now),
     })
   }
 

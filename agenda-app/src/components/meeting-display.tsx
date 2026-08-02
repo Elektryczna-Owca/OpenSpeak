@@ -40,10 +40,13 @@ export function MeetingDisplay({
 
   if (!segment) return null
 
-  const { currentIndex, currentItem, inSubLoop, subLabel } = computeRunTargets(
-    items,
-    segment,
-  )
+  const { currentIndex, currentItem, nextItem, inSubLoop, subLabel } =
+    computeRunTargets(items, segment)
+
+  // Segment closed but run still open: the controller finished an item and
+  // hasn't started the next one yet — feature the upcoming item, timer idle.
+  const between = segment.endedAt != null
+  const shownItem = between ? nextItem : currentItem
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
@@ -65,10 +68,17 @@ export function MeetingDisplay({
       </div>
 
       <div className="text-center">
+        {between && (
+          <p className="text-lg font-medium tracking-wide text-muted-foreground uppercase">
+            Up next
+          </p>
+        )}
         <h1 className="text-3xl font-semibold tracking-tight">
-          {currentItem?.title ?? segment.label}
+          {between
+            ? (nextItem?.title ?? 'All items finished')
+            : (currentItem?.title ?? segment.label)}
         </h1>
-        {inSubLoop && (
+        {!between && inSubLoop && (
           <p className="mt-1 text-xl text-muted-foreground">
             {subLabel} {segment.subIndex}
             {segment.personName && (
@@ -82,7 +92,7 @@ export function MeetingDisplay({
         <div className="text-center">
           <div
             className={`font-mono text-8xl font-semibold tabular-nums transition-colors ${
-              paused
+              between || paused
                 ? 'text-muted-foreground'
                 : timerColorClass(
                     elapsed,
@@ -92,33 +102,43 @@ export function MeetingDisplay({
                   )
             }`}
           >
-            {formatElapsed(elapsed)}
+            {formatElapsed(between ? 0 : elapsed)}
           </div>
-          {paused && (
+          {!between && paused && (
             <p className="mt-1 text-lg font-medium tracking-wide text-muted-foreground uppercase">
               Paused
             </p>
           )}
-          <Thresholds segment={segment} />
+          {between && nextItem ? (
+            <Thresholds
+              segment={{
+                minMinutes: nextItem.minMinutes,
+                expectedMinutes: nextItem.durationMinutes,
+                maxMinutes: nextItem.maxMinutes,
+              }}
+            />
+          ) : (
+            <Thresholds segment={segment} />
+          )}
         </div>
-        {currentItem?.url && (
+        {shownItem?.url && (
           // Fixed white backdrop with a quiet zone so the code scans on
           // every color theme.
           <a
-            href={currentItem.url}
+            href={shownItem.url}
             target="_blank"
             rel="noreferrer"
-            aria-label={`Link for ${currentItem.title}`}
+            aria-label={`Link for ${shownItem.title}`}
             className="shrink-0 rounded-lg bg-white p-2"
           >
-            <QRCodeSVG value={currentItem.url} size={112} marginSize={0} />
+            <QRCodeSVG value={shownItem.url} size={112} marginSize={0} />
           </a>
         )}
       </div>
 
       {currentIndex >= 0 && (
         <ol className="w-full max-w-md space-y-2">
-          {items.slice(currentIndex).map((item, i) => (
+          {items.slice(between ? currentIndex + 1 : currentIndex).map((item, i) => (
             <li
               key={item.id}
               className={

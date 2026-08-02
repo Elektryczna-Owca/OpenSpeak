@@ -5,6 +5,7 @@ import { DeleteRunButton } from '@/components/delete-run-button'
 import { MeetingDisplay } from '@/components/meeting-display'
 import { RunStartWatcher } from '@/components/run-start-watcher'
 import { formatElapsed } from '@/lib/timer-color'
+import { serializeSegment } from '@/lib/run-state'
 import { buttonVariants } from '@/components/ui/button'
 import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
 
@@ -64,20 +65,7 @@ export default async function RunPage({
         items={agenda.items}
         initialState={{
           endedAt: null,
-          segment: {
-            itemId: openSegment.itemId,
-            kind: openSegment.kind,
-            subIndex: openSegment.subIndex,
-            personId: openSegment.personId,
-            personName: openSegment.person?.name ?? null,
-            label: openSegment.label,
-            minMinutes: openSegment.minMinutes,
-            expectedMinutes: openSegment.expectedMinutes,
-            maxMinutes: openSegment.maxMinutes,
-            startedAt: openSegment.startedAt.toISOString(),
-            pausedAt: openSegment.pausedAt?.toISOString() ?? null,
-            pausedSeconds: openSegment.pausedSeconds,
-          },
+          segment: serializeSegment(openSegment),
         }}
       />
     )

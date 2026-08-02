@@ -1,8 +1,10 @@
 import type { NextSegment } from '@/actions/run-actions'
-import type { AgendaItem } from '@/generated/prisma/client'
+import type { AgendaItem, RunSegment } from '@/generated/prisma/client'
 
-// The open segment as served by /api/runs/[runId] — dates as ISO strings so
-// it round-trips through JSON polling.
+// The latest segment as served by /api/runs/[runId] — dates as ISO strings so
+// it round-trips through JSON polling. A segment with endedAt set (on a run
+// that hasn't ended) means the meeting is between items: the previous item is
+// finished and the next one hasn't been started yet.
 export type RunSegmentState = {
   itemId: string | null
   kind: string
@@ -14,8 +16,31 @@ export type RunSegmentState = {
   expectedMinutes: number | null
   maxMinutes: number | null
   startedAt: string
+  endedAt: string | null
   pausedAt: string | null
   pausedSeconds: number
+  skipped: boolean
+}
+
+export function serializeSegment(
+  segment: RunSegment & { person: { name: string } | null },
+): RunSegmentState {
+  return {
+    itemId: segment.itemId,
+    kind: segment.kind,
+    subIndex: segment.subIndex,
+    personId: segment.personId,
+    personName: segment.person?.name ?? null,
+    label: segment.label,
+    minMinutes: segment.minMinutes,
+    expectedMinutes: segment.expectedMinutes,
+    maxMinutes: segment.maxMinutes,
+    startedAt: segment.startedAt.toISOString(),
+    endedAt: segment.endedAt?.toISOString() ?? null,
+    pausedAt: segment.pausedAt?.toISOString() ?? null,
+    pausedSeconds: segment.pausedSeconds,
+    skipped: segment.skipped,
+  }
 }
 
 export type RunState = {
@@ -52,10 +77,5 @@ export function computeRunTargets(items: AgendaItem[], segment: RunSegmentState)
     nextLabel = 'Finish meeting'
   }
 
-  // "End" exits the sub-item loop: on to the next item, or finish.
-  const endTarget: NextSegment | null = nextItem
-    ? { itemId: nextItem.id, kind: 'item' }
-    : null
-
-  return { currentIndex, currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel, endTarget }
+  return { currentIndex, currentItem, nextItem, inSubLoop, subLabel, nextTarget, nextLabel }
 }

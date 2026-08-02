@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { startRunAction } from '@/actions/run-actions'
+import { serializeSegment } from '@/lib/run-state'
 import { MeetingControl } from '@/components/meeting-control'
 import { RunStartWatcher } from '@/components/run-start-watcher'
 import { Button } from '@/components/ui/button'
@@ -48,20 +49,7 @@ export default async function ControlPage({
         people={agenda.people}
         initialState={{
           endedAt: null,
-          segment: {
-            itemId: openSegment.itemId,
-            kind: openSegment.kind,
-            subIndex: openSegment.subIndex,
-            personId: openSegment.personId,
-            personName: openSegment.person?.name ?? null,
-            label: openSegment.label,
-            minMinutes: openSegment.minMinutes,
-            expectedMinutes: openSegment.expectedMinutes,
-            maxMinutes: openSegment.maxMinutes,
-            startedAt: openSegment.startedAt.toISOString(),
-            pausedAt: openSegment.pausedAt?.toISOString() ?? null,
-            pausedSeconds: openSegment.pausedSeconds,
-          },
+          segment: serializeSegment(openSegment),
         }}
       />
     )
