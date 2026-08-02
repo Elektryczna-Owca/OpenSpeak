@@ -6,29 +6,11 @@ import { MeetingDisplay } from '@/components/meeting-display'
 import { RunStartWatcher } from '@/components/run-start-watcher'
 import { formatElapsed } from '@/lib/timer-color'
 import { serializeSegment } from '@/lib/run-state'
+import { cumulativeStartMinutes, makeStartLabel } from '@/lib/schedule'
 import { buttonVariants } from '@/components/ui/button'
 import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
-
-// Minutes from meeting start to each item's planned start (running sum of
-// expected durations).
-function cumulativeStartMinutes(items: { durationMinutes: number }[]): number[] {
-  let acc = 0
-  return items.map(item => {
-    const start = acc
-    acc += item.durationMinutes
-    return start
-  })
-}
-
-// Offset from meeting start when the agenda has no scheduled start time.
-function offsetLabel(minutes: number): string {
-  const total = Math.round(minutes)
-  const h = Math.floor(total / 60)
-  const m = total % 60
-  return `+${h}:${String(m).padStart(2, '0')}`
-}
 
 export default async function RunPage({
   params,
@@ -63,6 +45,8 @@ export default async function RunPage({
         agendaTitle={agenda.title}
         runId={openRun.id}
         items={agenda.items}
+        startAt={agenda.startAt}
+        timezone={agenda.timezone}
         initialState={{
           endedAt: null,
           segment: serializeSegment(openSegment),
@@ -81,20 +65,7 @@ export default async function RunPage({
   // open-ended (the controller decides how many participants speak), so only
   // each item's own expected time counts here.
   const timeZone = agenda.timezone ?? 'UTC'
-  const timeFmt = agenda.startAt
-    ? new Intl.DateTimeFormat('en-US', {
-        timeZone,
-        hourCycle: 'h23',
-        hour: '2-digit',
-        minute: '2-digit',
-      })
-    : null
-  const startLabelAt = (minutes: number) =>
-    timeFmt && agenda.startAt
-      ? timeFmt.format(
-          new Date(agenda.startAt.getTime() + Math.round(minutes) * 60_000),
-        )
-      : offsetLabel(minutes)
+  const startLabelAt = makeStartLabel(agenda.startAt, agenda.timezone)
 
   const startMinutes = cumulativeStartMinutes(agenda.items)
   const rows = agenda.items.map((item, i) => ({

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
+import { cumulativeStartMinutes, makeStartLabel } from '@/lib/schedule'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { QRCodeSVG } from 'qrcode.react'
 import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
@@ -17,12 +18,16 @@ export function MeetingDisplay({
   agendaTitle,
   runId,
   items,
+  startAt,
+  timezone,
   initialState,
 }: {
   agendaId: string
   agendaTitle: string
   runId: string
   items: AgendaItem[]
+  startAt: Date | null
+  timezone: string | null
   initialState: RunState
 }) {
   const router = useRouter()
@@ -47,6 +52,14 @@ export function MeetingDisplay({
   // hasn't started the next one yet — feature the upcoming item, timer idle.
   const between = segment.endedAt != null
   const shownItem = between ? nextItem : currentItem
+
+  // Planned start of the next item, from the printed agenda's schedule
+  // (scheduled start + expected durations before it) — actual timing may drift.
+  const nextIndex = currentIndex + 1
+  const nextStartLabel =
+    nextItem && currentIndex >= 0
+      ? makeStartLabel(startAt, timezone)(cumulativeStartMinutes(items)[nextIndex])
+      : null
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
@@ -148,7 +161,14 @@ export function MeetingDisplay({
               }
             >
               <span className="flex items-baseline justify-between gap-2">
-                <span className="truncate">{item.title}</span>
+                <span className="truncate">
+                  {item.id === nextItem?.id && nextStartLabel && (
+                    <span className="mr-2 font-mono text-sm text-muted-foreground tabular-nums">
+                      {nextStartLabel}
+                    </span>
+                  )}
+                  {item.title}
+                </span>
                 <span className="shrink-0 text-sm text-muted-foreground">
                   {item.durationMinutes} min
                 </span>
