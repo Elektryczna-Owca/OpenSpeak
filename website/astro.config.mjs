@@ -9,7 +9,9 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'OpenSpeak',
-			plugins: [starlightLinksValidator()],
+			// The agenda app is served under /run on the same domain — it is not
+			// part of this static site, so exclude it from link validation.
+			plugins: [starlightLinksValidator({ exclude: ['/run'] })],
 			description: 'Open-source software for running structured, timed meetings.',
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/Elektryczna-Owca/OpenSpeak' },
