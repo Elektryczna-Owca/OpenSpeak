@@ -75,11 +75,27 @@ Astro Starlight docs site (Astro 7, Starlight 0.41), a standalone npm project �
 
 ```bash
 npm run dev        # dev server on :4321
-npm run build      # the verification step: fails on bad sidebar slugs, unknown icons, and broken internal links (starlight-links-validator)
-npm run preview    # serve the built dist/
+npm run build      # production build AND the verification step: fails on bad sidebar slugs, unknown icons, and broken internal links (starlight-links-validator)
+npm run preview    # serve the built dist/ locally to check it
 ```
 
-- Static output, no adapter — `dist/` deploys to any static host. Site URL and "Edit page" links are configured in `astro.config.mjs`.
+### Production build
+
+`npm run build` (run from `website/`, after `npm install`) writes the complete production site to `website/dist/` — plain HTML/CSS/JS with no server component and no adapter (`output` is Astro's static default). Deploy by copying `dist/` to any static host or an nginx docroot; directory-style URLs work with standard config (e.g. `try_files $uri $uri/index.html =404`). The canonical URL baked into the sitemap and OG tags comes from `site` in `astro.config.mjs` (https://openspeak.website). `dist/` is gitignored — build artifacts are never committed.
+
+- Site URL and "Edit page" links are configured in `astro.config.mjs`.
 - Content lives in `src/content/docs/` (16 pages: splash `index.mdx` + 5 sidebar groups). The sidebar is **manual** in `astro.config.mjs` — a new page must be added there too or the build won't link it.
 - Use `.mdx` only when a page needs Starlight components (`<Steps>`, `<Aside>`, `<CardGrid>`); plain `.md` otherwise. HTML comments mark pending screenshots (`<!-- TODO screenshot: ... -->`); `src/assets/screenshots/` is the intended home for them.
 - Docs content describes agenda-app behavior — when app behavior changes (timer rules, CSV format, run flow), update the matching docs page.
+
+### Documentation
+Full documentation: https://docs.astro.build
+
+Consult these guides before working on related tasks:
+
+- [Adding pages, dynamic routes, or middleware](https://docs.astro.build/en/guides/routing/)
+- [Working with Astro components](https://docs.astro.build/en/basics/astro-components/)
+- [Using React, Vue, Svelte, or other framework components](https://docs.astro.build/en/guides/framework-components/)
+- [Adding or managing content](https://docs.astro.build/en/guides/content-collections/)
+- [Adding styles or using Tailwind](https://docs.astro.build/en/guides/styling/)
+- [Supporting multiple languages](https://docs.astro.build/en/guides/internationalization/)
