@@ -1,0 +1,7 @@
+User-agent: *
+# The agenda app lives under /run — keep meeting data out of search engines.
+# Note: no bare "Disallow: /run" — that prefix would also match /running/... docs pages.
+Disallow: /run/
+Disallow: /run$
+
+Sitemap: https://openspeak.website/sitemap-index.xml
