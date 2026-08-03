@@ -1,12 +1,12 @@
 ---
 title: OpenSpeak
-description: Open-source software for planning and running structured, timed meetings.
+description: Open-source software for planning and running structured, timed meetings (Toastmasters-style).
 template: splash
 head:
   - tag: title
     content: OpenSpeak — run your meeting like a pro
 hero:
-  tagline: Plan the agenda, put the timer on the big screen, run the meeting from your phone — and get an honest report of where the time really went. Built for Toastmasters clubs, useful for any meeting that respects the clock.
+  tagline: Plan the agenda, put the timer on the big screen, run the meeting from your phone — and get a report of where the time really went. Built for Toastmasters clubs, useful for any meeting that respects the clock.
   # TODO: replace with an app screenshot once available
   # image:
   #   file: ../../assets/hero.png
@@ -39,17 +39,18 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 	<Card title="A timer everyone can see" icon="approve-check-circle">
 		Projector display with the classic green–yellow–red progression,
 		"up next" prompts, and a QR code for the current item's link.
+		Useful for linking to evaluation forms.
 	</Card>
 	<Card title="Run it from your phone" icon="rocket">
 		Start, pause, skip, and finish items from any phone. A discreet beep
 		tells the controller when a speaker hits maximum time.
 	</Card>
-	<Card title="Reports that tell the truth" icon="document">
+	<Card title="Reporting" icon="document">
 		Actual vs. planned for every item and speaker — including the idle
 		time between items. History never changes after the fact.
 	</Card>
-	<Card title="No accounts, no lock-in" icon="open-book">
-		Share a link and go — no logins to manage. Open source, self-hosted
+	<Card title="No accounts, no lock-in, no tracking" icon="open-book">
+		Share a link and go — no logins to manage, no cookies to track you. Open source, self-hosted
 		with Docker and PostgreSQL on your own server.
 	</Card>
 </CardGrid>
