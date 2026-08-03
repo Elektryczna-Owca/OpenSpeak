@@ -1,0 +1,48 @@
+---
+title: How a live meeting works
+description: The display screen, the control screen, live sync, timer colors, and pause — the operating model behind every OpenSpeak meeting.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+Running a meeting involves two screens with sharply divided jobs:
+
+- **[The display screen](/running/display-screen/)** — read-only, made for the projector. Before the meeting it shows the planned schedule; during it, the big color-coded timer.
+- **[The control screen](/running/control-screen/)** — a phone-sized remote, and the **only** place the meeting can be changed from: start, finish, pause, skip, end.
+
+A third page, the **[report](/running/reports/)**, works both after the meeting and during it as a "report so far".
+
+## Nothing happens by itself
+
+OpenSpeak never auto-advances. When an item's time is up, the timer goes red and the phone beeps — but the item keeps running until a human taps **Finish**. When an item finishes, the next one **waits** to be started. The gap between — applause, walking to the stage, setup — is real meeting time, and it's tracked and reported as ["in between" time](/running/reports/#the-in-between-row) rather than blamed on any item.
+
+## Every screen stays in sync
+
+All meeting pages poll the server every second, so a tap on the phone shows on the projector within a second. There's no pairing and no session:
+
+- Open the display and control pages on as many devices as you like. Several people can hold the controls — the last tap wins.
+- Idle pages notice when someone starts the meeting elsewhere and switch to the live view by themselves.
+- The full meeting state lives on the server, so **any device can reload, crash, or join late without losing anything** — reopen the URL and you're back exactly where the meeting is.
+
+<Aside type="tip">
+Phone died mid-meeting? Grab any other phone, open the control page, and carry on. Nothing was on the phone.
+</Aside>
+
+## Timer colors
+
+The timer reads like Toastmasters timing cards, and the colors are identical in every palette:
+
+| Color | When |
+|---|---|
+| White | From start |
+| **Green** | Elapsed time reaches **min** |
+| **Yellow** | Elapsed time reaches **expected** |
+| **Red** | 30 seconds before **max** |
+
+Thresholds you didn't set are skipped — an item with only an expected time goes white → yellow. Reaching **max** also triggers a double beep, on the [control screen only](/running/control-screen/#the-max-time-beep).
+
+Time is shown as `MM:SS`, switching to `H:MM:SS` past an hour.
+
+## Pause
+
+**Pause** freezes the timer on every device (with a "PAUSED" caption) and stops the clock fairly: paused time is excluded from elapsed time everywhere — the live timer, the beep threshold, and the report's *Actual* column. A speaker interrupted by a fire alarm loses nothing.

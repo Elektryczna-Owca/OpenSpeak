@@ -1,0 +1,55 @@
+---
+title: Importing from CSV
+description: Paste an agenda straight from Excel or Google Sheets — OpenSpeak detects the format, creates the items, and adds the people.
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+If your agenda already lives in a spreadsheet, don't retype it. **Agendas → Import CSV** creates a whole agenda — items, times, sub-item loops, and participants — from one paste.
+
+## The short version
+
+1. Make sure your sheet has a header row with at least `title` and `expected` columns.
+2. Copy the cells and paste them into the **Agenda CSV** box (a paste from Excel or Google Sheets is tab-separated — that's fine).
+3. Give the agenda a title and click import. Fix any per-line errors it points out, and paste again.
+
+Optionally pick a [template](/planning/templates/) from the **Start from a template** dropdown first — it fills the box with the template's CSV, which you can still edit before importing.
+
+## Format rules
+
+- The **first row is a header**. Column names are matched ignoring case, spaces, underscores, and dashes, in **any order**: `title`, `min`, `expected`, `max`, `person`, `sub label`, `sub min`, `sub expected`, `sub max`. Unknown columns are ignored (so extra spreadsheet columns don't hurt).
+- **`title` and `expected` are required** — as columns, and on every row.
+- The delimiter is auto-detected per paste: **tab, semicolon, or comma** all work.
+- Quoted fields work as usual (`"a, b"` keeps its comma; `""` inside quotes is a literal quote). Blank lines are skipped.
+- Times are **minutes** from 0.5 to 600 in **half-minute steps** — `10` or `10.5`, not `10.25`.
+- A name in **`person`** creates that participant on the new agenda and assigns the row's item to them. The same name on several rows becomes one person.
+- Filling `sub expected` (optionally with `sub label`, `sub min`, `sub max`) gives the item a [sub-item loop](/concepts/sub-item-loops/).
+
+<Aside type="note" title="All-or-nothing">
+Nothing is imported unless **every** row is valid. Errors are reported per line and field — e.g. `Line 4: sub expected — Set an expected time for the sub-item` — so you can fix the sheet and paste again without ending up with half an agenda.
+</Aside>
+
+<Aside type="caution">
+Import covers items and people only. The agenda description, scheduled start, timezone, and item URLs are not part of the CSV format — set those after importing.
+</Aside>
+
+## Worked example
+
+The first rows of the built-in Toastmasters template:
+
+```csv
+title,min,expected,max,person,sub label,sub min,sub expected,sub max
+Opening and welcoming guests,2,3,5,President,,,,
+Introduction by the Toastmaster of the Evening,2,3,4,Toastmaster,,,,
+Helpers introductions: timer / grammarian / ah-counter,3,4,5,,Helper,1,1.5,2
+Word of the day,1,2,3,Grammarian,,,,
+Prepared speeches,2,3,4,Toastmaster,Speaker,5,6,7
+```
+
+Importing this creates five items; "President", "Toastmaster", and "Grammarian" appear on the participant roster and are assigned to their items; "Helpers introductions" and "Prepared speeches" get sub-item loops (Helpers at 1/1.5/2 minutes each, Speakers at 5/6/7).
+
+The [full 12-item version](/reference/csv-columns/#the-toastmasters-template) is in the CSV reference — and ships as a ready-made template when the sample data is seeded.
+
+## Round-tripping
+
+[**Export CSV**](/planning/agenda-editor/#export-csv) on any agenda produces exactly this format, so export → edit in a spreadsheet → import is a natural workflow for recurring meetings.

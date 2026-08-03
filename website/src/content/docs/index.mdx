@@ -1,0 +1,52 @@
+---
+title: OpenSpeak
+description: Open-source software for planning and running structured, timed meetings.
+template: splash
+head:
+  - tag: title
+    content: OpenSpeak — run your meeting like a pro
+hero:
+  tagline: Plan the agenda, put the timer on the big screen, run the meeting from your phone — and get an honest report of where the time really went. Built for Toastmasters clubs, useful for any meeting that respects the clock.
+  # TODO: replace with an app screenshot once available
+  # image:
+  #   file: ../../assets/hero.png
+  actions:
+    - text: Get started
+      link: /getting-started/quick-start/
+      icon: right-arrow
+    - text: View on GitHub
+      link: https://github.com/Elektryczna-Owca/OpenSpeak
+      icon: external
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Why OpenSpeak
+
+<CardGrid stagger>
+	<Card title="Agendas in minutes" icon="pencil">
+		Drag-and-drop editor with min / expected / max time for every item.
+		Paste an agenda straight from a spreadsheet — CSV import just works.
+	</Card>
+	<Card title="Built for Toastmasters" icon="star">
+		Speaker rounds, role assignments, and a ready-made club meeting
+		template with prepared speeches, Table Topics, and evaluations.
+	</Card>
+	<Card title="A timer everyone can see" icon="approve-check-circle">
+		Projector display with the classic green–yellow–red progression,
+		"up next" prompts, and a QR code for the current item's link.
+	</Card>
+	<Card title="Run it from your phone" icon="rocket">
+		Start, pause, skip, and finish items from any phone. A discreet beep
+		tells the controller when a speaker hits maximum time.
+	</Card>
+	<Card title="Reports that tell the truth" icon="document">
+		Actual vs. planned for every item and speaker — including the idle
+		time between items. History never changes after the fact.
+	</Card>
+	<Card title="No accounts, no lock-in" icon="open-book">
+		Share a link and go — no logins to manage. Open source, self-hosted
+		with Docker and PostgreSQL on your own server.
+	</Card>
+</CardGrid>

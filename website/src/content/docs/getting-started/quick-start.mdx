@@ -1,0 +1,58 @@
+---
+title: Quick start
+description: Plan and run your first timed meeting with OpenSpeak in about five minutes.
+---
+
+import { Steps, Aside } from '@astrojs/starlight/components';
+
+This walkthrough takes you from an empty screen to a finished meeting report. It assumes OpenSpeak is already running — if not, see [Install & self-host](/getting-started/self-hosting/) first.
+
+<Steps>
+
+1. **Create an agenda.**
+
+   Open **Agendas** in the header and click **New agenda**. Give it a title — a description, start date/time, and timezone are optional (the timezone defaults to your browser's). Saving drops you straight into the agenda editor.
+
+   {/* TODO screenshot: new agenda form */}
+
+2. **Add a few items.**
+
+   Use the row at the bottom of the editor: type a title, set the **Expected** time in minutes (Min and Max are optional), and click **Add**. The form refocuses automatically, so you can type out a whole agenda without touching the mouse.
+
+   {/* TODO screenshot: agenda editor with items */}
+
+3. **Assign people (optional).**
+
+   Open **participants** to add names to the roster, then pick an assignee on each item — or click an item's "Unassigned" link for a one-tap assign dialog.
+
+4. **Open the two meeting screens.**
+
+   Click **Run meeting** to open the **display screen** — put this one on the projector; it shows the planned schedule until the meeting starts. From its header, open the **Control page** on your phone — this is the remote that actually drives the meeting.
+
+5. **Run the meeting.**
+
+   Tap **Start meeting** on the phone. The first item's timer starts immediately, everywhere. As the meeting proceeds:
+
+   - Tap **Finish agenda item** when an item is done, then **Start agenda item** when the next one begins. The gap in between is normal — applause, walking to the lectern — and is tracked separately.
+   - The timer turns **green** at the minimum time, **yellow** at the expected time, and **red** shortly before the maximum, when the phone also beeps.
+   - **Pause**, **Skip**, and **End meeting** are right there if you need them.
+
+   {/* TODO screenshot: control screen during a running item */}
+
+6. **Read the report.**
+
+   Tap **End meeting** (twice — destructive buttons need a confirming second tap) and both screens land on the meeting report: actual vs. planned time for every item, with statuses like *on time*, *over expected*, or *skipped*.
+
+   {/* TODO screenshot: run report */}
+
+</Steps>
+
+<Aside type="tip">
+Any screen can be reloaded, closed, or opened on another device mid-meeting without losing anything — the meeting state lives entirely on the server.
+</Aside>
+
+## Next steps
+
+- Have an existing agenda in a spreadsheet? [Import it from CSV](/planning/csv-import/).
+- Running a Toastmasters club? Start from the built-in [meeting template](/planning/templates/).
+- Curious about speaker rounds? See [Sub-item loops](/concepts/sub-item-loops/).
