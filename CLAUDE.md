@@ -88,6 +88,10 @@ npm run preview    # serve the built dist/ locally to check it
 - Use `.mdx` only when a page needs Starlight components (`<Steps>`, `<Aside>`, `<CardGrid>`); plain `.md` otherwise. HTML comments mark pending screenshots (`<!-- TODO screenshot: ... -->`); `src/assets/screenshots/` is the intended home for them.
 - Docs content describes agenda-app behavior — when app behavior changes (timer rules, CSV format, run flow), update the matching docs page.
 
+### Telemetry
+
+Astro's CLI collects anonymous telemetry during dev/build (the deployed static site contains none). Disable it per machine with `npx astro telemetry disable` (persisted in `~/.astro/`), or per invocation/CI with the env var `ASTRO_TELEMETRY_DISABLED=1`.
+
 ### Documentation
 Full documentation: https://docs.astro.build
 
