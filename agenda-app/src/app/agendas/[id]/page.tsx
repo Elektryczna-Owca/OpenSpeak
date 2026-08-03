@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { apiPath } from '@/lib/base-path'
 import { AgendaBoard } from '@/components/agenda-board'
 import { AddItemForm } from '@/components/add-item-form'
 import { AgendaForm } from '@/components/agenda-form'
@@ -42,7 +43,7 @@ export default async function AgendaPage({
         </Link>
         <div className="flex items-center gap-2">
           <a
-            href={`/api/agendas/${agenda.id}/csv`}
+            href={apiPath(`/api/agendas/${agenda.id}/csv`)}
             className={buttonVariants({ variant: 'outline' })}
           >
             <Download className="h-4 w-4" />

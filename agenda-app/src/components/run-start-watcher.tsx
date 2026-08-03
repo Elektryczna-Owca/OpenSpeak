@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { apiPath } from '@/lib/base-path'
 
 // The idle run/control pages are server-rendered, so on their own they never
 // notice a meeting being started from another device. This invisible watcher
@@ -12,7 +13,7 @@ export function RunStartWatcher({ agendaId }: { agendaId: string }) {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`/api/agendas/${agendaId}/open-run`, {
+        const res = await fetch(apiPath(`/api/agendas/${agendaId}/open-run`), {
           cache: 'no-store',
         })
         if (res.ok && (await res.json()).runId) router.refresh()

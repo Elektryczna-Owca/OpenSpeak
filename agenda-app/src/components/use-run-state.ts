@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { apiPath } from '@/lib/base-path'
 import type { RunState } from '@/lib/run-state'
 
 // Polls /api/runs/[runId] so every device viewing the run (display screen,
@@ -10,7 +11,9 @@ export function useRunState(runId: string, initial: RunState) {
 
   const refetch = useCallback(async () => {
     try {
-      const res = await fetch(`/api/runs/${runId}`, { cache: 'no-store' })
+      const res = await fetch(apiPath(`/api/runs/${runId}`), {
+        cache: 'no-store',
+      })
       if (res.ok) setState(await res.json())
     } catch {
       // transient network error — keep the last known state, next poll retries

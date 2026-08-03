@@ -80,6 +80,24 @@ A production image is built from `agenda-app/Dockerfile`. It creates a minimal s
 
 The app listens on port 3001 inside the container. Put a reverse proxy (nginx, Caddy, Traefik, …) in front of it to handle TLS.
 
+### Serving under a subpath
+
+To serve the app under a subpath instead of the domain root (e.g. `https://example.com/run`, leaving `/` for the documentation site), bake the base path in at **build time** — it cannot be changed at runtime:
+
+```bash
+docker build --build-arg NEXT_PUBLIC_BASE_PATH=/run -t openspeak .
+```
+
+The reverse proxy must pass the prefix through **unchanged**:
+
+```nginx
+location /run {
+    proxy_pass http://127.0.0.1:3001;   # no trailing slash — keeps the /run prefix
+}
+```
+
+The app then answers only under `/run` (e.g. `/run/agendas`); requests without the prefix return 404.
+
 Note: the `docker-compose.yml` in `agenda-app/` only provides the development database — it is not a production deployment. For production, use a managed PostgreSQL instance or run your own hardened Postgres server.
 
 ## Server requirements (custom Linux server)

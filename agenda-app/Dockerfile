@@ -13,6 +13,10 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+# Serve the app under a subpath, e.g. --build-arg NEXT_PUBLIC_BASE_PATH=/run.
+# Baked into the build (basePath in next.config.ts); empty = served at /.
+ARG NEXT_PUBLIC_BASE_PATH=
+ENV NEXT_PUBLIC_BASE_PATH=$NEXT_PUBLIC_BASE_PATH
 RUN npx prisma generate
 RUN npm run build
 
