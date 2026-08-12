@@ -13,7 +13,7 @@ Give the item a **sub-item label** (say, `Speaker`) and the sub-item's own **min
 2. Then the controller starts **Speaker 1**. When they finish, **Speaker 2**, and so on — each round is a fresh timer with the *sub-item's* thresholds, its own colors, its own max-time beep, and its own row in the report.
 3. The round is **open-ended**: OpenSpeak never decides the round is over. When the last speaker is done, the controller taps **Finish agenda item** to close the loop and move on to the next agenda item.
 
-If the agenda has [participants](/concepts/participants/), the control screen shows a dropdown during each round so you can record *who* Speaker 2 actually was — the name lands in the report next to their actual time.
+If the agenda has [participants](/concepts/participants/), the control screen shows a dropdown during each round so you can record *who* Speaker 2 actually was — the name lands in the report next to their actual time. A comment box under the dropdown takes an optional note for the round (a speech title, say), which lands in the report too.
 
 ## Setting it up
 

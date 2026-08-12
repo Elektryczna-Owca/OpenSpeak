@@ -11,6 +11,7 @@ export type RunSegmentState = {
   personId: string | null
   personName: string | null
   label: string
+  comment: string | null
   minMinutes: number | null
   expectedMinutes: number | null
   maxMinutes: number | null
@@ -32,6 +33,7 @@ export function serializeSegment(
     personId: segment.personId,
     personName: segment.person?.name ?? null,
     label: segment.label,
+    comment: segment.comment,
     minMinutes: segment.minMinutes,
     expectedMinutes: segment.expectedMinutes,
     maxMinutes: segment.maxMinutes,

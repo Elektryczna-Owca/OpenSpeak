@@ -137,6 +137,15 @@ export default async function RunReviewPage({
                         </span>
                       )}
                     </span>
+                    {segment.comment && (
+                      <p
+                        className={`mt-1 max-w-prose text-xs whitespace-pre-wrap text-muted-foreground ${
+                          segment.kind === 'sub' ? 'pl-[18px]' : ''
+                        }`}
+                      >
+                        {segment.comment}
+                      </p>
+                    )}
                   </td>
                   <td className="p-3 font-mono tabular-nums">
                     {formatElapsed(actualSeconds)}

@@ -13,7 +13,7 @@ Then one row per timed segment:
 
 | Column | Meaning |
 |---|---|
-| **Item** | The label — speaker rounds are indented with an arrow and show the recorded participant's name |
+| **Item** | The label — speaker rounds are indented with an arrow and show the recorded participant's name, plus any [comment](/running/control-screen/#while-an-item-is-running) typed on the control screen |
 | **Actual** | Real elapsed time, excluding pauses; a still-running segment counts up to now |
 | **Expected** | The planned time |
 | **Min–Max** | The other two thresholds |

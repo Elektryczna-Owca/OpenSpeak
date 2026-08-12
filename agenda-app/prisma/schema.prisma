@@ -87,6 +87,7 @@ model RunSegment {
   personId        String? // participant assigned to this segment (e.g. who speaker 2 was)
   person          Person?     @relation(fields: [personId], references: [id], onDelete: SetNull)
   label           String // snapshot: item title, or "<subLabel|Sub-item> <n>"
+  comment         String? // free-text note typed on the control page, shown in the report
   minMinutes      Float? // threshold snapshots taken at segment creation
   expectedMinutes Float?
   maxMinutes      Float?

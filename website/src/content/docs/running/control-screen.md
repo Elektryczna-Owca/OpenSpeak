@@ -23,7 +23,7 @@ The item's title, a large color-coded timer, the thresholds line, and:
 - **End meeting** — same two-tap pattern ("Tap again to end"). Ending sends you — and the display — to the report.
 - An **Up next** hint showing what follows.
 
-During a sub-item round, a **participant dropdown** lets you record who this speaker is; the name is saved on that round and shows in the report.
+During a sub-item round, a **participant dropdown** lets you record who this speaker is; the name is saved on that round and shows in the report. Just below it, a **comment** box takes a free-text note for that round — the speech title, a table-topics question, anything worth remembering. It saves as you type (and when you tap away), and each round keeps its own note. Notes only show up in the [report](/running/reports/) if you write one; the projector never shows them.
 
 <!-- TODO screenshot: control screen with a running item -->
 

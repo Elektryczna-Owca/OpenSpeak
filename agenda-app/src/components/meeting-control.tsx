@@ -1,12 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import {
   advanceRunAction,
   assignSegmentPersonAction,
   finishItemAction,
   finishSegmentAction,
+  setSegmentCommentAction,
   togglePauseAction,
   type NextSegment,
 } from '@/actions/run-actions'
@@ -49,6 +50,71 @@ function useTapConfirm() {
     action()
   }
   return { arming, tap }
+}
+
+// Free-text note for the current segment. The value is kept locally while
+// typing (the run state polls every second, which would otherwise overwrite
+// keystrokes) and saved debounced, plus immediately on blur. Rendered with a
+// key tied to the segment so a new sub-item starts from its own stored value.
+function SegmentCommentField({
+  runId,
+  placeholder,
+  ariaLabel,
+  initialComment,
+  onSaved,
+}: {
+  runId: string
+  placeholder: string
+  ariaLabel: string
+  initialComment: string | null
+  onSaved: () => void
+}) {
+  const [value, setValue] = useState(initialComment ?? '')
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const saved = useRef(initialComment ?? '')
+  const latest = useRef(initialComment ?? '')
+
+  const save = useCallback(
+    async (text: string) => {
+      if (timer.current) clearTimeout(timer.current)
+      timer.current = null
+      if (text === saved.current) return
+      saved.current = text
+      await setSegmentCommentAction(runId, text)
+      onSaved()
+    },
+    [runId, onSaved],
+  )
+
+  // Flush a still-pending edit when the field goes away (segment finished,
+  // page left) so nothing typed is lost.
+  const saveRef = useRef(save)
+  saveRef.current = save
+  useEffect(
+    () => () => {
+      if (timer.current) void saveRef.current(latest.current)
+    },
+    [],
+  )
+
+  function change(text: string) {
+    setValue(text)
+    latest.current = text
+    if (timer.current) clearTimeout(timer.current)
+    timer.current = setTimeout(() => void save(text), 800)
+  }
+
+  return (
+    <textarea
+      aria-label={ariaLabel}
+      placeholder={placeholder}
+      value={value}
+      onChange={e => change(e.target.value)}
+      onBlur={() => void save(value)}
+      rows={2}
+      className="min-h-16 w-full min-w-0 resize-y rounded-lg border border-input bg-transparent px-2.5 py-1.5 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+    />
+  )
 }
 
 const personSelectClass =
@@ -273,21 +339,33 @@ export function MeetingControl({
       </div>
       )}
 
-      {!between && inSubLoop && people.length > 0 && (
-        <select
-          aria-label={`Assign participant to ${subLabel.toLowerCase()} ${segment.subIndex}`}
-          value={segment.personId ?? ''}
-          onChange={e => assignPerson(e.target.value || null)}
-          disabled={pending}
-          className={personSelectClass}
-        >
-          <option value="">Unassigned</option>
-          {people.map(person => (
-            <option key={person.id} value={person.id}>
-              {person.name}
-            </option>
-          ))}
-        </select>
+      {!between && inSubLoop && (
+        <div className="flex w-full flex-col gap-2">
+          {people.length > 0 && (
+            <select
+              aria-label={`Assign participant to ${subLabel.toLowerCase()} ${segment.subIndex}`}
+              value={segment.personId ?? ''}
+              onChange={e => assignPerson(e.target.value || null)}
+              disabled={pending}
+              className={personSelectClass}
+            >
+              <option value="">Unassigned</option>
+              {people.map(person => (
+                <option key={person.id} value={person.id}>
+                  {person.name}
+                </option>
+              ))}
+            </select>
+          )}
+          <SegmentCommentField
+            key={segment.startedAt}
+            runId={runId}
+            ariaLabel={`Comment for ${subLabel.toLowerCase()} ${segment.subIndex}`}
+            placeholder="Comment (shown in the report)"
+            initialComment={segment.comment}
+            onSaved={refetch}
+          />
+        </div>
       )}
 
       {!between && (

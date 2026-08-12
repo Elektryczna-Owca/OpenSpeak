@@ -149,6 +149,25 @@ export async function assignSegmentPersonAction(
   revalidateRunPages(run.agendaId)
 }
 
+// Stores the free-text note typed on the control page for the current open
+// segment (e.g. what a speaker actually talked about); it shows up in the report.
+export async function setSegmentCommentAction(runId: string, comment: string) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return
+  const segment = run.segments[0]
+  if (!segment || segment.endedAt) return
+
+  const trimmed = comment.trim().slice(0, 2000)
+  await prisma.runSegment.update({
+    where: { id: segment.id },
+    data: { comment: trimmed === '' ? null : trimmed },
+  })
+  revalidateRunPages(run.agendaId)
+}
+
 // Removes a finished run (and its segments, via cascade) from the history.
 // Open runs are never deleted — they drive a live meeting.
 export async function deleteRunAction(runId: string) {
