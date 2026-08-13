@@ -3,13 +3,18 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { formatElapsed, timerColorClass } from '@/lib/timer-color'
+import { formatElapsed, timerColorClass, timerStage } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { cumulativeStartMinutes, makeStartLabel } from '@/lib/schedule'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
+import { MeetingFocus } from '@/components/meeting-focus'
 import { QRCodeSVG } from 'qrcode.react'
-import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
+import { ChevronLeft, CornerDownRight, Maximize2, Smartphone } from 'lucide-react'
 import type { AgendaItem } from '@/generated/prisma/client'
+
+// Per-agenda, per-device memory of the chosen presentation (standard view or
+// the full-screen focus mode).
+const focusModeKey = (agendaId: string) => `openspeak:run-mode:${agendaId}`
 
 // Read-only live view of the running meeting (e.g. on a projector). Advances
 // are made from the control page — this view polls and follows along.
@@ -36,6 +41,7 @@ export function MeetingDisplay({
   const elapsed = useElapsedSeconds(segment)
   const paused = segment?.pausedAt != null
   const [qrExpanded, setQrExpanded] = useState(false)
+  const [focus, setFocus] = useState(false)
 
   useEffect(() => {
     if (!qrExpanded) return
@@ -45,6 +51,47 @@ export function MeetingDisplay({
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [qrExpanded])
+
+  // Which presentation this screen last used, so a projector that reloads
+  // mid-meeting comes back the way it was left. Read after mount (never during
+  // render) so the server and client agree on the first paint.
+  useEffect(() => {
+    setFocus(localStorage.getItem(focusModeKey(agendaId)) === 'focus')
+  }, [agendaId])
+
+  const enterFocus = () => {
+    setFocus(true)
+    localStorage.setItem(focusModeKey(agendaId), 'focus')
+    // A click is a user gesture, so real fullscreen is allowed here. If the
+    // browser refuses, the overlay still covers the viewport.
+    document.documentElement.requestFullscreen?.().catch(() => {})
+  }
+
+  const exitFocus = () => {
+    setFocus(false)
+    localStorage.setItem(focusModeKey(agendaId), 'standard')
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
+  }
+
+  // Leaving fullscreen by the browser's own means (Escape, F11) also leaves
+  // focus mode — otherwise the overlay would linger with the browser chrome
+  // back. Escape is handled separately for when fullscreen was never granted.
+  useEffect(() => {
+    if (!focus) return
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement) exitFocus()
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') exitFocus()
+    }
+    document.addEventListener('fullscreenchange', onFullscreenChange)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange)
+      window.removeEventListener('keydown', onKey)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focus, agendaId])
 
   // When the controller finishes the meeting, follow to the review page.
   useEffect(() => {
@@ -77,10 +124,24 @@ export function MeetingDisplay({
   // Planned start of the next item, from the printed agenda's schedule
   // (scheduled start + expected durations before it) — actual timing may drift.
   const nextIndex = currentIndex + 1
+  const startLabelAt = makeStartLabel(startAt, timezone)
+  const startMinutes = cumulativeStartMinutes(items)
   const nextStartLabel =
-    nextItem && currentIndex >= 0
-      ? makeStartLabel(startAt, timezone)(cumulativeStartMinutes(items)[nextIndex])
-      : null
+    nextItem && currentIndex >= 0 ? startLabelAt(startMinutes[nextIndex]) : null
+
+  // Focus mode shows one thing large and names what follows it at the bottom.
+  // Between items the headline is already the next item, so what follows is the
+  // one after that.
+  const headlineIsNextItem = between && upNextSubIndex == null
+  const focusNextIndex = headlineIsNextItem ? nextIndex + 1 : nextIndex
+  const focusNextItem =
+    currentIndex >= 0 ? (items[focusNextIndex] ?? null) : null
+  const focusSubline =
+    between && upNextSubIndex != null
+      ? `${subLabel} ${upNextSubIndex}`
+      : !between && inSubLoop
+        ? `${subLabel} ${segment.subIndex}${segment.personName ? ` — ${segment.personName}` : ''}`
+        : null
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
@@ -92,13 +153,23 @@ export function MeetingDisplay({
           <ChevronLeft className="h-4 w-4" />
           {agendaTitle}
         </Link>
-        <Link
-          href={`/agendas/${agendaId}/control`}
-          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-        >
-          <Smartphone className="h-4 w-4" />
-          Control page
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href={`/agendas/${agendaId}/control`}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Smartphone className="h-4 w-4" />
+            Control page
+          </Link>
+          <button
+            type="button"
+            onClick={enterFocus}
+            className="flex cursor-pointer items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <Maximize2 className="h-4 w-4" />
+            Change mode
+          </button>
+        </div>
       </div>
 
       <div className="text-center">
@@ -221,6 +292,35 @@ export function MeetingDisplay({
             </li>
           ))}
         </ol>
+      )}
+
+      {focus && (
+        <MeetingFocus
+          eyebrow={between ? 'Up next' : null}
+          headline={
+            between
+              ? (shownItem?.title ?? 'All items finished')
+              : (currentItem?.title ?? segment.label)
+          }
+          subline={focusSubline}
+          elapsedLabel={formatElapsed(between ? 0 : elapsed)}
+          stage={
+            between
+              ? 'idle'
+              : timerStage(
+                  elapsed,
+                  segment.minMinutes,
+                  segment.expectedMinutes,
+                  segment.maxMinutes,
+                )
+          }
+          paused={!between && paused}
+          nextLabel={focusNextItem?.title ?? null}
+          nextStartLabel={
+            focusNextItem ? startLabelAt(startMinutes[focusNextIndex]) : null
+          }
+          onExit={exitFocus}
+        />
       )}
 
       {qrExpanded && shownItem?.url && (

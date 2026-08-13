@@ -7,22 +7,59 @@
 
 export const RED_WARNING_SECONDS = 30
 
+export type TimerStage = 'idle' | 'min' | 'expected' | 'max'
+
+export function timerStage(
+  elapsedSeconds: number,
+  minMinutes: number | null,
+  expectedMinutes: number | null,
+  maxMinutes: number | null,
+): TimerStage {
+  if (maxMinutes != null && elapsedSeconds >= maxMinutes * 60 - RED_WARNING_SECONDS) {
+    return 'max'
+  }
+  if (expectedMinutes != null && elapsedSeconds >= expectedMinutes * 60) {
+    return 'expected'
+  }
+  if (minMinutes != null && elapsedSeconds >= minMinutes * 60) {
+    return 'min'
+  }
+  return 'idle'
+}
+
 export function timerColorClass(
   elapsedSeconds: number,
   minMinutes: number | null,
   expectedMinutes: number | null,
   maxMinutes: number | null,
 ): string {
-  if (maxMinutes != null && elapsedSeconds >= maxMinutes * 60 - RED_WARNING_SECONDS) {
-    return 'text-red-500'
+  switch (timerStage(elapsedSeconds, minMinutes, expectedMinutes, maxMinutes)) {
+    case 'max':
+      return 'text-red-500'
+    case 'expected':
+      return 'text-yellow-400'
+    case 'min':
+      return 'text-green-500'
+    default:
+      return 'text-white'
   }
-  if (expectedMinutes != null && elapsedSeconds >= expectedMinutes * 60) {
-    return 'text-yellow-400'
+}
+
+// The same stages painted across a whole surface, for the full-screen focus
+// mode: the stage color becomes the background, so it also has to name a
+// foreground that stays legible on it. Before the min time there is no stage
+// color yet and the view sits on the active palette's own background.
+export function timerStageSurfaceClass(stage: TimerStage): string {
+  switch (stage) {
+    case 'max':
+      return 'bg-red-600 text-white'
+    case 'expected':
+      return 'bg-yellow-400 text-black'
+    case 'min':
+      return 'bg-green-600 text-white'
+    default:
+      return 'bg-background text-foreground'
   }
-  if (minMinutes != null && elapsedSeconds >= minMinutes * 60) {
-    return 'text-green-500'
-  }
-  return 'text-white'
 }
 
 // Same thresholds, expressed as a status word for the post-meeting review.

@@ -31,6 +31,18 @@ The live view is built to be readable from the back of the room:
 
 <!-- TODO screenshot: display screen during a running item -->
 
+## Full-screen focus mode
+
+**Change mode** (top right, next to the control-screen link) switches the display to a second presentation, built for a big room where the agenda list and thresholds are just noise:
+
+- The current item fills the screen in the largest type that fits; during a speaker round a second line underneath names the round and the speaker ("Evaluator 2 — Sabina"). Between items the heading is the upcoming one, prefixed **UP NEXT**.
+- **The whole background carries the timer stage** — the palette's own background before the min time, then green at min, yellow at expected, and red 30 seconds before max, following the same [timer colour rules](/running/overview/#timer-colors). The room reads the speaker's time from across the hall without looking at any digits.
+- Only a small timer (bottom left) and the next agenda item with its planned start (bottom right) stay on screen. While paused, the timer freezes and **PAUSED** appears beside it.
+
+Clicking **Change mode** also asks the browser for true full screen, so the tabs and address bar disappear. Press **Escape** or click the **✕** in the corner to come back to the standard display. The choice is remembered on that device, so a projector that reloads mid-meeting comes back in the mode you left it in.
+
+<!-- TODO screenshot: full-screen focus mode with a green background -->
+
 ## The QR code
 
 If the current (or up-next) item has a URL, a **QR code** appears next to the timer — always on a white card so it scans in every palette. Hover to see the URL.
