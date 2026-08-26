@@ -6,6 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `agenda-app/` — the product: a meeting-agenda/timer app (Next.js 16 App Router + Turbopack, React 19, TypeScript strict, Tailwind v4, Prisma 7 + PostgreSQL). Almost all work happens here.
 - `website/` — end-user documentation site for OpenSpeak (Astro Starlight, static output), deployed at https://openspeak.website. See "Website" below.
+- `scripts/` — standalone helper scripts, not part of either npm project. `fth-agenda-to-csv.py` scrapes a saved FreeToastHost club agenda page (`id="rostertable"`) into agenda import CSV; `--help` covers the flags and what it can't infer (sub-item loops, URLs, scheduled start).
 - `PLAN.md` — implementation notes for the initial build (stack versions, Prisma 7 patterns, shadcn caveats).
 
 ## Commands

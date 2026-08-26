@@ -2,11 +2,14 @@
 
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   advanceRunAction,
+  assignNewPersonAction,
   assignSegmentPersonAction,
   finishItemAction,
   finishSegmentAction,
+  goBackAction,
   setSegmentCommentAction,
   togglePauseAction,
   type NextSegment,
@@ -25,6 +28,7 @@ import {
   Play,
   SkipForward,
   Square,
+  Undo2,
 } from 'lucide-react'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
 
@@ -128,7 +132,7 @@ export function MeetingControl({
   agendaTitle,
   runId,
   items,
-  people,
+  people: initialPeople,
   initialState,
 }: {
   agendaId: string
@@ -138,6 +142,7 @@ export function MeetingControl({
   people: Person[]
   initialState: RunState
 }) {
+  const router = useRouter()
   const [pending, startTransition] = useTransition()
   const { state, refetch } = useRunState(runId, initialState)
   const segment = state.segment
@@ -146,6 +151,14 @@ export function MeetingControl({
   const paused = segment?.pausedAt != null
   const skipConfirm = useTapConfirm()
   const endConfirm = useTapConfirm()
+  const backConfirm = useTapConfirm()
+
+  // People created on the fly (assigned to a sub-item mid-meeting) need to
+  // show up in the picker immediately, ahead of the next server refresh.
+  const [people, setPeople] = useState<Pick<Person, 'id' | 'name'>[]>(initialPeople)
+  useEffect(() => setPeople(initialPeople), [initialPeople])
+  const [addingPerson, setAddingPerson] = useState(false)
+  const [newPersonName, setNewPersonName] = useState('')
 
   if (!segment || state.endedAt) return null
 
@@ -190,6 +203,13 @@ export function MeetingControl({
     })
   }
 
+  function goBack() {
+    startTransition(async () => {
+      await goBackAction(runId)
+      await refetch()
+    })
+  }
+
   function finishItem() {
     startTransition(async () => {
       await finishItemAction(runId)
@@ -207,6 +227,21 @@ export function MeetingControl({
   function assignPerson(personId: string | null) {
     startTransition(async () => {
       await assignSegmentPersonAction(runId, personId)
+      await refetch()
+    })
+  }
+
+  function addAndAssignPerson() {
+    const name = newPersonName.trim()
+    if (!name) return
+    startTransition(async () => {
+      const person = await assignNewPersonAction(runId, name)
+      if (person) {
+        setPeople(prev => [...prev, person])
+        setAddingPerson(false)
+        setNewPersonName('')
+        router.refresh()
+      }
       await refetch()
     })
   }
@@ -341,11 +376,51 @@ export function MeetingControl({
 
       {!between && inSubLoop && (
         <div className="flex w-full flex-col gap-2">
-          {people.length > 0 && (
+          {addingPerson ? (
+            <div className="flex gap-2">
+              <input
+                autoFocus
+                aria-label="New participant name"
+                placeholder="Participant name"
+                value={newPersonName}
+                onChange={e => setNewPersonName(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    addAndAssignPerson()
+                  } else if (e.key === 'Escape') {
+                    setAddingPerson(false)
+                    setNewPersonName('')
+                  }
+                }}
+                disabled={pending}
+                className={personSelectClass}
+              />
+              <Button
+                onClick={addAndAssignPerson}
+                disabled={pending || !newPersonName.trim()}
+              >
+                Add
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setAddingPerson(false)
+                  setNewPersonName('')
+                }}
+                disabled={pending}
+              >
+                Cancel
+              </Button>
+            </div>
+          ) : (
             <select
               aria-label={`Assign participant to ${subLabel.toLowerCase()} ${segment.subIndex}`}
               value={segment.personId ?? ''}
-              onChange={e => assignPerson(e.target.value || null)}
+              onChange={e => {
+                if (e.target.value === '__new__') setAddingPerson(true)
+                else assignPerson(e.target.value || null)
+              }}
               disabled={pending}
               className={personSelectClass}
             >
@@ -355,6 +430,7 @@ export function MeetingControl({
                   {person.name}
                 </option>
               ))}
+              <option value="__new__">+ New participant…</option>
             </select>
           )}
           <SegmentCommentField
@@ -434,6 +510,23 @@ export function MeetingControl({
       )}
 
       <div className="mt-2 flex flex-col items-center gap-2">
+        {segment.position > 0 && (
+          <Button
+            variant={backConfirm.arming ? 'destructive' : 'ghost'}
+            className={
+              backConfirm.arming ? '' : 'text-muted-foreground hover:text-foreground'
+            }
+            onClick={() =>
+              // Abandon the current segment entirely and reopen the previous
+              // one, paused, so the controller can pick up from there.
+              backConfirm.tap(goBack)
+            }
+            disabled={pending}
+          >
+            <Undo2 className="h-4 w-4" />
+            {backConfirm.arming ? 'Tap again to discard & go back' : 'Back to previous item'}
+          </Button>
+        )}
         {!between && (
         <Button
           variant={skipConfirm.arming ? 'destructive' : 'ghost'}

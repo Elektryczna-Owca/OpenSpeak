@@ -149,6 +149,32 @@ export async function assignSegmentPersonAction(
   revalidateRunPages(run.agendaId)
 }
 
+// Creates a new meeting participant on the fly and assigns them to the
+// current open segment — for a speaker who isn't on the participant list yet.
+export async function assignNewPersonAction(runId: string, name: string) {
+  const trimmed = name.trim().slice(0, 100)
+  if (!trimmed) return null
+
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return null
+  const segment = run.segments[0]
+  if (!segment || segment.endedAt) return null
+
+  const person = await prisma.person.create({
+    data: { agendaId: run.agendaId, name: trimmed },
+  })
+  await prisma.runSegment.update({
+    where: { id: segment.id },
+    data: { personId: person.id },
+  })
+  revalidatePath(`/agendas/${run.agendaId}/people`)
+  revalidateRunPages(run.agendaId)
+  return { id: person.id, name: person.name }
+}
+
 // Stores the free-text note typed on the control page for the current open
 // segment (e.g. what a speaker actually talked about); it shows up in the report.
 export async function setSegmentCommentAction(runId: string, comment: string) {
@@ -214,6 +240,37 @@ export async function finishItemAction(runId: string) {
     where: { id: segment.id },
     data: { itemDone: true },
   })
+  revalidateRunPages(run.agendaId)
+}
+
+// Abandons the current segment (running or between) with no trace — deleted
+// outright, so none of its time counts anywhere — and reopens the segment
+// before it, frozen at the moment it had finished as if paused right then.
+export async function goBackAction(runId: string) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 2 } },
+  })
+  if (!run || run.endedAt) return
+  const [current, previous] = run.segments
+  if (!current || !previous) return // nothing before the first segment
+
+  const now = new Date()
+  await prisma.$transaction([
+    prisma.runSegment.delete({ where: { id: current.id } }),
+    prisma.runSegment.update({
+      where: { id: previous.id },
+      data: {
+        endedAt: null,
+        skipped: false,
+        itemDone: false,
+        pausedAt: now,
+        pausedSeconds:
+          previous.pausedSeconds +
+          (previous.endedAt ? (now.getTime() - previous.endedAt.getTime()) / 1000 : 0),
+      },
+    }),
+  ])
   revalidateRunPages(run.agendaId)
 }
 

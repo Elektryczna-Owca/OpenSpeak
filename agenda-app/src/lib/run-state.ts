@@ -7,6 +7,7 @@ import type { AgendaItem, RunSegment } from '@/generated/prisma/client'
 export type RunSegmentState = {
   itemId: string | null
   kind: string
+  position: number
   subIndex: number | null
   personId: string | null
   personName: string | null
@@ -29,6 +30,7 @@ export function serializeSegment(
   return {
     itemId: segment.itemId,
     kind: segment.kind,
+    position: segment.position,
     subIndex: segment.subIndex,
     personId: segment.personId,
     personName: segment.person?.name ?? null,
