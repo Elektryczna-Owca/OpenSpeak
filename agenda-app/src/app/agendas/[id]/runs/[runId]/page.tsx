@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
-import { formatElapsed, segmentStatus } from '@/lib/timer-color'
+import { formatElapsed, segmentRowClass } from '@/lib/timer-color'
 import { buttonVariants } from '@/components/ui/button'
 import {
   ChevronLeft,
@@ -112,9 +112,6 @@ export default async function RunReviewPage({
             <tr className="border-b bg-muted/50 text-left text-muted-foreground">
               <th className="p-3 font-medium">Item</th>
               <th className="p-3 font-medium">Actual</th>
-              <th className="p-3 font-medium">Expected</th>
-              <th className="p-3 font-medium">Min–Max</th>
-              <th className="p-3 font-medium">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -140,18 +137,15 @@ export default async function RunReviewPage({
                         segment.startedAt.getTime()) /
                         1000 -
                       segment.pausedSeconds
-                const status = segment.skipped
-                  ? { label: 'skipped', className: 'text-muted-foreground italic' }
-                  : segment.endedAt
-                    ? segmentStatus(
-                        actualSeconds,
-                        segment.minMinutes,
-                        segment.expectedMinutes,
-                        segment.maxMinutes,
-                      )
-                    : null
+                const rowClass =
+                  !segment.skipped && segment.endedAt
+                    ? segmentRowClass(actualSeconds, segment.minMinutes, segment.maxMinutes)
+                    : ''
                 return (
-                  <tr key={segment.id} className="border-b last:border-b-0">
+                  <tr
+                    key={segment.id}
+                    className={`border-b last:border-b-0 ${rowClass}`}
+                  >
                     <td className="p-3">
                       <span className="flex items-center gap-1">
                         {segment.kind === 'sub' && (
@@ -161,6 +155,11 @@ export default async function RunReviewPage({
                         {segment.person && (
                           <span className="text-muted-foreground">
                             — {segment.person.name}
+                          </span>
+                        )}
+                        {segment.skipped && (
+                          <span className="text-muted-foreground italic">
+                            (skipped)
                           </span>
                         )}
                       </span>
@@ -175,21 +174,8 @@ export default async function RunReviewPage({
                       )}
                     </td>
                     <td className="p-3 font-mono tabular-nums">
-                      {formatElapsed(actualSeconds)}
-                    </td>
-                    <td className="p-3 text-muted-foreground">
-                      {segment.expectedMinutes != null
-                        ? `${segment.expectedMinutes} min`
-                        : '—'}
-                    </td>
-                    <td className="p-3 text-muted-foreground">
-                      {segment.minMinutes != null || segment.maxMinutes != null
-                        ? `${segment.minMinutes ?? '—'}–${segment.maxMinutes ?? '—'}`
-                        : '—'}
-                    </td>
-                    <td className="p-3">
-                      {status ? (
-                        <span className={status.className}>{status.label}</span>
+                      {segment.endedAt ? (
+                        formatElapsed(actualSeconds)
                       ) : (
                         <span className="text-muted-foreground">running</span>
                       )}
@@ -206,9 +192,6 @@ export default async function RunReviewPage({
                 <td className="p-3 font-mono tabular-nums">
                   {formatElapsed(betweenSeconds)}
                 </td>
-                <td className="p-3">—</td>
-                <td className="p-3">—</td>
-                <td className="p-3"></td>
               </tr>
             )}
           </tbody>

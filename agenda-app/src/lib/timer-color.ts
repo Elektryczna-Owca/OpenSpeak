@@ -62,23 +62,20 @@ export function timerStageSurfaceClass(stage: TimerStage): string {
   }
 }
 
-// Same thresholds, expressed as a status word for the post-meeting review.
-export function segmentStatus(
+// Row background for the post-meeting review: only min/max thresholds
+// change the color, so "over expected" renders the same green as "on time".
+export function segmentRowClass(
   actualSeconds: number,
   minMinutes: number | null,
-  expectedMinutes: number | null,
   maxMinutes: number | null,
-): { label: string; className: string } {
+): string {
   if (maxMinutes != null && actualSeconds > maxMinutes * 60) {
-    return { label: 'over max', className: 'text-(--timer-max)' }
-  }
-  if (expectedMinutes != null && actualSeconds > expectedMinutes * 60) {
-    return { label: 'over expected', className: 'text-(--timer-expected)' }
+    return 'bg-(--timer-max)/30'
   }
   if (minMinutes != null && actualSeconds < minMinutes * 60) {
-    return { label: 'under min', className: 'text-muted-foreground' }
+    return 'bg-muted'
   }
-  return { label: 'on time', className: 'text-(--timer-min)' }
+  return 'bg-(--timer-min)/30'
 }
 
 export function formatElapsed(totalSeconds: number): string {
