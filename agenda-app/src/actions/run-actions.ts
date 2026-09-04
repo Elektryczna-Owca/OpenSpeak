@@ -274,6 +274,37 @@ export async function goBackAction(runId: string) {
   revalidateRunPages(run.agendaId)
 }
 
+// Skips the next agenda item from the between-segments state, without ever
+// starting it. Recorded as a zero-length segment marked skipped so it still
+// shows up (as skipped) in the report, then the run waits between items again.
+export async function skipNextAction(runId: string, next: NextSegment) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    include: { segments: { orderBy: { position: 'desc' }, take: 1 } },
+  })
+  if (!run || run.endedAt) return
+  const lastSegment = run.segments[0]
+  if (!lastSegment || lastSegment.endedAt === null) return // only meaningful between segments
+
+  const item = await prisma.agendaItem.findFirst({
+    where: { id: next.itemId, agendaId: run.agendaId },
+  })
+  if (!item) return
+
+  const now = new Date()
+  await prisma.runSegment.create({
+    data: {
+      runId,
+      ...segmentSnapshot(item, next),
+      position: lastSegment.position + 1,
+      startedAt: now,
+      endedAt: now,
+      skipped: true,
+    },
+  })
+  revalidateRunPages(run.agendaId)
+}
+
 export async function advanceRunAction(runId: string, next: NextSegment | null) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },

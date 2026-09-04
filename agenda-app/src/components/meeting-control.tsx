@@ -11,6 +11,7 @@ import {
   finishSegmentAction,
   goBackAction,
   setSegmentCommentAction,
+  skipNextAction,
   togglePauseAction,
   type NextSegment,
 } from '@/actions/run-actions'
@@ -213,6 +214,14 @@ export function MeetingControl({
   function finishItem() {
     startTransition(async () => {
       await finishItemAction(runId)
+      await refetch()
+    })
+  }
+
+  function skipNext() {
+    if (!nextItem) return
+    startTransition(async () => {
+      await skipNextAction(runId, { itemId: nextItem.id, kind: 'item' })
       await refetch()
     })
   }
@@ -536,21 +545,23 @@ export function MeetingControl({
             {backConfirm.arming ? 'Tap again to discard & go back' : 'Back to previous item'}
           </Button>
         )}
-        {!between && (
+        {(!between ? true : !nextSubTarget && nextItem != null) && (
         <Button
           variant={skipConfirm.arming ? 'destructive' : 'ghost'}
           className={
             skipConfirm.arming ? '' : 'text-muted-foreground hover:text-foreground'
           }
           onClick={() =>
-            // Skip the current item: mark its segment skipped and wait
-            // between items — the next one still starts explicitly.
-            skipConfirm.tap(() => finish(true))
+            // Not between: mark the running segment skipped and wait between
+            // items. Between: skip the upcoming item without starting it.
+            skipConfirm.tap(between ? skipNext : () => finish(true))
           }
           disabled={pending}
         >
           <SkipForward className="h-4 w-4" />
-          {skipConfirm.arming ? 'Tap again to skip' : 'Skip agenda item'}
+          {skipConfirm.arming
+            ? 'Tap again to skip'
+            : `Skip ${(between ? nextItem?.title : currentItem?.title) ?? 'agenda item'}`}
         </Button>
         )}
         <Button
