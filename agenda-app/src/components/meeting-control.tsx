@@ -338,7 +338,7 @@ export function MeetingControl({
                   onClick={finishItem}
                   disabled={pending}
                 >
-                  Finish agenda item
+                  Finish {currentItem?.title ?? 'agenda item'}
                 </Button>
               </>
             ) : (
@@ -351,7 +351,7 @@ export function MeetingControl({
                 disabled={pending}
               >
                 <Play className="h-5 w-5" />
-                {nextItem ? 'Start agenda item' : 'Finish meeting'}
+                {nextItem ? `Start ${nextItem.title}` : 'Finish meeting'}
               </Button>
             )}
           </div>
@@ -479,7 +479,7 @@ export function MeetingControl({
         >
           {inSubLoop
             ? `Finish ${subLabel.toLowerCase()} ${segment.subIndex}`
-            : 'Finish agenda item'}
+            : `Finish ${currentItem?.title ?? 'agenda item'}`}
         </Button>
         <Button
           size="lg"
@@ -503,7 +503,16 @@ export function MeetingControl({
       </div>
       )}
 
-      {!between && nextItem && (
+      {!between && currentItem?.subExpectedMinutes != null && (
+        <p className="text-sm text-muted-foreground">
+          Up next:{' '}
+          <span className="text-foreground">
+            {subLabel} {inSubLoop ? (segment.subIndex ?? 1) + 1 : 1}
+          </span>
+        </p>
+      )}
+
+      {!between && currentItem?.subExpectedMinutes == null && nextItem && (
         <p className="text-sm text-muted-foreground">
           Up next: <span className="text-foreground">{nextItem.title}</span>
         </p>
