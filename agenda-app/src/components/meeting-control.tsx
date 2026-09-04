@@ -29,6 +29,7 @@ import {
   Play,
   SkipForward,
   Square,
+  Timer,
   Undo2,
 } from 'lucide-react'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
@@ -161,6 +162,21 @@ export function MeetingControl({
   const [addingPerson, setAddingPerson] = useState(false)
   const [newPersonName, setNewPersonName] = useState('')
 
+  // Prep time for the upcoming sub-item, timed locally while waiting between
+  // segments — the segment it belongs to doesn't exist until "Start" is
+  // pressed, at which point these are stamped onto it and reset.
+  const [prepStartedAt, setPrepStartedAt] = useState<Date | null>(null)
+  const [prepEndedAt, setPrepEndedAt] = useState<Date | null>(null)
+  useEffect(() => {
+    setPrepStartedAt(null)
+    setPrepEndedAt(null)
+  }, [segment?.position])
+  const prepElapsed = useElapsedSeconds(
+    prepStartedAt && !prepEndedAt
+      ? { startedAt: prepStartedAt.toISOString(), pausedAt: null, pausedSeconds: 0 }
+      : null,
+  )
+
   if (!segment || state.endedAt) return null
 
   const { currentItem, nextItem, inSubLoop, subLabel } = computeRunTargets(
@@ -195,6 +211,26 @@ export function MeetingControl({
       await advanceRunAction(runId, target)
       await refetch()
     })
+  }
+
+  // Starts the next sub-item, folding in whatever prep time was tracked —
+  // stopping it first if it was still running.
+  function startSub(target: NextSegment) {
+    const endedAt = prepStartedAt && !prepEndedAt ? new Date() : prepEndedAt
+    advance({
+      ...target,
+      prepStartedAt: prepStartedAt?.toISOString(),
+      prepEndedAt: endedAt?.toISOString(),
+    })
+  }
+
+  function togglePrep() {
+    if (prepStartedAt && !prepEndedAt) {
+      setPrepEndedAt(new Date())
+    } else {
+      setPrepStartedAt(new Date())
+      setPrepEndedAt(null)
+    }
   }
 
   function finish(skipped: boolean) {
@@ -334,11 +370,23 @@ export function MeetingControl({
                 <Button
                   size="lg"
                   className="h-14 w-full text-lg"
-                  onClick={() => advance(nextSubTarget)}
+                  onClick={() => startSub(nextSubTarget)}
                   disabled={pending}
                 >
                   <Play className="h-5 w-5" />
                   Start {subLabel.toLowerCase()} {nextSubTarget.subIndex}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 w-full"
+                  onClick={togglePrep}
+                  disabled={pending}
+                >
+                  <Timer className="h-4 w-4" />
+                  {prepStartedAt && !prepEndedAt
+                    ? `Stop prep time — ${formatElapsed(prepElapsed)}`
+                    : 'Start prep time'}
                 </Button>
                 <Button
                   size="lg"

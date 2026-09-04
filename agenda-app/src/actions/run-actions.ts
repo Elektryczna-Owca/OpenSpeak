@@ -13,6 +13,11 @@ export type NextSegment = {
   itemId: string
   kind: 'item' | 'sub'
   subIndex?: number
+  // Prep time the participant used before this sub-item started, timed on
+  // the control page while waiting between segments (the segment doesn't
+  // exist yet, so these are carried in and stamped onto it at creation).
+  prepStartedAt?: string
+  prepEndedAt?: string
 }
 
 // Threshold + label snapshots survive later edits/deletion of the item.
@@ -351,6 +356,8 @@ export async function advanceRunAction(runId: string, next: NextSegment | null) 
       ...segmentSnapshot(item, next),
       position: (lastSegment?.position ?? -1) + 1,
       startedAt: now,
+      prepStartedAt: next.prepStartedAt ? new Date(next.prepStartedAt) : null,
+      prepEndedAt: next.prepEndedAt ? new Date(next.prepEndedAt) : null,
     },
   })
   revalidateRunPages(run.agendaId)

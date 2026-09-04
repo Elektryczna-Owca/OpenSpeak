@@ -98,6 +98,8 @@ model RunSegment {
   itemDone        Boolean   @default(false) // whole item declared finished (no more subs)
   pausedAt        DateTime? // set while the timer is paused
   pausedSeconds   Float     @default(0) // accumulated pause time, excluded from elapsed
+  prepStartedAt   DateTime? // when the participant's prep time began (sub-items)
+  prepEndedAt     DateTime? // when the participant's prep time ended (sub-items)
 
   @@index([runId, position])
 }

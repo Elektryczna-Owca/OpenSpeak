@@ -141,6 +141,10 @@ export default async function RunReviewPage({
                   !segment.skipped && segment.endedAt
                     ? segmentRowClass(actualSeconds, segment.minMinutes, segment.maxMinutes)
                     : ''
+                const prepSeconds =
+                  segment.prepStartedAt && segment.prepEndedAt
+                    ? (segment.prepEndedAt.getTime() - segment.prepStartedAt.getTime()) / 1000
+                    : null
                 return (
                   <tr
                     key={segment.id}
@@ -175,7 +179,9 @@ export default async function RunReviewPage({
                     </td>
                     <td className="p-3 font-mono tabular-nums">
                       {segment.endedAt ? (
-                        formatElapsed(actualSeconds)
+                          prepSeconds != null ?
+                              formatElapsed(prepSeconds) + " + " + formatElapsed(actualSeconds) :
+                              formatElapsed(actualSeconds)
                       ) : (
                         <span className="text-muted-foreground">running</span>
                       )}
