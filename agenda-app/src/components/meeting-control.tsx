@@ -536,7 +536,9 @@ export function MeetingControl({
         >
           {inSubLoop
             ? `Finish ${subLabel.toLowerCase()} ${segment.subIndex}`
-            : `Finish ${currentItem?.title ?? 'agenda item'}`}
+            : currentItem?.subExpectedMinutes != null
+              ? `Continue ${currentItem.title} - ${subLabel.toLowerCase()} 1`
+              : `Finish ${currentItem?.title ?? 'agenda item'}`}
         </Button>
         <Button
           size="lg"
