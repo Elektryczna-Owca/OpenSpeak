@@ -1,15 +1,7 @@
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { formatElapsed, segmentRowClass } from '@/lib/timer-color'
-import { buttonVariants } from '@/components/ui/button'
-import {
-  ChevronLeft,
-  Clock,
-  CornerDownRight,
-  Play,
-  Smartphone,
-} from 'lucide-react'
+import { CornerDownRight } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,7 +14,6 @@ export default async function RunReviewPage({
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },
     include: {
-      agenda: { select: { id: true, title: true, timezone: true } },
       segments: {
         orderBy: { position: 'asc' },
         include: { person: { select: { name: true } } },
@@ -31,17 +22,9 @@ export default async function RunReviewPage({
   })
   if (!run || run.agendaId !== id) notFound()
 
-  const startedLabel = new Intl.DateTimeFormat('en-US', {
-    dateStyle: 'full',
-    timeStyle: 'short',
-    timeZone: run.agenda.timezone ?? 'UTC',
-  }).format(run.startedAt)
-
   // For a still-running meeting this page is a "report so far": totals and
   // the open segment are measured up to now (frozen at pausedAt while paused).
   const now = new Date()
-  const totalSeconds =
-    ((run.endedAt ?? now).getTime() - run.startedAt.getTime()) / 1000
 
   // Total idle time between segments: from each segment's end until the next
   // one starts (or until the meeting ends / now for the last one). Since
@@ -68,43 +51,8 @@ export default async function RunReviewPage({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href={`/agendas/${run.agenda.id}`}
-          className={buttonVariants({ variant: 'ghost', size: 'sm' })}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          {run.agenda.title}
-        </Link>
-        {run.endedAt ? (
-          <Link
-            href={`/agendas/${run.agenda.id}/run`}
-            className={buttonVariants({ variant: 'outline', size: 'sm' })}
-          >
-            <Play className="h-4 w-4" />
-            Run again
-          </Link>
-        ) : (
-          <Link
-            href={`/agendas/${run.agenda.id}/control`}
-            className={buttonVariants({ variant: 'outline', size: 'sm' })}
-          >
-            <Smartphone className="h-4 w-4" />
-            Back to control
-          </Link>
-        )}
-      </div>
-
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Meeting review</h1>
-        <p className="text-muted-foreground">{startedLabel}</p>
-        <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-          <Clock className="h-4 w-4" />
-          {formatElapsed(totalSeconds)}
-          {run.endedAt ? ' total' : ' so far — still in progress'}
-        </p>
-      </div>
+    <div className="space-y-4">
+      <h1 className="text-2xl font-semibold tracking-tight">Meeting review</h1>
 
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
