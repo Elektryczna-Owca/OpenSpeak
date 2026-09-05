@@ -213,6 +213,8 @@ export async function deleteRunAction(runId: string) {
 
 // Ends the current segment without starting anything — the run sits between
 // items until the controller starts the next one (or finishes the meeting).
+// Skipping abandons the whole item, so it also closes out any sub-item loop
+// (itemDone) rather than leaving the between-state offering the next round.
 export async function finishSegmentAction(runId: string, skipped = false) {
   const run = await prisma.meetingRun.findUnique({
     where: { id: runId },
@@ -224,7 +226,10 @@ export async function finishSegmentAction(runId: string, skipped = false) {
 
   await prisma.runSegment.update({
     where: { id: segment.id },
-    data: closeSegmentData(segment, new Date(), skipped),
+    data: {
+      ...closeSegmentData(segment, new Date(), skipped),
+      ...(skipped ? { itemDone: true } : {}),
+    },
   })
   revalidateRunPages(run.agendaId)
 }
@@ -305,6 +310,7 @@ export async function skipNextAction(runId: string, next: NextSegment) {
       startedAt: now,
       endedAt: now,
       skipped: true,
+      itemDone: true,
     },
   })
   revalidateRunPages(run.agendaId)
