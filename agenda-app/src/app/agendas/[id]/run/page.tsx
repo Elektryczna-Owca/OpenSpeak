@@ -5,7 +5,7 @@ import { DeleteRunButton } from '@/components/delete-run-button'
 import { MeetingDisplay } from '@/components/meeting-display'
 import { RunStartWatcher } from '@/components/run-start-watcher'
 import { formatElapsed } from '@/lib/timer-color'
-import { serializeSegment } from '@/lib/run-state'
+import { type DisplayMode, serializeSegment } from '@/lib/run-state'
 import { cumulativeStartMinutes, makeStartLabel } from '@/lib/schedule'
 import { buttonVariants } from '@/components/ui/button'
 import { ChevronLeft, CornerDownRight, Smartphone } from 'lucide-react'
@@ -49,6 +49,7 @@ export default async function RunPage({
         timezone={agenda.timezone}
         initialState={{
           endedAt: null,
+          enforcedDisplayMode: openRun.enforcedDisplayMode as DisplayMode | null,
           segment: serializeSegment(openSegment),
         }}
       />

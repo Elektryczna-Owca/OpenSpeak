@@ -10,13 +10,14 @@ import {
   finishItemAction,
   finishSegmentAction,
   goBackAction,
+  setEnforcedDisplayModeAction,
   setSegmentCommentAction,
   skipNextAction,
   togglePauseAction,
   type NextSegment,
 } from '@/actions/run-actions'
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
-import { type RunState, computeRunTargets } from '@/lib/run-state'
+import { type DisplayMode, type RunState, computeRunTargets } from '@/lib/run-state'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { useMaxTimeAlert } from '@/components/use-max-alert'
 import { Thresholds } from '@/components/meeting-display'
@@ -269,6 +270,14 @@ export function MeetingControl({
     })
   }
 
+  // null ('Auto') releases every display back to its own local preference.
+  function setDisplayMode(mode: DisplayMode | null) {
+    startTransition(async () => {
+      await setEnforcedDisplayModeAction(runId, mode)
+      await refetch()
+    })
+  }
+
   function assignPerson(personId: string | null) {
     startTransition(async () => {
       await assignSegmentPersonAction(runId, personId)
@@ -316,6 +325,36 @@ export function MeetingControl({
             <MonitorPlay className="h-4 w-4" />
             Display
           </Link>
+        </div>
+      </div>
+
+      <div className="w-full">
+        <p className="mb-1 text-center text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          Display mode
+        </p>
+        <div className="flex w-full items-center gap-1 rounded-lg border p-1">
+          {(
+            [
+              { mode: null, label: 'Auto' },
+              { mode: 'standard', label: 'Standard' },
+              { mode: 'focus', label: 'Focus' },
+              { mode: 'report', label: 'Report' },
+            ] as const
+          ).map(({ mode, label }) => (
+            <Button
+              key={label}
+              type="button"
+              size="sm"
+              variant={
+                (state.enforcedDisplayMode ?? null) === mode ? 'default' : 'ghost'
+              }
+              className="flex-1"
+              onClick={() => setDisplayMode(mode)}
+              disabled={pending}
+            >
+              {label}
+            </Button>
+          ))}
         </div>
       </div>
 

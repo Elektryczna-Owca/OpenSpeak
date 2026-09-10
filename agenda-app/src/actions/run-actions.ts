@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import type { AgendaItem } from '@/generated/prisma/client'
+import type { DisplayMode } from '@/lib/run-state'
 
 // The client runner owns the flow state machine; these actions record the
 // transitions. Segments are created when they start and closed when advanced
@@ -121,6 +122,26 @@ export async function togglePauseAction(runId: string) {
               segment.pausedSeconds +
               (now.getTime() - segment.pausedAt.getTime()) / 1000,
           },
+  })
+  revalidateRunPages(run.agendaId)
+}
+
+// Forces every viewer of /run onto a given presentation (or, for 'report',
+// redirects them to the run's report page) until cleared back to null, at
+// which point each display resumes following its own local preference.
+export async function setEnforcedDisplayModeAction(
+  runId: string,
+  mode: DisplayMode | null,
+) {
+  const run = await prisma.meetingRun.findUnique({
+    where: { id: runId },
+    select: { agendaId: true, endedAt: true },
+  })
+  if (!run || run.endedAt) return
+
+  await prisma.meetingRun.update({
+    where: { id: runId },
+    data: { enforcedDisplayMode: mode },
   })
   revalidateRunPages(run.agendaId)
 }

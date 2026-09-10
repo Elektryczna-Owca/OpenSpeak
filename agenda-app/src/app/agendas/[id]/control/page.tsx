@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { startRunAction } from '@/actions/run-actions'
-import { serializeSegment } from '@/lib/run-state'
+import { type DisplayMode, serializeSegment } from '@/lib/run-state'
 import { MeetingControl } from '@/components/meeting-control'
 import { RunStartWatcher } from '@/components/run-start-watcher'
 import { Button } from '@/components/ui/button'
@@ -49,6 +49,7 @@ export default async function ControlPage({
         people={agenda.people}
         initialState={{
           endedAt: null,
+          enforcedDisplayMode: openRun.enforcedDisplayMode as DisplayMode | null,
           segment: serializeSegment(openSegment),
         }}
       />

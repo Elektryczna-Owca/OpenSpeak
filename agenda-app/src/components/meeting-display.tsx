@@ -42,6 +42,10 @@ export function MeetingDisplay({
   const paused = segment?.pausedAt != null
   const [qrExpanded, setQrExpanded] = useState(false)
   const [focus, setFocus] = useState(false)
+  // Non-null when the control page is forcing every display onto one
+  // presentation. 'report' redirects away entirely; 'focus'/'standard' pin
+  // the toggle below until the control page releases it back to null.
+  const enforced = state.enforcedDisplayMode
 
   useEffect(() => {
     if (!qrExpanded) return
@@ -54,12 +58,23 @@ export function MeetingDisplay({
 
   // Which presentation this screen last used, so a projector that reloads
   // mid-meeting comes back the way it was left. Read after mount (never during
-  // render) so the server and client agree on the first paint.
+  // render) so the server and client agree on the first paint. Skipped while
+  // the control page is enforcing a mode — that takes over below instead.
   useEffect(() => {
+    if (enforced) return
     setFocus(localStorage.getItem(focusModeKey(agendaId)) === 'focus')
-  }, [agendaId])
+  }, [agendaId, enforced])
+
+  // The control page forcing 'focus' or 'standard' overrides this screen's own
+  // preference without overwriting it, so the device's choice comes back as
+  // soon as the control page releases the enforcement (sets it back to null).
+  useEffect(() => {
+    if (enforced === 'focus') setFocus(true)
+    else if (enforced === 'standard') setFocus(false)
+  }, [enforced])
 
   const enterFocus = () => {
+    if (enforced) return
     setFocus(true)
     localStorage.setItem(focusModeKey(agendaId), 'focus')
     // A click is a user gesture, so real fullscreen is allowed here. If the
@@ -68,6 +83,7 @@ export function MeetingDisplay({
   }
 
   const exitFocus = () => {
+    if (enforced) return
     setFocus(false)
     localStorage.setItem(focusModeKey(agendaId), 'standard')
     if (document.fullscreenElement) document.exitFullscreen().catch(() => {})
@@ -76,6 +92,8 @@ export function MeetingDisplay({
   // Leaving fullscreen by the browser's own means (Escape, F11) also leaves
   // focus mode — otherwise the overlay would linger with the browser chrome
   // back. Escape is handled separately for when fullscreen was never granted.
+  // Both are no-ops while enforced (exitFocus bails out), so a stray Escape on
+  // an enforced projector doesn't fight the next poll.
   useEffect(() => {
     if (!focus) return
     const onFullscreenChange = () => {
@@ -91,14 +109,16 @@ export function MeetingDisplay({
       window.removeEventListener('keydown', onKey)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focus, agendaId])
+  }, [focus, agendaId, enforced])
 
-  // When the controller finishes the meeting, follow to the review page.
+  // When the controller finishes the meeting, or forces the report view,
+  // follow to the review page (which also shows a live "report so far" while
+  // the run is still open).
   useEffect(() => {
-    if (state.endedAt) {
+    if (state.endedAt || enforced === 'report') {
       router.push(`/agendas/${agendaId}/runs/${runId}`)
     }
-  }, [state.endedAt, router, agendaId, runId])
+  }, [state.endedAt, enforced, router, agendaId, runId])
 
   if (!segment) return null
 
@@ -161,14 +181,21 @@ export function MeetingDisplay({
             <Smartphone className="h-4 w-4" />
             Control page
           </Link>
-          <button
-            type="button"
-            onClick={enterFocus}
-            className="flex cursor-pointer items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-          >
-            <Maximize2 className="h-4 w-4" />
-            Change mode
-          </button>
+          {enforced ? (
+            <span className="flex items-center gap-1 text-sm text-muted-foreground">
+              <Maximize2 className="h-4 w-4" />
+              Mode set by control page
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={enterFocus}
+              className="flex cursor-pointer items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <Maximize2 className="h-4 w-4" />
+              Change mode
+            </button>
+          )}
         </div>
       </div>
 

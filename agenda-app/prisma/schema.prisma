@@ -71,6 +71,10 @@ model MeetingRun {
   agenda    Agenda       @relation(fields: [agendaId], references: [id], onDelete: Cascade)
   startedAt DateTime     @default(now())
   endedAt   DateTime?
+  // Display mode forced onto every viewer of /run from the control page:
+  // 'standard' | 'focus' | 'report'. Null means unenforced — each display
+  // follows its own locally-remembered preference.
+  enforcedDisplayMode String?
   segments  RunSegment[]
 
   @@index([agendaId])

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { serializeSegment } from '@/lib/run-state'
+import { type DisplayMode, serializeSegment } from '@/lib/run-state'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +26,7 @@ export async function GET(
   const segment = run.segments[0] ?? null
   return Response.json({
     endedAt: run.endedAt?.toISOString() ?? null,
+    enforcedDisplayMode: run.enforcedDisplayMode as DisplayMode | null,
     // An ended segment is still served: with the run itself open it marks the
     // "between items" state (previous item finished, next not yet started).
     segment: segment ? serializeSegment(segment) : null,

@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { formatElapsed, segmentRowClass } from '@/lib/timer-color'
+import { ReportModeWatcher } from '@/components/report-mode-watcher'
 import { CornerDownRight } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -52,6 +53,7 @@ export default async function RunReviewPage({
 
   return (
     <div className="space-y-4">
+      {!run.endedAt && <ReportModeWatcher agendaId={id} runId={run.id} />}
       <h1 className="text-2xl font-semibold tracking-tight">Meeting review</h1>
 
       <div className="overflow-x-auto rounded-lg border">

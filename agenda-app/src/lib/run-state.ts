@@ -1,5 +1,10 @@
 import type { AgendaItem, RunSegment } from '@/generated/prisma/client'
 
+// Display mode the control page can force onto every viewer of /run. Null
+// (the default) means unenforced — each display follows its own
+// locally-remembered preference instead.
+export type DisplayMode = 'standard' | 'focus' | 'report'
+
 // The latest segment as served by /api/runs/[runId] — dates as ISO strings so
 // it round-trips through JSON polling. A segment with endedAt set (on a run
 // that hasn't ended) means the meeting is between items: the previous item is
@@ -50,6 +55,7 @@ export function serializeSegment(
 
 export type RunState = {
   endedAt: string | null
+  enforcedDisplayMode: DisplayMode | null
   segment: RunSegmentState | null
 }
 
