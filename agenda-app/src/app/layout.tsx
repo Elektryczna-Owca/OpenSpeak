@@ -66,6 +66,9 @@ export default function RootLayout({
                 <Link href="/templates" className="hover:text-foreground">
                   Templates
                 </Link>
+                <Link href="/special-items" className="hover:text-foreground">
+                  Special items
+                </Link>
               </nav>
               <div className="ml-auto flex items-center gap-1">
                 <FontSwitcher />

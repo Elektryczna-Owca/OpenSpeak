@@ -37,8 +37,20 @@ const ItemSchema = z
     subMinMinutes: optionalMinutes,
     subExpectedMinutes: optionalMinutes,
     subMaxMinutes: optionalMinutes,
+    specialItemId: z
+      .string()
+      .transform(v => (v === '' ? null : v))
+      .nullable()
+      .optional(),
+    specialValue: z.preprocess(
+      v => (v === '' || v === null || v === undefined ? null : v),
+      z.string().max(200).nullable(),
+    ),
   })
   .superRefine((data, ctx) => {
+    if (data.specialItemId && data.specialValue == null) {
+      ctx.addIssue({ code: 'custom', path: ['specialValue'], message: 'Pick a value' })
+    }
     checkOrdering(
       ctx,
       data.minMinutes,
@@ -61,6 +73,7 @@ export type ItemFormState = {
     subMinMinutes?: string[]
     subExpectedMinutes?: string[]
     subMaxMinutes?: string[]
+    specialValue?: string[]
     _form?: string[]
   }
   ok?: boolean
@@ -78,6 +91,22 @@ function normalizeSub<T extends {
     return { ...data, subLabel: null, subMinMinutes: null, subMaxMinutes: null }
   }
   return data
+}
+
+// Returns the special item link only if the special item exists; a regular
+// item (or a deleted special item) stores neither the id nor the value.
+async function resolveSpecial(
+  specialItemId: string | null | undefined,
+  specialValue: string | null,
+): Promise<{ specialItemId: string | null; specialValue: string | null }> {
+  if (!specialItemId) return { specialItemId: null, specialValue: null }
+  const special = await prisma.specialItem.findUnique({
+    where: { id: specialItemId },
+    select: { id: true },
+  })
+  return special
+    ? { specialItemId: special.id, specialValue }
+    : { specialItemId: null, specialValue: null }
 }
 
 // Returns the personId only if it belongs to the given agenda, otherwise null.
@@ -110,15 +139,18 @@ export async function addItemAction(
     subMinMinutes: formData.get('subMinMinutes'),
     subExpectedMinutes: formData.get('subExpectedMinutes'),
     subMaxMinutes: formData.get('subMaxMinutes'),
+    specialItemId: formData.get('specialItemId'),
+    specialValue: formData.get('specialValue'),
   })
   if (!parsed.success) {
     return { errors: z.flattenError(parsed.error).fieldErrors }
   }
-  const { personId, ...data } = parsed.data
+  const { personId, specialItemId, specialValue, ...data } = parsed.data
   const count = await prisma.agendaItem.count({ where: { agendaId } })
   await prisma.agendaItem.create({
     data: {
       ...normalizeSub(data),
+      ...(await resolveSpecial(specialItemId, specialValue)),
       agendaId,
       position: count,
       personId: await resolvePersonId(agendaId, personId),
@@ -144,6 +176,8 @@ export async function updateItemAction(
     subMinMinutes: formData.get('subMinMinutes'),
     subExpectedMinutes: formData.get('subExpectedMinutes'),
     subMaxMinutes: formData.get('subMaxMinutes'),
+    specialItemId: formData.get('specialItemId'),
+    specialValue: formData.get('specialValue'),
   })
   if (!parsed.success) {
     return { errors: z.flattenError(parsed.error).fieldErrors }
@@ -155,11 +189,12 @@ export async function updateItemAction(
   if (!existing) {
     return { errors: { _form: ['Item not found'] } }
   }
-  const { personId, ...data } = parsed.data
+  const { personId, specialItemId, specialValue, ...data } = parsed.data
   const item = await prisma.agendaItem.update({
     where: { id },
     data: {
       ...normalizeSub(data),
+      ...(await resolveSpecial(specialItemId, specialValue)),
       personId: await resolvePersonId(existing.agendaId, personId),
     },
   })

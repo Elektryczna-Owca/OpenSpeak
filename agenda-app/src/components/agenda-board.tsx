@@ -19,15 +19,18 @@ import {
 import { reorderItemsAction } from '@/actions/item-actions'
 import { AgendaItemCard } from './agenda-item-card'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
+import type { SpecialItemOption } from '@/lib/special-item-csv'
 
 export function AgendaBoard({
   agendaId,
   initialItems,
   people,
+  specialItems,
 }: {
   agendaId: string
   initialItems: AgendaItem[]
   people: Person[]
+  specialItems: SpecialItemOption[]
 }) {
   const [items, setItems] = useState(initialItems)
   const [, startTransition] = useTransition()
@@ -86,7 +89,12 @@ export function AgendaBoard({
       >
         <div className="flex flex-col gap-3">
           {items.map(item => (
-            <AgendaItemCard key={item.id} item={item} people={people} />
+            <AgendaItemCard
+              key={item.id}
+              item={item}
+              people={people}
+              specialItems={specialItems}
+            />
           ))}
         </div>
       </SortableContext>

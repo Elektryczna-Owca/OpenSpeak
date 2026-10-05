@@ -48,6 +48,11 @@ model AgendaItem {
   subMinMinutes      Float?
   subExpectedMinutes Float?
   subMaxMinutes      Float?
+  // Set when the item was picked from a special item list (e.g. a Pathways
+  // project): which list, and the chosen value's label.
+  specialItemId      String?
+  specialItem        SpecialItem? @relation(fields: [specialItemId], references: [id], onDelete: SetNull)
+  specialValue       String?
   position           Int
   runSegments        RunSegment[]
   createdAt          DateTime     @default(now())
@@ -55,6 +60,19 @@ model AgendaItem {
 
   @@index([agendaId, position])
   @@index([personId])
+  @@index([specialItemId])
+}
+
+// A predefined list of values with times (e.g. Pathways projects) that agenda
+// items can be picked from. Values are stored as CSV like templates; see
+// src/lib/special-item-csv.ts for the format.
+model SpecialItem {
+  id          String       @id @default(cuid())
+  name        String
+  csv         String
+  agendaItems AgendaItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Template {

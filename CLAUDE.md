@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `agenda-app/` — the product: a meeting-agenda/timer app (Next.js 16 App Router + Turbopack, React 19, TypeScript strict, Tailwind v4, Prisma 7 + PostgreSQL). Almost all work happens here.
 - `website/` — end-user documentation site for OpenSpeak (Astro Starlight, static output), deployed at https://openspeak.website. See "Website" below.
-- `scripts/` — standalone helper scripts, not part of either npm project. `fth-agenda-to-csv.py` scrapes a saved FreeToastHost club agenda page (`id="rostertable"`) into agenda import CSV; `--help` covers the flags and what it can't infer (sub-item loops, URLs, scheduled start).
+- `scripts/` — standalone helper scripts, not part of either npm project. `fth-agenda-to-csv.py` scrapes a saved FreeToastHost club agenda page (`id="rostertable"`) into agenda import CSV; `--help` covers the flags and what it can't infer (sub-item loops, URLs, scheduled start). `pathways-projects-to-csv.py` extracts the Pathways project picker from a saved club-site "Edit agenda row" page into special-item CSV (output committed at `agenda-app/prisma/special-items/pathways-projects.csv`, loaded by the seed).
 - `PLAN.md` — implementation notes for the initial build (stack versions, Prisma 7 patterns, shadcn caveats).
 
 ## Commands
@@ -39,7 +39,7 @@ Gotchas:
 
 ### Data model (`prisma/schema.prisma`)
 
-`Agenda` → ordered `AgendaItem[]` (by `position`) and `Person[]` (participants). An item may carry an optional **sub-item loop** config (`subLabel`, `subMin/Expected/MaxMinutes`) — e.g. "Speaker" rounds where each participant gets their own timed slot. A meeting execution is a `MeetingRun` → `RunSegment[]`; each segment **snapshots** the label and min/expected/max thresholds at creation so later item edits don't rewrite history.
+`Agenda` → ordered `AgendaItem[]` (by `position`) and `Person[]` (participants). An item may carry an optional **sub-item loop** config (`subLabel`, `subMin/Expected/MaxMinutes`) — e.g. "Speaker" rounds where each participant gets their own timed slot. An item may also be linked to a **special item** (`specialItemId` + `specialValue`): a global, named value list with times (e.g. Pathways projects) stored as CSV like `Template` — format in `src/lib/special-item-csv.ts`, managed under `/special-items`, picked via `special-item-picker.tsx` in the add row and edit dialog, which only pre-fills title/times. A meeting execution is a `MeetingRun` → `RunSegment[]`; each segment **snapshots** the label and min/expected/max thresholds at creation so later item edits don't rewrite history.
 
 ### Meeting run state machine (the core domain)
 
@@ -85,7 +85,7 @@ npm run preview    # serve the built dist/ locally to check it
 `npm run build` (run from `website/`, after `npm install`) writes the complete production site to `website/dist/` — plain HTML/CSS/JS with no server component and no adapter (`output` is Astro's static default). Deploy by copying `dist/` to any static host or an nginx docroot; directory-style URLs work with standard config (e.g. `try_files $uri $uri/index.html =404`). The canonical URL baked into the sitemap and OG tags comes from `site` in `astro.config.mjs` (https://openspeak.website). `dist/` is gitignored — build artifacts are never committed.
 
 - Site URL and "Edit page" links are configured in `astro.config.mjs`.
-- Content lives in `src/content/docs/` (16 pages: splash `index.mdx` + 5 sidebar groups). The sidebar is **manual** in `astro.config.mjs` — a new page must be added there too or the build won't link it.
+- Content lives in `src/content/docs/` (17 pages: splash `index.mdx` + 5 sidebar groups). The sidebar is **manual** in `astro.config.mjs` — a new page must be added there too or the build won't link it.
 - Use `.mdx` only when a page needs Starlight components (`<Steps>`, `<Aside>`, `<CardGrid>`); plain `.md` otherwise. HTML comments mark pending screenshots (`<!-- TODO screenshot: ... -->`); `src/assets/screenshots/` is the intended home for them.
 - Docs content describes agenda-app behavior — when app behavior changes (timer rules, CSV format, run flow), update the matching docs page.
 

@@ -14,16 +14,20 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PersonSelect } from '@/components/person-select'
+import { SpecialItemPicker } from '@/components/special-item-picker'
+import type { SpecialItemOption } from '@/lib/special-item-csv'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
 
 export function ItemEditDialog({
   item,
   people,
+  specialItems,
   open,
   onOpenChange,
 }: {
   item: AgendaItem
   people: Person[]
+  specialItems: SpecialItemOption[]
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
@@ -58,6 +62,15 @@ export function ItemEditDialog({
           action={formAction}
           className="space-y-4"
         >
+          {specialItems.length > 0 && (
+            <SpecialItemPicker
+              idPrefix={item.id}
+              specialItems={specialItems}
+              defaultSpecialItemId={item.specialItemId}
+              defaultValue={item.specialValue}
+              error={state.errors?.specialValue?.[0]}
+            />
+          )}
           <div className="space-y-1.5">
             <Label htmlFor={`title-${item.id}`}>Title</Label>
             <Input

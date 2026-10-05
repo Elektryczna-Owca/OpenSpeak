@@ -1,0 +1,556 @@
+group,value,min,expected,max
+Presentation Mastery,PM (L1) Ice Breaker,4,5,6
+Presentation Mastery,PM (L1) Writing a Speech with Purpose,5,6,7
+Presentation Mastery,PM (L1) Evaluation and Feedback #1,5,6,7
+Presentation Mastery,PM (L1) Evaluation and Feedback #2,5,6,7
+Presentation Mastery,PM (L1) Evaluation and Feedback #3,2,2.5,3
+Presentation Mastery,PM (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Presentation Mastery,PM (L1 elective) Intro to Vocal Variety Only,5,6,7
+Presentation Mastery,PM (L1 elective) Intro to Body Language Only,5,6,7
+Presentation Mastery,PM (L2) Understanding Your Communication Style,5,6,7
+Presentation Mastery,PM (L2) Effective Body Language,5,6,7
+Presentation Mastery,PM (L2) Introduction to Toastmasters Mentoring,5,6,7
+Presentation Mastery,PM (L3) Persuasive Speaking,5,6,7
+Presentation Mastery,PM (L3 elective) Active Listening,5,6,7
+Presentation Mastery,PM (L3 elective) Connect with Storytelling,5,6,7
+Presentation Mastery,PM (L3 elective) Connect With Your Audience,5,6,7
+Presentation Mastery,PM (L3 elective) Creating Effective Visual Aids,5,6,7
+Presentation Mastery,PM (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Presentation Mastery,PM (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Presentation Mastery,PM (L3 elective) Focus on the Positive,5,6,7
+Presentation Mastery,PM (L3 elective) Focus on the Positive Report,2,2.5,3
+Presentation Mastery,PM (L3 elective) Inspire Your Audience,5,6,7
+Presentation Mastery,PM (L3 elective) Know Your Sense of Humor,5,6,7
+Presentation Mastery,PM (L3 elective) Make Connections Through Networking,5,6,7
+Presentation Mastery,PM (L3 elective) Prepare for an Interview,5,6,7
+Presentation Mastery,PM (L3 elective) Researching and Presenting,5,6,7
+Presentation Mastery,PM (L3 elective) Understanding Vocal Variety,5,6,7
+Presentation Mastery,PM (L3 elective) Using Descriptive Language,5,6,7
+Presentation Mastery,PM (L3 elective) Using Presentation Software,5,6,7
+Presentation Mastery,PM (L4) Managing a Difficult Audience,10,12.5,15
+Presentation Mastery,PM (L4 elective) Building a Social Media Presence,5,6,7
+Presentation Mastery,PM (L4 elective) Create a Podcast,2,2.5,3
+Presentation Mastery,PM (L4 elective) Manage Online Meetings,20,22.5,25
+Presentation Mastery,PM (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Presentation Mastery,PM (L4 elective) Manage Projects Successfully #2,5,6,7
+Presentation Mastery,PM (L4 elective) Public Relations Strategies,5,6,7
+Presentation Mastery,PM (L4 elective) Question-and-Answer Session,15,17.5,20
+Presentation Mastery,PM (L4 elective) Write a Compelling Blog,2,2.5,3
+Presentation Mastery,PM (L5) Prepare to Speak Professionally,18,20,22
+Presentation Mastery,PM (L5) Reflect on Your Path,10,11,12
+Presentation Mastery,PM (L5 elective) Ethical Leadership,20,30,40
+Presentation Mastery,PM (L5 elective) High Performance Leadership #1,5,6,7
+Presentation Mastery,PM (L5 elective) High Performance Leadership #2,5,6,7
+Presentation Mastery,PM (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Presentation Mastery,PM (L5 elective) Lessons Learned,5,6,7
+Presentation Mastery,PM (L5 elective) Moderate a Panel Discussion,20,30,40
+Dynamic Leadership,DL (L1) Ice Breaker,4,5,6
+Dynamic Leadership,DL (L1) Writing a Speech with Purpose,5,6,7
+Dynamic Leadership,DL (L1) Evaluation and Feedback #1,5,6,7
+Dynamic Leadership,DL (L1) Evaluation and Feedback #2,5,6,7
+Dynamic Leadership,DL (L1) Evaluation and Feedback #3,2,2.5,3
+Dynamic Leadership,DL (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Dynamic Leadership,DL (L1 elective) Intro to Vocal Variety Only,5,6,7
+Dynamic Leadership,DL (L1 elective) Intro to Body Language Only,5,6,7
+Dynamic Leadership,DL (L2) Understanding Your Leadership Style,5,6,7
+Dynamic Leadership,DL (L2) Understanding Your Communication Style,5,6,7
+Dynamic Leadership,DL (L2) Introduction to Toastmasters Mentoring,5,6,7
+Dynamic Leadership,DL (L3) Negotiate the Best Outcome,5,6,7
+Dynamic Leadership,DL (L3 elective) Active Listening,5,6,7
+Dynamic Leadership,DL (L3 elective) Connect with Storytelling,5,6,7
+Dynamic Leadership,DL (L3 elective) Connect With Your Audience,5,6,7
+Dynamic Leadership,DL (L3 elective) Creating Effective Visual Aids,5,6,7
+Dynamic Leadership,DL (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Dynamic Leadership,DL (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Dynamic Leadership,DL (L3 elective) Effective Body Language,5,6,7
+Dynamic Leadership,DL (L3 elective) Focus on the Positive,5,6,7
+Dynamic Leadership,DL (L3 elective) Focus on the Positive Report,2,2.5,3
+Dynamic Leadership,DL (L3 elective) Inspire Your Audience,5,6,7
+Dynamic Leadership,DL (L3 elective) Know Your Sense of Humor,5,6,7
+Dynamic Leadership,DL (L3 elective) Make Connections Through Networking,5,6,7
+Dynamic Leadership,DL (L3 elective) Prepare for an Interview,5,6,7
+Dynamic Leadership,DL (L3 elective) Researching and Presenting,5,6,7
+Dynamic Leadership,DL (L3 elective) Understanding Vocal Variety,5,6,7
+Dynamic Leadership,DL (L3 elective) Using Descriptive Language,5,6,7
+Dynamic Leadership,DL (L3 elective) Using Presentation Software,5,6,7
+Dynamic Leadership,DL (L4) Manage Change,5,6,7
+Dynamic Leadership,DL (L4 elective) Building a Social Media Presence,5,6,7
+Dynamic Leadership,DL (L4 elective) Create a Podcast,2,2.5,3
+Dynamic Leadership,DL (L4 elective) Manage Online Meetings,20,22.5,25
+Dynamic Leadership,DL (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Dynamic Leadership,DL (L4 elective) Manage Projects Successfully #2,5,6,7
+Dynamic Leadership,DL (L4 elective) Managing a Difficult Audience,10,12.5,15
+Dynamic Leadership,DL (L4 elective) Public Relations Strategies,5,6,7
+Dynamic Leadership,DL (L4 elective) Question-and-Answer Session,15,17.5,20
+Dynamic Leadership,DL (L4 elective) Write a Compelling Blog,2,2.5,3
+Dynamic Leadership,DL (L5) Lead in Any Situation,8,9,10
+Dynamic Leadership,DL (L5) Reflect on Your Path,10,11,12
+Dynamic Leadership,DL (L5 elective) Ethical Leadership,20,30,40
+Dynamic Leadership,DL (L5 elective) High Performance Leadership #1,5,6,7
+Dynamic Leadership,DL (L5 elective) High Performance Leadership #2,5,6,7
+Dynamic Leadership,DL (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Dynamic Leadership,DL (L5 elective) Lessons Learned,5,6,7
+Dynamic Leadership,DL (L5 elective) Moderate a Panel Discussion,20,30,40
+Dynamic Leadership,DL (L5 elective) Prepare to Speak Professionally,18,20,22
+Engaging Humor,EH (L1) Ice Breaker,4,5,6
+Engaging Humor,EH (L1) Writing a Speech with Purpose,5,6,7
+Engaging Humor,EH (L1) Evaluation and Feedback #1,5,6,7
+Engaging Humor,EH (L1) Evaluation and Feedback #2,5,6,7
+Engaging Humor,EH (L1) Evaluation and Feedback #3,2,2.5,3
+Engaging Humor,EH (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Engaging Humor,EH (L1 elective) Intro to Vocal Variety Only,5,6,7
+Engaging Humor,EH (L1 elective) Intro to Body Language Only,5,6,7
+Engaging Humor,EH (L2) Know Your Sense of Humor,5,6,7
+Engaging Humor,EH (L2) Connect With Your Audience,5,6,7
+Engaging Humor,EH (L2) Introduction to Toastmasters Mentoring,5,6,7
+Engaging Humor,EH (L3) Engage Your Audience with Humor,5,6,7
+Engaging Humor,EH (L3 elective) Active Listening,5,6,7
+Engaging Humor,EH (L3 elective) Connect with Storytelling,5,6,7
+Engaging Humor,EH (L3 elective) Creating Effective Visual Aids,5,6,7
+Engaging Humor,EH (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Engaging Humor,EH (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Engaging Humor,EH (L3 elective) Effective Body Language,5,6,7
+Engaging Humor,EH (L3 elective) Focus on the Positive,5,6,7
+Engaging Humor,EH (L3 elective) Focus on the Positive Report,2,2.5,3
+Engaging Humor,EH (L3 elective) Inspire Your Audience,5,6,7
+Engaging Humor,EH (L3 elective) Make Connections Through Networking,5,6,7
+Engaging Humor,EH (L3 elective) Prepare for an Interview,5,6,7
+Engaging Humor,EH (L3 elective) Researching and Presenting,5,6,7
+Engaging Humor,EH (L3 elective) Understanding Vocal Variety,5,6,7
+Engaging Humor,EH (L3 elective) Using Descriptive Language,5,6,7
+Engaging Humor,EH (L3 elective) Using Presentation Software,5,6,7
+Engaging Humor,EH (L4) The Power of Humor in an Impromptu Speech,,,
+Engaging Humor,EH (L4 elective) Building a Social Media Presence,5,6,7
+Engaging Humor,EH (L4 elective) Create a Podcast,2,2.5,3
+Engaging Humor,EH (L4 elective) Manage Online Meetings,20,22.5,25
+Engaging Humor,EH (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Engaging Humor,EH (L4 elective) Manage Projects Successfully #2,5,6,7
+Engaging Humor,EH (L4 elective) Managing a Difficult Audience,10,12.5,15
+Engaging Humor,EH (L4 elective) Public Relations Strategies,5,6,7
+Engaging Humor,EH (L4 elective) Question-and-Answer Session,15,17.5,20
+Engaging Humor,EH (L4 elective) Write a Compelling Blog,2,2.5,3
+Engaging Humor,EH (L5) Deliver Your Message With Humor,18,20,22
+Engaging Humor,EH (L5) Reflect on Your Path,10,11,12
+Engaging Humor,EH (L5 elective) Ethical Leadership,20,30,40
+Engaging Humor,EH (L5 elective) High Performance Leadership #1,5,6,7
+Engaging Humor,EH (L5 elective) High Performance Leadership #2,5,6,7
+Engaging Humor,EH (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Engaging Humor,EH (L5 elective) Lessons Learned,5,6,7
+Engaging Humor,EH (L5 elective) Moderate a Panel Discussion,20,30,40
+Engaging Humor,EH (L5 elective) Prepare to Speak Professionally,18,20,22
+Motivational Strategies,MS (L1) Ice Breaker,4,5,6
+Motivational Strategies,MS (L1) Writing a Speech with Purpose,5,6,7
+Motivational Strategies,MS (L1) Evaluation and Feedback #1,5,6,7
+Motivational Strategies,MS (L1) Evaluation and Feedback #2,5,6,7
+Motivational Strategies,MS (L1) Evaluation and Feedback #3,2,2.5,3
+Motivational Strategies,MS (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Motivational Strategies,MS (L1 elective) Intro to Vocal Variety Only,5,6,7
+Motivational Strategies,MS (L1 elective) Intro to Body Language Only,5,6,7
+Motivational Strategies,MS (L2) Understanding Your Communication Style,5,6,7
+Motivational Strategies,MS (L2) Active Listening,5,6,7
+Motivational Strategies,MS (L2) Introduction to Toastmasters Mentoring,5,6,7
+Motivational Strategies,MS (L3) Understanding Emotional Intelligence,5,6,7
+Motivational Strategies,MS (L3 elective) Connect with Storytelling,5,6,7
+Motivational Strategies,MS (L3 elective) Connect With Your Audience,5,6,7
+Motivational Strategies,MS (L3 elective) Creating Effective Visual Aids,5,6,7
+Motivational Strategies,MS (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Motivational Strategies,MS (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Motivational Strategies,MS (L3 elective) Effective Body Language,5,6,7
+Motivational Strategies,MS (L3 elective) Focus on the Positive,5,6,7
+Motivational Strategies,MS (L3 elective) Focus on the Positive Report,2,2.5,3
+Motivational Strategies,MS (L3 elective) Inspire Your Audience,5,6,7
+Motivational Strategies,MS (L3 elective) Know Your Sense of Humor,5,6,7
+Motivational Strategies,MS (L3 elective) Make Connections Through Networking,5,6,7
+Motivational Strategies,MS (L3 elective) Prepare for an Interview,5,6,7
+Motivational Strategies,MS (L3 elective) Researching and Presenting,5,6,7
+Motivational Strategies,MS (L3 elective) Understanding Vocal Variety,5,6,7
+Motivational Strategies,MS (L3 elective) Using Descriptive Language,5,6,7
+Motivational Strategies,MS (L3 elective) Using Presentation Software,5,6,7
+Motivational Strategies,MS (L4) Motivate Others,5,6,7
+Motivational Strategies,MS (L4 elective) Building a Social Media Presence,5,6,7
+Motivational Strategies,MS (L4 elective) Create a Podcast,2,2.5,3
+Motivational Strategies,MS (L4 elective) Manage Online Meetings,20,22.5,25
+Motivational Strategies,MS (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Motivational Strategies,MS (L4 elective) Manage Projects Successfully #2,5,6,7
+Motivational Strategies,MS (L4 elective) Managing a Difficult Audience,10,12.5,15
+Motivational Strategies,MS (L4 elective) Public Relations Strategies,5,6,7
+Motivational Strategies,MS (L4 elective) Question-and-Answer Session,15,17.5,20
+Motivational Strategies,MS (L4 elective) Write a Compelling Blog,2,2.5,3
+Motivational Strategies,MS (L5) Team Building #1,2,2.5,3
+Motivational Strategies,MS (L5) Team Building #2,5,6,7
+Motivational Strategies,MS (L5) Reflect on Your Path,10,11,12
+Motivational Strategies,MS (L5 elective) Ethical Leadership,20,30,40
+Motivational Strategies,MS (L5 elective) High Performance Leadership #1,5,6,7
+Motivational Strategies,MS (L5 elective) High Performance Leadership #2,5,6,7
+Motivational Strategies,MS (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Motivational Strategies,MS (L5 elective) Lessons Learned,5,6,7
+Motivational Strategies,MS (L5 elective) Moderate a Panel Discussion,20,30,40
+Motivational Strategies,MS (L5 elective) Prepare to Speak Professionally,18,20,22
+Persuasive Influence,PI (L1) Ice Breaker,4,5,6
+Persuasive Influence,PI (L1) Writing a Speech with Purpose,5,6,7
+Persuasive Influence,PI (L1) Evaluation and Feedback #1,5,6,7
+Persuasive Influence,PI (L1) Evaluation and Feedback #2,5,6,7
+Persuasive Influence,PI (L1) Evaluation and Feedback #3,2,2.5,3
+Persuasive Influence,PI (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Persuasive Influence,PI (L1 elective) Intro to Vocal Variety Only,5,6,7
+Persuasive Influence,PI (L1 elective) Intro to Body Language Only,5,6,7
+Persuasive Influence,PI (L2) Understanding Your Leadership Style,5,6,7
+Persuasive Influence,PI (L2) Active Listening,5,6,7
+Persuasive Influence,PI (L2) Introduction to Toastmasters Mentoring,5,6,7
+Persuasive Influence,PI (L3) Understanding Conflict Resolution,5,6,7
+Persuasive Influence,PI (L3 elective) Connect with Storytelling,5,6,7
+Persuasive Influence,PI (L3 elective) Connect With Your Audience,5,6,7
+Persuasive Influence,PI (L3 elective) Creating Effective Visual Aids,5,6,7
+Persuasive Influence,PI (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Persuasive Influence,PI (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Persuasive Influence,PI (L3 elective) Effective Body Language,5,6,7
+Persuasive Influence,PI (L3 elective) Focus on the Positive,5,6,7
+Persuasive Influence,PI (L3 elective) Focus on the Positive Report,2,2.5,3
+Persuasive Influence,PI (L3 elective) Inspire Your Audience,5,6,7
+Persuasive Influence,PI (L3 elective) Know Your Sense of Humor,5,6,7
+Persuasive Influence,PI (L3 elective) Make Connections Through Networking,5,6,7
+Persuasive Influence,PI (L3 elective) Prepare for an Interview,5,6,7
+Persuasive Influence,PI (L3 elective) Researching and Presenting,5,6,7
+Persuasive Influence,PI (L3 elective) Understanding Vocal Variety,5,6,7
+Persuasive Influence,PI (L3 elective) Using Descriptive Language,5,6,7
+Persuasive Influence,PI (L3 elective) Using Presentation Software,5,6,7
+Persuasive Influence,PI (L4) Leading in Difficult Situations,5,6,7
+Persuasive Influence,PI (L4 elective) Building a Social Media Presence,5,6,7
+Persuasive Influence,PI (L4 elective) Create a Podcast,2,2.5,3
+Persuasive Influence,PI (L4 elective) Manage Online Meetings,20,22.5,25
+Persuasive Influence,PI (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Persuasive Influence,PI (L4 elective) Manage Projects Successfully #2,5,6,7
+Persuasive Influence,PI (L4 elective) Managing a Difficult Audience,10,12.5,15
+Persuasive Influence,PI (L4 elective) Public Relations Strategies,5,6,7
+Persuasive Influence,PI (L4 elective) Question-and-Answer Session,15,17.5,20
+Persuasive Influence,PI (L4 elective) Write a Compelling Blog,2,2.5,3
+Persuasive Influence,PI (L5) High Performance Leadership #1,5,6,7
+Persuasive Influence,PI (L5) High Performance Leadership #2,5,6,7
+Persuasive Influence,PI (L5) Reflect on Your Path,10,11,12
+Persuasive Influence,PI (L5 elective) Ethical Leadership,20,30,40
+Persuasive Influence,PI (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Persuasive Influence,PI (L5 elective) Lessons Learned,5,6,7
+Persuasive Influence,PI (L5 elective) Moderate a Panel Discussion,20,30,40
+Persuasive Influence,PI (L5 elective) Prepare to Speak Professionally,18,20,22
+Visionary Communication,VC (L1) Ice Breaker,4,5,6
+Visionary Communication,VC (L1) Writing a Speech with Purpose,5,6,7
+Visionary Communication,VC (L1) Evaluation and Feedback #1,5,6,7
+Visionary Communication,VC (L1) Evaluation and Feedback #2,5,6,7
+Visionary Communication,VC (L1) Evaluation and Feedback #3,2,2.5,3
+Visionary Communication,VC (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Visionary Communication,VC (L1 elective) Intro to Vocal Variety Only,5,6,7
+Visionary Communication,VC (L1 elective) Intro to Body Language Only,5,6,7
+Visionary Communication,VC (L2) Understanding Your Leadership Style,5,6,7
+Visionary Communication,VC (L2) Understanding Your Communication Style,5,6,7
+Visionary Communication,VC (L2) Introduction to Toastmasters Mentoring,5,6,7
+Visionary Communication,VC (L3) Develop a Communication Plan,5,6,7
+Visionary Communication,VC (L3 elective) Active Listening,5,6,7
+Visionary Communication,VC (L3 elective) Connect with Storytelling,5,6,7
+Visionary Communication,VC (L3 elective) Connect With Your Audience,5,6,7
+Visionary Communication,VC (L3 elective) Creating Effective Visual Aids,5,6,7
+Visionary Communication,VC (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Visionary Communication,VC (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Visionary Communication,VC (L3 elective) Effective Body Language,5,6,7
+Visionary Communication,VC (L3 elective) Focus on the Positive,5,6,7
+Visionary Communication,VC (L3 elective) Focus on the Positive Report,2,2.5,3
+Visionary Communication,VC (L3 elective) Inspire Your Audience,5,6,7
+Visionary Communication,VC (L3 elective) Know Your Sense of Humor,5,6,7
+Visionary Communication,VC (L3 elective) Make Connections Through Networking,5,6,7
+Visionary Communication,VC (L3 elective) Prepare for an Interview,5,6,7
+Visionary Communication,VC (L3 elective) Researching and Presenting,5,6,7
+Visionary Communication,VC (L3 elective) Understanding Vocal Variety,5,6,7
+Visionary Communication,VC (L3 elective) Using Descriptive Language,5,6,7
+Visionary Communication,VC (L3 elective) Using Presentation Software,5,6,7
+Visionary Communication,VC (L4) Communicate Change,5,6,7
+Visionary Communication,VC (L4 elective) Building a Social Media Presence,5,6,7
+Visionary Communication,VC (L4 elective) Create a Podcast,2,2.5,3
+Visionary Communication,VC (L4 elective) Manage Online Meetings,20,22.5,25
+Visionary Communication,VC (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Visionary Communication,VC (L4 elective) Manage Projects Successfully #2,5,6,7
+Visionary Communication,VC (L4 elective) Managing a Difficult Audience,10,12.5,15
+Visionary Communication,VC (L4 elective) Public Relations Strategies,5,6,7
+Visionary Communication,VC (L4 elective) Question-and-Answer Session,15,17.5,20
+Visionary Communication,VC (L4 elective) Write a Compelling Blog,2,2.5,3
+Visionary Communication,VC (L5) Develop Your Vision #1,5,6,7
+Visionary Communication,VC (L5) Develop Your Vision #2,5,6,7
+Visionary Communication,VC (L5) Reflect on Your Path,10,11,12
+Visionary Communication,VC (L5 elective) Ethical Leadership,20,30,40
+Visionary Communication,VC (L5 elective) High Performance Leadership #1,5,6,7
+Visionary Communication,VC (L5 elective) High Performance Leadership #2,5,6,7
+Visionary Communication,VC (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Visionary Communication,VC (L5 elective) Lessons Learned,5,6,7
+Visionary Communication,VC (L5 elective) Moderate a Panel Discussion,20,30,40
+Visionary Communication,VC (L5 elective) Prepare to Speak Professionally,18,20,22
+Effective Coaching,EC (L1) Ice Breaker,4,5,6
+Effective Coaching,EC (L1) Writing a Speech with Purpose,5,6,7
+Effective Coaching,EC (L1) Evaluation and Feedback #1,5,6,7
+Effective Coaching,EC (L1) Evaluation and Feedback #2,5,6,7
+Effective Coaching,EC (L1) Evaluation and Feedback #3,2,2.5,3
+Effective Coaching,EC (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Effective Coaching,EC (L1 elective) Intro to Vocal Variety Only,5,6,7
+Effective Coaching,EC (L1 elective) Intro to Body Language Only,5,6,7
+Effective Coaching,EC (L2) Understanding Your Leadership Style,5,6,7
+Effective Coaching,EC (L2) Understanding Your Communication Style,5,6,7
+Effective Coaching,EC (L2) Introduction to Toastmasters Mentoring,5,6,7
+Effective Coaching,EC (L3) Reaching Consensus #1,,,
+Effective Coaching,EC (L3) Reaching Consensus #2,,,
+Effective Coaching,EC (L3 elective) Active Listening,5,6,7
+Effective Coaching,EC (L3 elective) Connect with Storytelling,5,6,7
+Effective Coaching,EC (L3 elective) Connect With Your Audience,5,6,7
+Effective Coaching,EC (L3 elective) Creating Effective Visual Aids,5,6,7
+Effective Coaching,EC (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Effective Coaching,EC (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Effective Coaching,EC (L3 elective) Effective Body Language,5,6,7
+Effective Coaching,EC (L3 elective) Focus on the Positive,5,6,7
+Effective Coaching,EC (L3 elective) Focus on the Positive Report,2,2.5,3
+Effective Coaching,EC (L3 elective) Inspire Your Audience,5,6,7
+Effective Coaching,EC (L3 elective) Know Your Sense of Humor,5,6,7
+Effective Coaching,EC (L3 elective) Make Connections Through Networking,5,6,7
+Effective Coaching,EC (L3 elective) Prepare for an Interview,5,6,7
+Effective Coaching,EC (L3 elective) Researching and Presenting,5,6,7
+Effective Coaching,EC (L3 elective) Understanding Vocal Variety,5,6,7
+Effective Coaching,EC (L3 elective) Using Descriptive Language,5,6,7
+Effective Coaching,EC (L3 elective) Using Presentation Software,5,6,7
+Effective Coaching,EC (L4) Improvement Through Positive Coaching,5,6,7
+Effective Coaching,EC (L4 elective) Building a Social Media Presence,5,6,7
+Effective Coaching,EC (L4 elective) Create a Podcast,2,2.5,3
+Effective Coaching,EC (L4 elective) Manage Online Meetings,20,22.5,25
+Effective Coaching,EC (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Effective Coaching,EC (L4 elective) Manage Projects Successfully #2,5,6,7
+Effective Coaching,EC (L4 elective) Managing a Difficult Audience,10,12.5,15
+Effective Coaching,EC (L4 elective) Public Relations Strategies,5,6,7
+Effective Coaching,EC (L4 elective) Question-and-Answer Session,15,17.5,20
+Effective Coaching,EC (L4 elective) Write a Compelling Blog,2,2.5,3
+Effective Coaching,EC (L5) High Performance Leadership #1,5,6,7
+Effective Coaching,EC (L5) High Performance Leadership #2,5,6,7
+Effective Coaching,EC (L5) Reflect on Your Path,10,11,12
+Effective Coaching,EC (L5 elective) Ethical Leadership,20,30,40
+Effective Coaching,EC (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Effective Coaching,EC (L5 elective) Lessons Learned,5,6,7
+Effective Coaching,EC (L5 elective) Moderate a Panel Discussion,20,30,40
+Effective Coaching,EC (L5 elective) Prepare to Speak Professionally,18,20,22
+Innovative Planning,IP (L1) Ice Breaker,4,5,6
+Innovative Planning,IP (L1) Writing a Speech with Purpose,5,6,7
+Innovative Planning,IP (L1) Evaluation and Feedback #1,5,6,7
+Innovative Planning,IP (L1) Evaluation and Feedback #2,5,6,7
+Innovative Planning,IP (L1) Evaluation and Feedback #3,2,2.5,3
+Innovative Planning,IP (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Innovative Planning,IP (L1 elective) Intro to Vocal Variety Only,5,6,7
+Innovative Planning,IP (L1 elective) Intro to Body Language Only,5,6,7
+Innovative Planning,IP (L2) Understanding Your Leadership Style,5,6,7
+Innovative Planning,IP (L2) Connect With Your Audience,5,6,7
+Innovative Planning,IP (L2) Introduction to Toastmasters Mentoring,5,6,7
+Innovative Planning,IP (L3) Present a Proposal,5,6,7
+Innovative Planning,IP (L3 elective) Active Listening,5,6,7
+Innovative Planning,IP (L3 elective) Connect with Storytelling,5,6,7
+Innovative Planning,IP (L3 elective) Creating Effective Visual Aids,5,6,7
+Innovative Planning,IP (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Innovative Planning,IP (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Innovative Planning,IP (L3 elective) Effective Body Language,5,6,7
+Innovative Planning,IP (L3 elective) Focus on the Positive,5,6,7
+Innovative Planning,IP (L3 elective) Focus on the Positive Report,2,2.5,3
+Innovative Planning,IP (L3 elective) Inspire Your Audience,5,6,7
+Innovative Planning,IP (L3 elective) Know Your Sense of Humor,5,6,7
+Innovative Planning,IP (L3 elective) Make Connections Through Networking,5,6,7
+Innovative Planning,IP (L3 elective) Prepare for an Interview,5,6,7
+Innovative Planning,IP (L3 elective) Researching and Presenting,5,6,7
+Innovative Planning,IP (L3 elective) Understanding Vocal Variety,5,6,7
+Innovative Planning,IP (L3 elective) Using Descriptive Language,5,6,7
+Innovative Planning,IP (L3 elective) Using Presentation Software,5,6,7
+Innovative Planning,IP (L4) Manage Projects Successfully #1,2,2.5,3
+Innovative Planning,IP (L4) Manage Projects Successfully #2,5,6,7
+Innovative Planning,IP (L4 elective) Building a Social Media Presence,5,6,7
+Innovative Planning,IP (L4 elective) Create a Podcast,2,2.5,3
+Innovative Planning,IP (L4 elective) Manage Online Meetings,20,22.5,25
+Innovative Planning,IP (L4 elective) Managing a Difficult Audience,10,12.5,15
+Innovative Planning,IP (L4 elective) Public Relations Strategies,5,6,7
+Innovative Planning,IP (L4 elective) Question-and-Answer Session,15,17.5,20
+Innovative Planning,IP (L4 elective) Write a Compelling Blog,2,2.5,3
+Innovative Planning,IP (L5) High Performance Leadership #1,5,6,7
+Innovative Planning,IP (L5) High Performance Leadership #2,5,6,7
+Innovative Planning,IP (L5) Reflect on Your Path,10,11,12
+Innovative Planning,IP (L5 elective) Ethical Leadership,20,30,40
+Innovative Planning,IP (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Innovative Planning,IP (L5 elective) Lessons Learned,5,6,7
+Innovative Planning,IP (L5 elective) Moderate a Panel Discussion,20,30,40
+Innovative Planning,IP (L5 elective) Prepare to Speak Professionally,18,20,22
+Leadership Development,LD (L1) Ice Breaker,4,5,6
+Leadership Development,LD (L1) Writing a Speech with Purpose,5,6,7
+Leadership Development,LD (L1) Evaluation and Feedback #1,5,6,7
+Leadership Development,LD (L1) Evaluation and Feedback #2,5,6,7
+Leadership Development,LD (L1) Evaluation and Feedback #3,2,2.5,3
+Leadership Development,LD (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Leadership Development,LD (L1 elective) Intro to Vocal Variety Only,5,6,7
+Leadership Development,LD (L1 elective) Intro to Body Language Only,5,6,7
+Leadership Development,LD (L2) Managing Time,5,6,7
+Leadership Development,LD (L2) Understanding Your Leadership Style,5,6,7
+Leadership Development,LD (L2) Introduction to Toastmasters Mentoring,5,6,7
+Leadership Development,LD (L3) Planning and Implementing,5,6,7
+Leadership Development,LD (L3 elective) Active Listening,5,6,7
+Leadership Development,LD (L3 elective) Connect with Storytelling,5,6,7
+Leadership Development,LD (L3 elective) Connect With Your Audience,5,6,7
+Leadership Development,LD (L3 elective) Creating Effective Visual Aids,5,6,7
+Leadership Development,LD (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Leadership Development,LD (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Leadership Development,LD (L3 elective) Effective Body Language,5,6,7
+Leadership Development,LD (L3 elective) Focus on the Positive,5,6,7
+Leadership Development,LD (L3 elective) Focus on the Positive Report,2,2.5,3
+Leadership Development,LD (L3 elective) Inspire Your Audience,5,6,7
+Leadership Development,LD (L3 elective) Know Your Sense of Humor,5,6,7
+Leadership Development,LD (L3 elective) Make Connections Through Networking,5,6,7
+Leadership Development,LD (L3 elective) Prepare for an Interview,5,6,7
+Leadership Development,LD (L3 elective) Researching and Presenting,5,6,7
+Leadership Development,LD (L3 elective) Understanding Vocal Variety,5,6,7
+Leadership Development,LD (L3 elective) Using Descriptive Language,5,6,7
+Leadership Development,LD (L3 elective) Using Presentation Software,5,6,7
+Leadership Development,LD (L4) Leading Your Team,5,6,7
+Leadership Development,LD (L4 elective) Building a Social Media Presence,5,6,7
+Leadership Development,LD (L4 elective) Create a Podcast,2,2.5,3
+Leadership Development,LD (L4 elective) Manage Online Meetings,20,22.5,25
+Leadership Development,LD (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Leadership Development,LD (L4 elective) Manage Projects Successfully #2,5,6,7
+Leadership Development,LD (L4 elective) Managing a Difficult Audience,10,12.5,15
+Leadership Development,LD (L4 elective) Public Relations Strategies,5,6,7
+Leadership Development,LD (L4 elective) Question-and-Answer Session,15,17.5,20
+Leadership Development,LD (L4 elective) Write a Compelling Blog,2,2.5,3
+Leadership Development,LD (L5) Manage Successful Events,5,6,7
+Leadership Development,LD (L5) Reflect on Your Path,10,11,12
+Leadership Development,LD (L5 elective) Ethical Leadership,20,30,40
+Leadership Development,LD (L5 elective) High Performance Leadership #1,5,6,7
+Leadership Development,LD (L5 elective) High Performance Leadership #2,5,6,7
+Leadership Development,LD (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Leadership Development,LD (L5 elective) Lessons Learned,5,6,7
+Leadership Development,LD (L5 elective) Moderate a Panel Discussion,20,30,40
+Leadership Development,LD (L5 elective) Prepare to Speak Professionally,18,20,22
+Strategic Relationships,SR (L1) Ice Breaker,4,5,6
+Strategic Relationships,SR (L1) Writing a Speech with Purpose,5,6,7
+Strategic Relationships,SR (L1) Evaluation and Feedback #1,5,6,7
+Strategic Relationships,SR (L1) Evaluation and Feedback #2,5,6,7
+Strategic Relationships,SR (L1) Evaluation and Feedback #3,2,2.5,3
+Strategic Relationships,SR (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Strategic Relationships,SR (L1 elective) Intro to Vocal Variety Only,5,6,7
+Strategic Relationships,SR (L1 elective) Intro to Body Language Only,5,6,7
+Strategic Relationships,SR (L2) Understanding Your Leadership Style,5,6,7
+Strategic Relationships,SR (L2) Active Listening / NEW,5,6,7
+Strategic Relationships,SR (L2) Introduction to Toastmasters Mentoring,5,6,7
+Strategic Relationships,SR (L3) Make Connections Through Networking,5,6,7
+Strategic Relationships,SR (L3 elective) Active Listening / OLD,5,6,7
+Strategic Relationships,SR (L3 elective) Connect with Storytelling,5,6,7
+Strategic Relationships,SR (L3 elective) Connect With Your Audience,5,6,7
+Strategic Relationships,SR (L3 elective) Creating Effective Visual Aids,5,6,7
+Strategic Relationships,SR (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Strategic Relationships,SR (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Strategic Relationships,SR (L3 elective) Effective Body Language,5,6,7
+Strategic Relationships,SR (L3 elective) Focus on the Positive,5,6,7
+Strategic Relationships,SR (L3 elective) Focus on the Positive Report,2,2.5,3
+Strategic Relationships,SR (L3 elective) Inspire Your Audience,5,6,7
+Strategic Relationships,SR (L3 elective) Know Your Sense of Humor,5,6,7
+Strategic Relationships,SR (L3 elective) Prepare for an Interview,5,6,7
+Strategic Relationships,SR (L3 elective) Researching and Presenting,5,6,7
+Strategic Relationships,SR (L3 elective) Understanding Vocal Variety,5,6,7
+Strategic Relationships,SR (L3 elective) Using Descriptive Language,5,6,7
+Strategic Relationships,SR (L3 elective) Using Presentation Software,5,6,7
+Strategic Relationships,SR (L4) Public Relations Strategies,5,6,7
+Strategic Relationships,SR (L4 elective) Building a Social Media Presence,5,6,7
+Strategic Relationships,SR (L4 elective) Create a Podcast,2,2.5,3
+Strategic Relationships,SR (L4 elective) Manage Online Meetings,20,22.5,25
+Strategic Relationships,SR (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Strategic Relationships,SR (L4 elective) Manage Projects Successfully #2,5,6,7
+Strategic Relationships,SR (L4 elective) Managing a Difficult Audience,10,12.5,15
+Strategic Relationships,SR (L4 elective) Question-and-Answer Session,15,17.5,20
+Strategic Relationships,SR (L4 elective) Write a Compelling Blog,2,2.5,3
+Strategic Relationships,SR (L5) Leading in Your Volunteer Organization,5,6,7
+Strategic Relationships,SR (L5) Reflect on Your Path,10,11,12
+Strategic Relationships,SR (L5 elective) Ethical Leadership,20,30,40
+Strategic Relationships,SR (L5 elective) High Performance Leadership #1,5,6,7
+Strategic Relationships,SR (L5 elective) High Performance Leadership #2,5,6,7
+Strategic Relationships,SR (L5 elective) Lessons Learned,5,6,7
+Strategic Relationships,SR (L5 elective) Moderate a Panel Discussion,20,30,40
+Strategic Relationships,SR (L5 elective) Prepare to Speak Professionally,18,20,22
+Team Collaboration,TC (L1) Ice Breaker,4,5,6
+Team Collaboration,TC (L1) Writing a Speech with Purpose,5,6,7
+Team Collaboration,TC (L1) Evaluation and Feedback #1,5,6,7
+Team Collaboration,TC (L1) Evaluation and Feedback #2,5,6,7
+Team Collaboration,TC (L1) Evaluation and Feedback #3,2,2.5,3
+Team Collaboration,TC (L1 elective) Intro to Vocal Variety & Body Language,5,6,7
+Team Collaboration,TC (L1 elective) Intro to Vocal Variety Only,5,6,7
+Team Collaboration,TC (L1 elective) Intro to Body Language Only,5,6,7
+Team Collaboration,TC (L2) Understanding Your Leadership Style,5,6,7
+Team Collaboration,TC (L2) Active Listening,5,6,7
+Team Collaboration,TC (L2) Introduction to Toastmasters Mentoring,5,6,7
+Team Collaboration,TC (L3) Successful Collaboration,5,6,7
+Team Collaboration,TC (L3 elective) Connect with Storytelling,5,6,7
+Team Collaboration,TC (L3 elective) Connect With Your Audience,5,6,7
+Team Collaboration,TC (L3 elective) Creating Effective Visual Aids,5,6,7
+Team Collaboration,TC (L3 elective) Deliver Social Speeches #1,3,3.5,4
+Team Collaboration,TC (L3 elective) Deliver Social Speeches #2,3,3.5,4
+Team Collaboration,TC (L3 elective) Effective Body Language,5,6,7
+Team Collaboration,TC (L3 elective) Focus on the Positive,5,6,7
+Team Collaboration,TC (L3 elective) Focus on the Positive Report,2,2.5,3
+Team Collaboration,TC (L3 elective) Inspire Your Audience,5,6,7
+Team Collaboration,TC (L3 elective) Know Your Sense of Humor,5,6,7
+Team Collaboration,TC (L3 elective) Make Connections Through Networking,5,6,7
+Team Collaboration,TC (L3 elective) Prepare for an Interview,5,6,7
+Team Collaboration,TC (L3 elective) Researching and Presenting,5,6,7
+Team Collaboration,TC (L3 elective) Understanding Vocal Variety,5,6,7
+Team Collaboration,TC (L3 elective) Using Descriptive Language,5,6,7
+Team Collaboration,TC (L3 elective) Using Presentation Software,5,6,7
+Team Collaboration,TC (L4) Motivate Others,5,6,7
+Team Collaboration,TC (L4 elective) Building a Social Media Presence,5,6,7
+Team Collaboration,TC (L4 elective) Create a Podcast,2,2.5,3
+Team Collaboration,TC (L4 elective) Manage Online Meetings,20,22.5,25
+Team Collaboration,TC (L4 elective) Managing a Difficult Audience,10,12.5,15
+Team Collaboration,TC (L4 elective) Manage Projects Successfully #1,2,2.5,3
+Team Collaboration,TC (L4 elective) Manage Projects Successfully #2,5,6,7
+Team Collaboration,TC (L4 elective) Public Relations Strategies,5,6,7
+Team Collaboration,TC (L4 elective) Question-and-Answer Session,15,17.5,20
+Team Collaboration,TC (L4 elective) Write a Compelling Blog,2,2.5,3
+Team Collaboration,TC (L5) Lead in Any Situation,8,9,10
+Team Collaboration,TC (L5) Reflect on Your Path,10,11,12
+Team Collaboration,TC (L5 elective) Ethical Leadership,20,30,40
+Team Collaboration,TC (L5 elective) High Performance Leadership #1,5,6,7
+Team Collaboration,TC (L5 elective) High Performance Leadership #2,5,6,7
+Team Collaboration,TC (L5 elective) Leading in Your Volunteer Organization,5,6,7
+Team Collaboration,TC (L5 elective) Lessons Learned,5,6,7
+Team Collaboration,TC (L5 elective) Moderate a Panel Discussion,20,30,40
+Team Collaboration,TC (L5 elective) Prepare to Speak Professionally,18,20,22
+Basic Training,BT (L1) Ice Breaker,4,5,6
+Basic Training,BT (L1) Be in Earnest,5,6,7
+Basic Training,BT (L2) Building a Speech,5,6,7
+Basic Training,BT (L2) Hands Up,5,6,7
+Basic Training,BT (L3) Vocal Variety,5,6,7
+Basic Training,BT (L3) Speech Building,5,6,7
+Basic Training,BT (L4) Reading the Speech,5,6,7
+Basic Training,BT (L4) Illuminate the Speech,5,6,7
+Basic Training,BT (L4) Working With Words,5,6,7
+Basic Training,BT (L5) Special Types of Speech,4,5,6
+Basic Training,BT (L5) Organizing the Speech,8,9,10
+Basic Training,BT (L5) Carrying On,14,15,16
+Entertaining Speaker & Storytelling,ES (L1) Ice Breaker,4,5,6
+Entertaining Speaker & Storytelling,ES (L1) Organize Your Speech,5,6,7
+Entertaining Speaker & Storytelling,ES (L1) Get to the Point,5,6,7
+Entertaining Speaker & Storytelling,ES (L2) How to Say It,5,6,7
+Entertaining Speaker & Storytelling,ES (L2) Your Body Speaks,5,6,7
+Entertaining Speaker & Storytelling,ES (L2) Vocal Variety,5,6,7
+Entertaining Speaker & Storytelling,ES (L3) Research Your Topic,5,6,7
+Entertaining Speaker & Storytelling,ES (L3) Get Comfortable with Visual Aids,5,6,7
+Entertaining Speaker & Storytelling,ES (L3) Persuade with Power,5,6,7
+Entertaining Speaker & Storytelling,ES (L3) Inspire Your Audience,8,9,10
+Entertaining Speaker & Storytelling,ES (L4) The Entertaining Speech,5,6,7
+Entertaining Speaker & Storytelling,ES (L4) Resources for Entertainment,5,6,7
+Entertaining Speaker & Storytelling,ES (L4) Make Them Laugh,5,6,7
+Entertaining Speaker & Storytelling,ES (L4) A Dramatic Talk,5,6,7
+Entertaining Speaker & Storytelling,ES (L4) Speaking After Dinner,8,9,10
+Entertaining Speaker & Storytelling,ES (L5) The Folk Tale,7,8,9
+Entertaining Speaker & Storytelling,ES (L5) Let's Get Personal,6,7,8
+Entertaining Speaker & Storytelling,ES (L5) The Moral of the Story,5,6,7
+Entertaining Speaker & Storytelling,ES (L5) The Touching Story,6,7,8
+Entertaining Speaker & Storytelling,ES (L5) Bringing History to Life,7,8,9
+Distinguished Toastmaster,DTM (L5) Distinguished Toastmaster #1,5,6,7
+Distinguished Toastmaster,DTM (L5) Distinguished Toastmaster #2,8,9,10
+Pathways Mentor Program,PMP (L4) Mentoring,,,
+Pathways Mentor Program,PMP (L5) Advanced Mentoring,,,
+Online Meeting Mastery,OMM (L2) Attending Online Meetings,5,6,7
+Online Meeting Mastery,OMM (L2) Delivering Online Presentations,5,6,7
+Online Meeting Mastery,OMM (L2) Leading Online Presentations,5,6,7
+Online Meeting Mastery,OMM (L2) Culminating Assignment,17,21,25

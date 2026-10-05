@@ -4,21 +4,25 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { GripVertical, Clock, Pencil, Trash2, User, CornerDownRight } from 'lucide-react'
+import { GripVertical, Clock, Pencil, Trash2, User, CornerDownRight, Sparkles } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { deleteItemAction } from '@/actions/item-actions'
 import { ItemEditDialog } from './item-edit-dialog'
 import { QuickAssignDialog } from './quick-assign-dialog'
 import type { AgendaItem, Person } from '@/generated/prisma/client'
+import type { SpecialItemOption } from '@/lib/special-item-csv'
 
 export function AgendaItemCard({
   item,
   people,
+  specialItems,
 }: {
   item: AgendaItem
   people: Person[]
+  specialItems: SpecialItemOption[]
 }) {
   const assignee = people.find(p => p.id === item.personId)
+  const special = specialItems.find(s => s.id === item.specialItemId)
   const [editOpen, setEditOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [, startTransition] = useTransition()
@@ -46,6 +50,13 @@ export function AgendaItemCard({
           </button>
           <div className="flex-1 min-w-0">
             <h3 className="font-medium truncate">{item.title}</h3>
+            {special && item.specialValue && (
+              <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
+                <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                {special.name}
+                {item.specialValue !== item.title && `: ${item.specialValue}`}
+              </p>
+            )}
             <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
               <User className="h-3.5 w-3.5 shrink-0" />
               {assignee ? (
@@ -112,6 +123,7 @@ export function AgendaItemCard({
       <ItemEditDialog
         item={item}
         people={people}
+        specialItems={specialItems}
         open={editOpen}
         onOpenChange={setEditOpen}
       />

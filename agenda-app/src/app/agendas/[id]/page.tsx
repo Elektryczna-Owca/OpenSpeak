@@ -9,6 +9,7 @@ import { DeleteAgendaButton } from '@/components/delete-agenda-button'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatMeetingStart } from '@/lib/datetime'
+import { parseSpecialItemCsv, type SpecialItemOption } from '@/lib/special-item-csv'
 import { CalendarClock, ChevronLeft, Clock, Download, ListChecks, Play, Users } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -28,6 +29,10 @@ export default async function AgendaPage({
   })
 
   if (!agenda) notFound()
+
+  const specialItems: SpecialItemOption[] = (
+    await prisma.specialItem.findMany({ orderBy: { name: 'asc' } })
+  ).map(s => ({ id: s.id, name: s.name, values: parseSpecialItemCsv(s.csv).values }))
 
   const totalMin = agenda.items.reduce((sum, i) => sum + i.durationMinutes, 0)
 
@@ -100,9 +105,14 @@ export default async function AgendaPage({
         agendaId={agenda.id}
         initialItems={agenda.items}
         people={agenda.people}
+        specialItems={specialItems}
       />
 
-      <AddItemForm agendaId={agenda.id} people={agenda.people} />
+      <AddItemForm
+        agendaId={agenda.id}
+        people={agenda.people}
+        specialItems={specialItems}
+      />
     </div>
   )
 }

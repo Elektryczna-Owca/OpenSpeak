@@ -1,20 +1,24 @@
 'use client'
 
-import { useActionState, useEffect, useRef } from 'react'
+import { useActionState, useEffect, useRef, useState } from 'react'
 import { addItemAction, type ItemFormState } from '@/actions/item-actions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PersonSelect } from '@/components/person-select'
+import { SpecialItemPicker } from '@/components/special-item-picker'
+import type { SpecialItemOption } from '@/lib/special-item-csv'
 import { Plus } from 'lucide-react'
 import type { Person } from '@/generated/prisma/client'
 
 export function AddItemForm({
   agendaId,
   people,
+  specialItems,
 }: {
   agendaId: string
   people: Person[]
+  specialItems: SpecialItemOption[]
 }) {
   const formRef = useRef<HTMLFormElement>(null)
   const titleRef = useRef<HTMLInputElement>(null)
@@ -23,10 +27,15 @@ export function AddItemForm({
     action,
     {},
   )
+  // The picker remounts after each add (clearing its value) but keeps the
+  // chosen type, so several items of one kind can be added in a row.
+  const [specialTypeId, setSpecialTypeId] = useState('')
+  const [pickerKey, setPickerKey] = useState(0)
 
   useEffect(() => {
     if (state.ok) {
       formRef.current?.reset()
+      setPickerKey(k => k + 1)
       titleRef.current?.focus()
     }
   }, [state])
@@ -37,6 +46,17 @@ export function AddItemForm({
       action={formAction}
       className="rounded-lg border bg-card p-4"
     >
+      {specialItems.length > 0 && (
+        <SpecialItemPicker
+          key={pickerKey}
+          idPrefix="new"
+          specialItems={specialItems}
+          defaultSpecialItemId={specialTypeId}
+          onTypeChange={setSpecialTypeId}
+          error={state.errors?.specialValue?.[0]}
+          className="mb-3"
+        />
+      )}
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
         <div className="flex-1 space-y-1.5 sm:min-w-48">
           <Label htmlFor="title">New item</Label>

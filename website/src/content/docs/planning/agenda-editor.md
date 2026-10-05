@@ -13,12 +13,15 @@ The row at the bottom of the item list is built for speed: **title → Min → E
 
 The assignee dropdown appears once the agenda has [participants](/concepts/participants/).
 
+Once [special items](/planning/special-items/) exist, a **Type** dropdown sits above the row: pick e.g. **Pathways project** and then a project, and the title and times fill in for you.
+
 Sub-item loops can't be configured from the quick-add row — add the item first, then open its edit dialog.
 
 ## Editing an item
 
 The pencil icon opens the full edit dialog:
 
+- **Type** — regular item or a [special item](/planning/special-items/) value (shown only when special items exist)
 - **Title**
 - **URL** — optional; shown as a QR code during the meeting. Must be a complete URL including `https://`.
 - **Min / Expected / Max** — minutes, half-minute steps, `min ≤ expected ≤ max` (the dialog tells you exactly which rule you broke).

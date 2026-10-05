@@ -102,7 +102,7 @@ export type SerializableAgendaItem = {
 const CSV_HEADER =
   'title,min,expected,max,person,sub label,sub min,sub expected,sub max'
 
-function csvField(value: string | number | null): string {
+export function csvField(value: string | number | null): string {
   if (value == null) return ''
   const text = String(value)
   return /[",\n\r]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text
@@ -128,11 +128,11 @@ export function serializeAgendaCsv(items: SerializableAgendaItem[]): string {
   return [CSV_HEADER, ...rows].join('\n') + '\n'
 }
 
-function normalizeHeader(cell: string): string {
+export function normalizeHeader(cell: string): string {
   return cell.toLowerCase().replace(/[\s_-]+/g, '')
 }
 
-function detectDelimiter(headerLine: string): string {
+export function detectDelimiter(headerLine: string): string {
   let best = ','
   let bestCount = 0
   for (const delim of ['\t', ';', ',']) {
@@ -146,7 +146,7 @@ function detectDelimiter(headerLine: string): string {
 }
 
 // Splits one CSV line on `delim`, honoring double quotes ("" = literal quote).
-function splitLine(line: string, delim: string): string[] {
+export function splitLine(line: string, delim: string): string[] {
   const fields: string[] = []
   let current = ''
   let inQuotes = false

@@ -42,6 +42,7 @@ export default defineConfig({
 						{ label: 'The agenda editor', slug: 'planning/agenda-editor' },
 						{ label: 'Importing from CSV', slug: 'planning/csv-import' },
 						{ label: 'Templates', slug: 'planning/templates' },
+						{ label: 'Special items', slug: 'planning/special-items' },
 					],
 				},
 				{
