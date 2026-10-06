@@ -12,9 +12,10 @@ Special items live under **Special items** in the header. Like [templates](/plan
 Once at least one special item exists, the [agenda editor](/planning/agenda-editor/)'s add row and the item edit dialog gain a **Type** dropdown: **Regular item** (the default) or one of your special items. Choosing a special item shows a second dropdown with its values, grouped (e.g. by path for Pathways). Picking a value:
 
 - fills **Min / Expected / Max** with the value's times (values without times leave them as they are);
-- fills the **title** with the value — unless you already typed your own title (e.g. "Speech 2 — Anna"), which is kept.
+- fills the **title** with the special item's name (e.g. "Pathways project") — unless you already typed your own title;
+- fills the **description** with the value and its group (e.g. "Dynamic Leadership — Ice Breaker") — unless you already wrote your own description.
 
-Both stay editable: the special item is a shortcut, not a lock. The item card shows which value was picked (e.g. "Pathways project: PM (L1) Ice Breaker") whenever the title is something else. Switching **Type** back to **Regular item** removes the link and keeps the title and times.
+Both stay editable: the special item is a shortcut, not a lock. Switching **Type** back to **Regular item** removes the link, clears the title and description that were filled in for you (anything you typed stays), and keeps the times.
 
 In the add row the chosen type stays selected after each add, so a block of prepared speeches is quick to enter.
 
@@ -43,4 +44,4 @@ Seeding the sample data (`npx prisma db seed`, see [Install & self-host](/gettin
 
 ## Deleting
 
-The trash button deletes a special item after a confirmation. Agenda items picked from it keep their title and times; only the link to the list is dropped.
+The trash button deletes a special item after a confirmation. Agenda items picked from it keep their title, description and times; only the link to the list is dropped.

@@ -20,13 +20,21 @@ function groupValues(values: SpecialItemValue[]) {
 
 function setField(form: HTMLFormElement | null, name: string, value: string) {
   const field = form?.elements.namedItem(name)
-  if (field instanceof HTMLInputElement) field.value = value
+  if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement) {
+    field.value = value
+  }
+}
+
+// What a picked value contributes to the item's description.
+function describeValue(v: SpecialItemValue) {
+  return v.group ? `${v.group} — ${v.value}` : v.value
 }
 
 // Switches an item form between a regular item and one picked from a special
 // item list. Submits `specialItemId` and `specialValue`; picking a value fills
-// the form's title (unless the user typed their own) and min/expected/max
-// inputs, which stay editable.
+// the form's title (the special item's name) and description (the value, with
+// its group) — unless the user typed their own — and min/expected/max inputs,
+// which stay editable.
 export function SpecialItemPicker({
   idPrefix,
   specialItems,
@@ -48,11 +56,15 @@ export function SpecialItemPicker({
     specialItems.some(s => s.id === defaultSpecialItemId) ? defaultSpecialItemId! : '',
   )
   const [value, setValue] = useState(defaultValue ?? '')
-  // The title we last filled in, so a later pick replaces it but never
-  // overwrites a title the user typed.
-  const autoTitle = useRef(defaultValue ?? '')
-
   const special = specialItems.find(s => s.id === typeId)
+  // The title and description we last filled in, so a later pick replaces
+  // them but never overwrites text the user typed.
+  const autoTitle = useRef(special?.name ?? '')
+  const autoDescription = useRef(
+    special?.values.find(v => v.value === defaultValue)
+      ? describeValue(special.values.find(v => v.value === defaultValue)!)
+      : (defaultValue ?? ''),
+  )
   // A value removed from the list since it was picked still shows as selected.
   const orphan =
     special && value !== '' && !special.values.some(v => v.value === value)
@@ -65,11 +77,21 @@ export function SpecialItemPicker({
     if (!picked) return
     const title = form?.elements.namedItem('title')
     if (
+      special &&
       title instanceof HTMLInputElement &&
       (title.value === '' || title.value === autoTitle.current)
     ) {
-      title.value = picked.value
-      autoTitle.current = picked.value
+      title.value = special.name
+      autoTitle.current = special.name
+    }
+    const description = form?.elements.namedItem('description')
+    if (
+      (description instanceof HTMLInputElement ||
+        description instanceof HTMLTextAreaElement) &&
+      (description.value === '' || description.value === autoDescription.current)
+    ) {
+      description.value = describeValue(picked)
+      autoDescription.current = description.value
     }
     if (picked.expectedMinutes != null) {
       setField(form, 'minMinutes', String(picked.minMinutes ?? ''))
@@ -88,6 +110,23 @@ export function SpecialItemPicker({
           className={selectClass}
           value={typeId}
           onChange={e => {
+            // Switching type drops the text this picker filled in (but never
+            // text the user typed).
+            const form = e.currentTarget.form
+            const title = form?.elements.namedItem('title')
+            if (title instanceof HTMLInputElement && title.value === autoTitle.current) {
+              title.value = ''
+            }
+            const description = form?.elements.namedItem('description')
+            if (
+              (description instanceof HTMLInputElement ||
+                description instanceof HTMLTextAreaElement) &&
+              description.value === autoDescription.current
+            ) {
+              description.value = ''
+            }
+            autoTitle.current = ''
+            autoDescription.current = ''
             setTypeId(e.target.value)
             setValue('')
             onTypeChange?.(e.target.value)

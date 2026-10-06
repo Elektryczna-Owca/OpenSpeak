@@ -5,7 +5,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { GripVertical, Clock, Pencil, Trash2, User, CornerDownRight, Sparkles } from 'lucide-react'
+import { GripVertical, Clock, Pencil, Trash2, User, CornerDownRight } from 'lucide-react'
 import { useState, useTransition } from 'react'
 import { deleteItemAction } from '@/actions/item-actions'
 import { ItemEditDialog } from './item-edit-dialog'
@@ -23,7 +23,6 @@ export function AgendaItemCard({
   specialItems: SpecialItemOption[]
 }) {
   const assignee = people.find(p => p.id === item.personId)
-  const special = specialItems.find(s => s.id === item.specialItemId)
   const [editOpen, setEditOpen] = useState(false)
   const [assignOpen, setAssignOpen] = useState(false)
   const [, startTransition] = useTransition()
@@ -54,13 +53,6 @@ export function AgendaItemCard({
             {item.description && (
               <p className="truncate text-sm text-muted-foreground/80">
                 {item.description}
-              </p>
-            )}
-            {special && item.specialValue && (
-              <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
-                <Sparkles className="h-3.5 w-3.5 shrink-0" />
-                {special.name}
-                {item.specialValue !== item.title && `: ${item.specialValue}`}
               </p>
             )}
             <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">

@@ -57,6 +57,8 @@ export function AddItemForm({
           className="mb-3"
         />
       )}
+      {/* Filled in by the special item picker; editable later in the item dialog. */}
+      <input type="text" name="description" hidden readOnly />
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
         <div className="flex-1 space-y-1.5 sm:min-w-48">
           <Label htmlFor="title">New item</Label>
