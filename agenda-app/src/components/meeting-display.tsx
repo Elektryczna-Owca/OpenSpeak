@@ -10,7 +10,7 @@ import { BASE_PATH } from '@/lib/base-path'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { MeetingFocus } from '@/components/meeting-focus'
 import { QRCodeSVG } from 'qrcode.react'
-import { ChevronLeft, CornerDownRight, Maximize2, Smartphone } from 'lucide-react'
+import { ChevronLeft, CornerDownRight, Maximize2, Smartphone, X } from 'lucide-react'
 import type { AgendaItem } from '@/generated/prisma/client'
 
 // Per-agenda, per-device memory of the chosen presentation (standard view or
@@ -44,6 +44,9 @@ export function MeetingDisplay({
   const [qrExpanded, setQrExpanded] = useState(false)
   const [focus, setFocus] = useState(false)
   // Absolute guest-registration URL; needs window, so resolved after mount.
+  // Closing the guest QR overlay here hides it on this screen only; it resets
+  // when the control page leaves 'guests' so the next Guest QR shows again.
+  const [guestsDismissed, setGuestsDismissed] = useState(false)
   const [guestUrl, setGuestUrl] = useState<string | null>(null)
   useEffect(() => {
     setGuestUrl(`${window.location.origin}${BASE_PATH}/agendas/${agendaId}/guest`)
@@ -52,6 +55,19 @@ export function MeetingDisplay({
   // presentation. 'report' redirects away entirely; 'focus'/'standard' pin
   // the toggle below until the control page releases it back to null.
   const enforced = state.enforcedDisplayMode
+
+  useEffect(() => {
+    if (enforced !== 'guests') setGuestsDismissed(false)
+  }, [enforced])
+
+  useEffect(() => {
+    if (enforced !== 'guests' || guestsDismissed) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setGuestsDismissed(true)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [enforced, guestsDismissed])
 
   useEffect(() => {
     if (!qrExpanded) return
@@ -356,20 +372,27 @@ export function MeetingDisplay({
         />
       )}
 
-      {enforced === 'guests' && guestUrl && (
+      {enforced === 'guests' && !guestsDismissed && guestUrl && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-white">
+          <button
+            type="button"
+            onClick={() => setGuestsDismissed(true)}
+            aria-label="Close guest QR code"
+            className="absolute top-4 right-4 cursor-pointer rounded-full p-2 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+          >
+            <X className="h-8 w-8" />
+          </button>
           <p className="text-4xl font-semibold text-neutral-900">
             Guests: scan to register
           </p>
-          <QRCodeSVG
-            value={guestUrl}
-            size={512}
-            marginSize={0}
-            className="h-[min(80vw,64vh)] w-[min(80vw,64vh)]"
-          />
-          <span className="max-w-[90vw] truncate font-mono text-xl text-neutral-700">
-            {guestUrl}
-          </span>
+          <a href={guestUrl} aria-label="Open guest registration form">
+            <QRCodeSVG
+              value={guestUrl}
+              size={512}
+              marginSize={0}
+              className="h-[min(80vw,64vh)] w-[min(80vw,64vh)]"
+            />
+          </a>
         </div>
       )}
 

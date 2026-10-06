@@ -51,7 +51,9 @@ If the current (or up-next) item has a URL, a **QR code** appears next to the ti
 
 ### Guest registration QR code
 
-Tap **Guest QR** under *Display mode* on the [control screen](/running/control-screen/) and every display switches to a full-screen QR code. Guests scan it with their phone and land on a short form asking for their **name** (up to 32 characters) and a **phone number or email**. Submitting adds them to the agenda's [participants](/concepts/participants/) as "Name (Guest)", so you can pick them as a speaker on the control screen right away. Registration only works while a meeting is running. Choose **Auto** (or another mode) to take the QR code down.
+Tap **Guest QR** under *Display mode* on the [control screen](/running/control-screen/) and every display switches to a full-screen QR code. Guests scan it with their phone and land on a short form asking for their **name** (up to 32 characters) and a **phone number or email**. Submitting adds them to the agenda's [participants](/concepts/participants/) as "Name (Guest)", so you can pick them as a speaker on the control screen right away. The QR code itself is a link to the form, and no URL is printed. Registration only works while a meeting is running.
+
+To take the QR code down, choose **Auto** (or another mode) on the control screen — or close it on the display itself with the **✕** in the corner or **Escape**. Closing it on the display hides it on that screen only; the next **Guest QR** tap shows it again.
 
 ## When the meeting ends
 
