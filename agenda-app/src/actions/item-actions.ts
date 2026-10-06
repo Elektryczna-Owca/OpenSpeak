@@ -25,6 +25,13 @@ const ItemSchema = z
         v => v == null || URL.canParse(v),
         'Enter a valid URL (including https://)',
       ),
+    description: z
+      .string()
+      .trim()
+      .max(2000, 'Description is too long (max 2000 characters)')
+      .transform(v => (v === '' ? null : v))
+      .nullable()
+      .optional(),
     durationMinutes: requiredMinutes,
     minMinutes: optionalMinutes,
     maxMinutes: optionalMinutes,
@@ -66,6 +73,7 @@ export type ItemFormState = {
   errors?: {
     title?: string[]
     url?: string[]
+    description?: string[]
     durationMinutes?: string[]
     minMinutes?: string[]
     maxMinutes?: string[]
@@ -131,6 +139,7 @@ export async function addItemAction(
   const parsed = ItemSchema.safeParse({
     title: formData.get('title'),
     url: formData.get('url'),
+    description: formData.get('description') ?? undefined,
     durationMinutes: formData.get('durationMinutes'),
     minMinutes: formData.get('minMinutes'),
     maxMinutes: formData.get('maxMinutes'),
@@ -168,6 +177,7 @@ export async function updateItemAction(
   const parsed = ItemSchema.safeParse({
     title: formData.get('title'),
     url: formData.get('url'),
+    description: formData.get('description') ?? undefined,
     durationMinutes: formData.get('durationMinutes'),
     minMinutes: formData.get('minMinutes'),
     maxMinutes: formData.get('maxMinutes'),

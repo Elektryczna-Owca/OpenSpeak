@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PersonSelect } from '@/components/person-select'
@@ -103,6 +104,25 @@ export function ItemEditDialog({
             />
             {state.errors?.url && (
               <p className="text-sm text-destructive">{state.errors.url[0]}</p>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor={`description-${item.id}`}>
+              Description{' '}
+              <span className="font-normal text-muted-foreground">
+                (optional, shown on the display during the meeting)
+              </span>
+            </Label>
+            <Textarea
+              id={`description-${item.id}`}
+              name="description"
+              rows={3}
+              maxLength={2000}
+              defaultValue={item.description ?? ''}
+              aria-invalid={!!state.errors?.description}
+            />
+            {state.errors?.description && (
+              <p className="text-sm text-destructive">{state.errors.description[0]}</p>
             )}
           </div>
           <div className="space-y-1.5">

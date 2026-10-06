@@ -27,6 +27,7 @@ An **item** is one timed block of the meeting — a speech, a report, a break. I
 - **Time thresholds** — *Min*, *Expected*, and *Max* minutes (details below).
 - **Assignee** — optionally, one of the agenda's [participants](/concepts/participants/).
 - **URL** — optional. While the item runs, the URL is shown as a **QR code** on the display screen — handy for a voting form or slides link. It must be a full URL including `https://`.
+- **Description** — optional free text (up to 2000 characters), set in the item's edit dialog. It shows on the item card and on the [display screen](/running/display-screen/) under the item's title while it is current or up next.
 - **Sub-item loop** — optional per-participant rounds; see [Sub-item loops](/concepts/sub-item-loops/).
 
 ## The three time thresholds

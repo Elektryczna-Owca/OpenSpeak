@@ -23,6 +23,7 @@ The pencil icon opens the full edit dialog:
 
 - **Type** — regular item or a [special item](/planning/special-items/) value (shown only when special items exist)
 - **Title**
+- **Description** — optional notes on the item (edit dialog only); shown on the display screen under the title.
 - **URL** — optional; shown as a QR code during the meeting. Must be a complete URL including `https://`.
 - **Min / Expected / Max** — minutes, half-minute steps, `min ≤ expected ≤ max` (the dialog tells you exactly which rule you broke).
 - **Assignee**
@@ -44,4 +45,4 @@ The trash icon removes an item after a native browser confirmation. Numbering st
 - save a recurring meeting as a [template](/planning/templates/),
 - keep a plain-text backup.
 
-Three things are **not** exported: item **URLs**, the agenda **description**, and the **scheduled start/timezone**. If you rely on export as a backup, note those down separately.
+Four things are **not** exported: item **URLs**, item **descriptions**, the agenda **description**, and the **scheduled start/timezone**. If you rely on export as a backup, note those down separately.

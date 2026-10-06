@@ -245,6 +245,11 @@ export function MeetingDisplay({
             )}
           </p>
         )}
+        {shownItem?.description && (
+          <p className="mx-auto mt-3 max-w-2xl text-lg whitespace-pre-line text-muted-foreground">
+            {shownItem.description}
+          </p>
+        )}
       </div>
 
       <div className="flex items-center gap-8">

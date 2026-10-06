@@ -51,6 +51,11 @@ export function AgendaItemCard({
           </button>
           <div className="flex-1 min-w-0">
             <h3 className="font-medium truncate">{item.title}</h3>
+            {item.description && (
+              <p className="truncate text-sm text-muted-foreground/80">
+                {item.description}
+              </p>
+            )}
             {special && item.specialValue && (
               <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
                 <Sparkles className="h-3.5 w-3.5 shrink-0" />
