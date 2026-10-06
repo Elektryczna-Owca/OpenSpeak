@@ -1,5 +1,6 @@
 'use client'
 
+import { personLabel } from '@/lib/person-label'
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -158,8 +159,14 @@ export function MeetingControl({
 
   // People created on the fly (assigned to a sub-item mid-meeting) need to
   // show up in the picker immediately, ahead of the next server refresh.
-  const [people, setPeople] = useState<Pick<Person, 'id' | 'name'>[]>(initialPeople)
+  const [people, setPeople] = useState<Pick<Person, 'id' | 'name' | 'isGuest'>[]>(initialPeople)
   useEffect(() => setPeople(initialPeople), [initialPeople])
+  // A guest registering via the QR code adds a participant elsewhere; reload
+  // the roster when the polled count drifts from what this page rendered.
+  const peopleCount = state.peopleCount
+  useEffect(() => {
+    if (peopleCount != null && peopleCount !== people.length) router.refresh()
+  }, [peopleCount, people.length, router])
   const [addingPerson, setAddingPerson] = useState(false)
   const [newPersonName, setNewPersonName] = useState('')
 
@@ -339,6 +346,7 @@ export function MeetingControl({
               { mode: 'standard', label: 'Standard' },
               { mode: 'focus', label: 'Focus' },
               { mode: 'report', label: 'Report' },
+              { mode: 'guests', label: 'Guest QR' },
             ] as const
           ).map(({ mode, label }) => (
             <Button
@@ -523,7 +531,7 @@ export function MeetingControl({
               <option value="">Unassigned</option>
               {people.map(person => (
                 <option key={person.id} value={person.id}>
-                  {person.name}
+                  {personLabel(person)}
                 </option>
               ))}
               <option value="__new__">+ New participant…</option>

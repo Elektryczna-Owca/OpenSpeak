@@ -1,5 +1,6 @@
 'use client'
 
+import { personLabel } from '@/lib/person-label'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
@@ -60,7 +61,7 @@ export function AgendaItemCard({
             <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
               <User className="h-3.5 w-3.5 shrink-0" />
               {assignee ? (
-                assignee.name
+                personLabel(assignee)
               ) : people.length > 0 ? (
                 <button
                   type="button"

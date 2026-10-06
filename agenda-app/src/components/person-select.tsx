@@ -1,4 +1,5 @@
 import { Label } from '@/components/ui/label'
+import { personLabel } from '@/lib/person-label'
 import { cn } from '@/lib/utils'
 import type { Person } from '@/generated/prisma/client'
 
@@ -28,7 +29,7 @@ export function PersonSelect({
         <option value="">Unassigned</option>
         {people.map(person => (
           <option key={person.id} value={person.id}>
-            {person.name}
+            {personLabel(person)}
           </option>
         ))}
       </select>

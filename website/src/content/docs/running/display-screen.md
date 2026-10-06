@@ -49,6 +49,10 @@ If the current (or up-next) item has a URL, a **QR code** appears next to the ti
 
 **Click the QR code to blow it up to a full-screen overlay** with the URL printed underneath — big enough for the whole room to scan, perfect for "vote for best speaker" forms. Click again or press Escape to close.
 
+### Guest registration QR code
+
+Tap **Guest QR** under *Display mode* on the [control screen](/running/control-screen/) and every display switches to a full-screen QR code. Guests scan it with their phone and land on a short form asking for their **name** (up to 32 characters) and a **phone number or email**. Submitting adds them to the agenda's [participants](/concepts/participants/) as "Name (Guest)", so you can pick them as a speaker on the control screen right away. Registration only works while a meeting is running. Choose **Auto** (or another mode) to take the QR code down.
+
 ## When the meeting ends
 
 The display navigates to the finished run's [report](/running/reports/) automatically — the projector ends the evening showing the results.

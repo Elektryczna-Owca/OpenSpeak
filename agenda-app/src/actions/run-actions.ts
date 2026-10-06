@@ -198,7 +198,7 @@ export async function assignNewPersonAction(runId: string, name: string) {
   })
   revalidatePath(`/agendas/${run.agendaId}/people`)
   revalidateRunPages(run.agendaId)
-  return { id: person.id, name: person.name }
+  return { id: person.id, name: person.name, isGuest: person.isGuest }
 }
 
 // Stores the free-text note typed on the control page for the current open

@@ -33,7 +33,7 @@ export default async function ControlPage({
       segments: {
         orderBy: { position: 'desc' },
         take: 1,
-        include: { person: { select: { name: true } } },
+        include: { person: { select: { name: true, isGuest: true } } },
       },
     },
   })

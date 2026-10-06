@@ -1,9 +1,10 @@
+import { personLabel } from '@/lib/person-label'
 import type { AgendaItem, RunSegment } from '@/generated/prisma/client'
 
 // Display mode the control page can force onto every viewer of /run. Null
 // (the default) means unenforced — each display follows its own
 // locally-remembered preference instead.
-export type DisplayMode = 'standard' | 'focus' | 'report'
+export type DisplayMode = 'standard' | 'focus' | 'report' | 'guests'
 
 // The latest segment as served by /api/runs/[runId] — dates as ISO strings so
 // it round-trips through JSON polling. A segment with endedAt set (on a run
@@ -30,7 +31,7 @@ export type RunSegmentState = {
 }
 
 export function serializeSegment(
-  segment: RunSegment & { person: { name: string } | null },
+  segment: RunSegment & { person: { name: string; isGuest: boolean } | null },
 ): RunSegmentState {
   return {
     itemId: segment.itemId,
@@ -38,7 +39,7 @@ export function serializeSegment(
     position: segment.position,
     subIndex: segment.subIndex,
     personId: segment.personId,
-    personName: segment.person?.name ?? null,
+    personName: segment.person ? personLabel(segment.person) : null,
     label: segment.label,
     comment: segment.comment,
     minMinutes: segment.minMinutes,
@@ -57,6 +58,9 @@ export type RunState = {
   endedAt: string | null
   enforcedDisplayMode: DisplayMode | null
   segment: RunSegmentState | null
+  // Number of participants in the agenda; the control page refreshes its
+  // roster when it changes (e.g. a guest registered via the QR code).
+  peopleCount?: number
 }
 
 // Locates the current segment within the agenda. Every transition is manual:

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { personLabel } from '@/lib/person-label'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { DeleteRunButton } from '@/components/delete-run-button'
@@ -32,7 +33,7 @@ export default async function RunPage({
       segments: {
         orderBy: { position: 'desc' },
         take: 1,
-        include: { person: { select: { name: true } } },
+        include: { person: { select: { name: true, isGuest: true } } },
       },
     },
   })
@@ -133,7 +134,7 @@ export default async function RunPage({
                     {item.person && (
                       <span className="text-muted-foreground">
                         {' '}
-                        — {item.person.name}
+                        — {personLabel(item.person)}
                       </span>
                     )}
                     {item.subExpectedMinutes != null && (

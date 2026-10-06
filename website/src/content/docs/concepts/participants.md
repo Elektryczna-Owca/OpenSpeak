@@ -12,6 +12,7 @@ Rosters are **per agenda**: people are not shared between agendas, and there is 
 1. **The participants page** — from the agenda editor, follow the **participants** link and add names directly. Names sort alphabetically.
 2. **Assigning items** — the add-item row and the item edit dialog both have an assignee dropdown listing the roster.
 3. **CSV import** — any name in the `person` column of an [imported CSV](/planning/csv-import/) is created as a participant automatically and assigned to that row's item. The same name used on several rows becomes one person.
+4. **Guest QR code** — during a meeting, the control screen's **Guest QR** display mode shows a [QR code](/running/display-screen/#guest-registration-qr-code) guests scan to register their name and phone/email. They join the roster flagged as guests and appear as "Name (Guest)" everywhere. Their contact details show under their name on the participants page.
 
 ## Assigning items
 

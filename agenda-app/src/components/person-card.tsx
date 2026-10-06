@@ -1,5 +1,6 @@
 'use client'
 
+import { personLabel } from '@/lib/person-label'
 import { useState, useTransition } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -18,7 +19,10 @@ export function PersonCard({ person }: { person: Person }) {
         <CardContent className="flex items-center gap-3 p-4">
           <User className="h-5 w-5 text-muted-foreground" />
           <div className="flex-1 min-w-0">
-            <h3 className="font-medium truncate">{person.name}</h3>
+            <h3 className="font-medium truncate">{personLabel(person)}</h3>
+            {person.contact && (
+              <p className="text-sm text-muted-foreground truncate">{person.contact}</p>
+            )}
           </div>
           <Button
             variant="ghost"
@@ -34,7 +38,7 @@ export function PersonCard({ person }: { person: Person }) {
             onClick={() => {
               if (
                 confirm(
-                  `Delete "${person.name}"? Their agenda items will become unassigned.`,
+                  `Delete "${personLabel(person)}"? Their agenda items will become unassigned.`,
                 )
               ) {
                 startTransition(() => {

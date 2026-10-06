@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import { personLabel } from '@/lib/person-label'
 import { prisma } from '@/lib/prisma'
 import { formatElapsed, segmentRowClass } from '@/lib/timer-color'
 import { ReportModeWatcher } from '@/components/report-mode-watcher'
@@ -17,7 +18,7 @@ export default async function RunReviewPage({
     include: {
       segments: {
         orderBy: { position: 'asc' },
-        include: { person: { select: { name: true } } },
+        include: { person: { select: { name: true, isGuest: true } } },
       },
     },
   })
@@ -108,7 +109,7 @@ export default async function RunReviewPage({
                         {segment.label}
                         {segment.person && (
                           <span className="text-muted-foreground">
-                            — {segment.person.name}
+                            — {personLabel(segment.person)}
                           </span>
                         )}
                         {segment.skipped && (

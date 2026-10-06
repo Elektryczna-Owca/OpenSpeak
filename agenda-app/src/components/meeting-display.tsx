@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { formatElapsed, timerColorClass, timerStage } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { cumulativeStartMinutes, makeStartLabel } from '@/lib/schedule'
+import { BASE_PATH } from '@/lib/base-path'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { MeetingFocus } from '@/components/meeting-focus'
 import { QRCodeSVG } from 'qrcode.react'
@@ -42,6 +43,11 @@ export function MeetingDisplay({
   const paused = segment?.pausedAt != null
   const [qrExpanded, setQrExpanded] = useState(false)
   const [focus, setFocus] = useState(false)
+  // Absolute guest-registration URL; needs window, so resolved after mount.
+  const [guestUrl, setGuestUrl] = useState<string | null>(null)
+  useEffect(() => {
+    setGuestUrl(`${window.location.origin}${BASE_PATH}/agendas/${agendaId}/guest`)
+  }, [agendaId])
   // Non-null when the control page is forcing every display onto one
   // presentation. 'report' redirects away entirely; 'focus'/'standard' pin
   // the toggle below until the control page releases it back to null.
@@ -348,6 +354,23 @@ export function MeetingDisplay({
           }
           onExit={exitFocus}
         />
+      )}
+
+      {enforced === 'guests' && guestUrl && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center gap-8 bg-white">
+          <p className="text-4xl font-semibold text-neutral-900">
+            Guests: scan to register
+          </p>
+          <QRCodeSVG
+            value={guestUrl}
+            size={512}
+            marginSize={0}
+            className="h-[min(80vw,64vh)] w-[min(80vw,64vh)]"
+          />
+          <span className="max-w-[90vw] truncate font-mono text-xl text-neutral-700">
+            {guestUrl}
+          </span>
+        </div>
       )}
 
       {qrExpanded && shownItem?.url && (

@@ -16,7 +16,7 @@ export async function GET(
       segments: {
         orderBy: { position: 'desc' },
         take: 1,
-        include: { person: { select: { name: true } } },
+        include: { person: { select: { name: true, isGuest: true } } },
       },
     },
   })
@@ -29,6 +29,7 @@ export async function GET(
     enforcedDisplayMode: run.enforcedDisplayMode as DisplayMode | null,
     // An ended segment is still served: with the run itself open it marks the
     // "between items" state (previous item finished, next not yet started).
+    peopleCount: await prisma.person.count({ where: { agendaId: run.agendaId } }),
     segment: segment ? serializeSegment(segment) : null,
   })
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { personLabel } from '@/lib/person-label'
 import { useTransition } from 'react'
 import { assignItemPersonAction } from '@/actions/item-actions'
 import {
@@ -48,7 +49,7 @@ export function QuickAssignDialog({
                 })
               }
             >
-              {person.name}
+              {personLabel(person)}
             </Button>
           ))}
         </div>
