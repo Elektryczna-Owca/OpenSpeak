@@ -30,8 +30,12 @@ Notes:
 - Other sub-item loops (multi-speaker rounds) cannot be inferred from a flat
   time table — add `sub label`/`sub min`/`sub expected`/`sub max` by hand to
   the rows that are really N timed slots.
-- Item URLs, the agenda description, the scheduled start, and the timezone are
-  not part of the CSV format; set them in OpenSpeak after importing.
+- Member names are shortened to "Firstname L." (first word + initial of the
+  last word); single-word names are kept as is.
+- Rows titled "Speaker" get FEEDBACK_URL in the `url` column, so the speech
+  feedback form shows as a QR code while they run.
+- The agenda description, the scheduled start, and the timezone are not part
+  of the CSV format; set them in OpenSpeak after importing.
 """
 
 import argparse
@@ -47,10 +51,13 @@ DESC_RE = re.compile(r'class="[^"]*fst-italic[^"]*">(.*?)</div>', re.I | re.S)
 MEMBER_RE = re.compile(r'class="member-name">(.*?)</span>', re.I | re.S)
 TIMING_RE = re.compile(r'Green (\d+:\d\d) \| Yellow (\d+:\d\d) \| Red (\d+:\d\d)', re.I)
 TOTAL_RE = re.compile(r'Timing:\s*(\d+:\d\d) total', re.I)
+# Speech feedback form, attached as the item URL of every "Speaker" row.
+FEEDBACK_URL = ('https://docs.google.com/forms/d/'
+                '16fQ08hrKRrMUc8Nk0bMV_68863vZQ6tfSgIisZpsUbg/edit')
 RED_GRACE = 0.5  # OpenSpeak's red starts 30 s before max
 
 CSV_HEADER = ['title', 'min', 'expected', 'max', 'person',
-              'sub label', 'sub min', 'sub expected', 'sub max']
+              'sub label', 'sub min', 'sub expected', 'sub max', 'url']
 
 
 def strip_tags(fragment: str) -> str:
@@ -88,6 +95,12 @@ def number(value: float) -> str:
     return str(int(value)) if value == int(value) else str(value)
 
 
+def short_name(name: str) -> str:
+    """'Bruno Pacheco Wiener' -> 'Bruno W.'; single-word names are kept."""
+    parts = name.split()
+    return f'{parts[0]} {parts[-1][0]}.' if len(parts) > 1 else name
+
+
 def parse_rows(markup: str) -> list[dict]:
     """Agenda rows, in meeting order, from a saved FTH 4 agenda page."""
     anchor = markup.find(TABLE_ANCHOR)
@@ -115,7 +128,7 @@ def parse_rows(markup: str) -> list[dict]:
             'start': start.group(0).zfill(5),
             # drop FTH's inline links ("Timer ⏱ Printed timer sheet ...")
             'title': strip_tags(title.group(1)).split(' ⏱')[0].rstrip('.'),
-            'person': strip_tags(member.group(1)) if member else '',
+            'person': short_name(strip_tags(member.group(1))) if member else '',
             'description': description,
             'timing': [mmss(g) for g in timing.groups()] if timing else None,
             'per_response': bool(timing) and 'per response' in description.lower(),
@@ -134,6 +147,11 @@ def parse_rows(markup: str) -> list[dict]:
 
 
 def to_csv_row(row: dict) -> list[str]:
+    url = FEEDBACK_URL if row['title'] == 'Speaker' else ''
+    return to_time_cells(row) + [url]
+
+
+def to_time_cells(row: dict) -> list[str]:
     timing = row['timing']
     if timing and row['per_response']:
         green, yellow, red = timing

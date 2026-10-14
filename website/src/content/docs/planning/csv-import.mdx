@@ -17,7 +17,7 @@ Optionally pick a [template](/planning/templates/) from the **Start from a templ
 
 ## Format rules
 
-- The **first row is a header**. Column names are matched ignoring case, spaces, underscores, and dashes, in **any order**: `title`, `min`, `expected`, `max`, `person`, `sub label`, `sub min`, `sub expected`, `sub max`. Unknown columns are ignored (so extra spreadsheet columns don't hurt).
+- The **first row is a header**. Column names are matched ignoring case, spaces, underscores, and dashes, in **any order**: `title`, `min`, `expected`, `max`, `person`, `sub label`, `sub min`, `sub expected`, `sub max`, `url`. Unknown columns are ignored (so extra spreadsheet columns don't hurt).
 - **`title` and `expected` are required** — as columns, and on every row.
 - The delimiter is auto-detected per paste: **tab, semicolon, or comma** all work.
 - Quoted fields work as usual (`"a, b"` keeps its comma; `""` inside quotes is a literal quote). Blank lines are skipped.
@@ -30,7 +30,7 @@ Nothing is imported unless **every** row is valid. Errors are reported per line 
 </Aside>
 
 <Aside type="caution">
-Import covers items and people only. The agenda description, scheduled start, timezone, and item URLs are not part of the CSV format — set those after importing.
+Import covers items, people, and item URLs (the optional `url` column, which becomes the item's QR code). The agenda description, scheduled start, and timezone are not part of the CSV format — set those after importing.
 </Aside>
 
 ## Worked example

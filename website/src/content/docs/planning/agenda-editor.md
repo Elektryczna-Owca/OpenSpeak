@@ -45,4 +45,4 @@ The trash icon removes an item after a native browser confirmation. Numbering st
 - save a recurring meeting as a [template](/planning/templates/),
 - keep a plain-text backup.
 
-Four things are **not** exported: item **URLs**, item **descriptions**, the agenda **description**, and the **scheduled start/timezone**. If you rely on export as a backup, note those down separately.
+Three things are **not** exported: item **descriptions**, the agenda **description**, and the **scheduled start/timezone**. If you rely on export as a backup, note those down separately.

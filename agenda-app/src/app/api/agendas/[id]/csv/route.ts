@@ -31,6 +31,7 @@ export async function GET(
       subMinMinutes: item.subMinMinutes,
       subExpectedMinutes: item.subExpectedMinutes,
       subMaxMinutes: item.subMaxMinutes,
+      url: item.url,
     })),
   )
 

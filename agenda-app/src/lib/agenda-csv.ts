@@ -7,7 +7,7 @@ import { checkOrdering, checkSubItem, optionalLabel, optionalMinutes } from '@/l
 // - quoted fields supported ("a, b", doubled "" for a literal quote);
 // - first row is a header; columns are matched case-insensitively ignoring
 //   spaces/underscores/dashes: title, min, expected, max, person, sub label,
-//   sub min, sub expected, sub max. Unknown columns are ignored;
+//   sub min, sub expected, sub max, url. Unknown columns are ignored;
 // - per row: title + expected required, times follow the shared item rules.
 
 export type ParsedCsvItem = {
@@ -20,6 +20,7 @@ export type ParsedCsvItem = {
   subMinMinutes: number | null
   subExpectedMinutes: number | null
   subMaxMinutes: number | null
+  url: string | null
 }
 
 type ColumnKey =
@@ -32,6 +33,7 @@ type ColumnKey =
   | 'submin'
   | 'subexpected'
   | 'submax'
+  | 'url'
 
 const COLUMN_ALIASES: Record<string, ColumnKey> = {
   title: 'title',
@@ -43,6 +45,7 @@ const COLUMN_ALIASES: Record<string, ColumnKey> = {
   submin: 'submin',
   subexpected: 'subexpected',
   submax: 'submax',
+  url: 'url',
 }
 
 // Human names for error messages, keyed by the row-schema field the issue
@@ -57,6 +60,7 @@ const FIELD_DISPLAY: Record<string, string> = {
   subMinMinutes: 'sub min',
   subExpectedMinutes: 'sub expected',
   subMaxMinutes: 'sub max',
+  url: 'url',
 }
 
 const RowSchema = z
@@ -70,6 +74,14 @@ const RowSchema = z
     subMinMinutes: optionalMinutes,
     subExpectedMinutes: optionalMinutes,
     subMaxMinutes: optionalMinutes,
+    url: z.preprocess(
+      v => (v === '' || v === null || v === undefined ? null : v),
+      z
+        .string()
+        .max(2000, 'is too long')
+        .refine(v => URL.canParse(v), 'Enter a valid URL (including https://)')
+        .nullable(),
+    ),
   })
   .superRefine((data, ctx) => {
     if (data.durationMinutes == null) {
@@ -97,10 +109,11 @@ export type SerializableAgendaItem = {
   subMinMinutes: number | null
   subExpectedMinutes: number | null
   subMaxMinutes: number | null
+  url: string | null
 }
 
 const CSV_HEADER =
-  'title,min,expected,max,person,sub label,sub min,sub expected,sub max'
+  'title,min,expected,max,person,sub label,sub min,sub expected,sub max,url'
 
 export function csvField(value: string | number | null): string {
   if (value == null) return ''
@@ -121,6 +134,7 @@ export function serializeAgendaCsv(items: SerializableAgendaItem[]): string {
       item.subMinMinutes,
       item.subExpectedMinutes,
       item.subMaxMinutes,
+      item.url,
     ]
       .map(csvField)
       .join(','),
@@ -224,6 +238,7 @@ export function parseAgendaCsv(text: string): {
       submin: '',
       subexpected: '',
       submax: '',
+      url: '',
     }
     columns.forEach((key, i) => {
       if (key) raw[key] = (cells[i] ?? '').trim()
@@ -239,6 +254,7 @@ export function parseAgendaCsv(text: string): {
       subMinMinutes: raw.submin,
       subExpectedMinutes: raw.subexpected,
       subMaxMinutes: raw.submax,
+      url: raw.url,
     })
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {

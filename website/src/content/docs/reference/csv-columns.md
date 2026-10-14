@@ -20,6 +20,7 @@ The first row must be a header. Columns may appear in **any order**; names are m
 | `sub min` | no | Minutes — per-slot minimum |
 | `sub expected` | no* | Minutes — per-slot planned time; **setting it is what activates the sub-item loop** |
 | `sub max` | no | Minutes — per-slot maximum |
+| `url` | no | Item URL, shown as a QR code (must be a valid URL including `https://`) |
 
 \* required only if any other `sub *` value is present on that row — a sub-item without `sub expected` is an error.
 
@@ -48,7 +49,6 @@ Line 7: expected — Use whole or half minutes (e.g. 10 or 10.5)
 
 Export produces this exact format, so export → import reproduces an agenda's items, times, sub-item loops, and participants. **Not** included in the format (set manually after import):
 
-- item **URLs** (QR codes),
 - the agenda **description**,
 - the **scheduled start** and **timezone**.
 
