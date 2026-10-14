@@ -370,6 +370,8 @@ export function MeetingDisplay({
           }
           paused={!between && paused}
           nextLabel={focusNextItem?.title ?? null}
+          qrUrl={shownItem?.url ?? null}
+          onQrClick={() => setQrExpanded(true)}
           nextStartLabel={
             focusNextItem ? startLabelAt(startMinutes[focusNextIndex]) : null
           }
