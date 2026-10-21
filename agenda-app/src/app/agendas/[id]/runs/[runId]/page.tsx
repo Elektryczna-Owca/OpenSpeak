@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { personLabel } from '@/lib/person-label'
 import { prisma } from '@/lib/prisma'
 import { formatElapsed, segmentRowClass } from '@/lib/timer-color'
+import { LeaveReportButton } from '@/components/leave-report-button'
 import { ReportModeWatcher } from '@/components/report-mode-watcher'
 import { CornerDownRight } from 'lucide-react'
 
@@ -55,7 +56,10 @@ export default async function RunReviewPage({
   return (
     <div className="space-y-4">
       {!run.endedAt && <ReportModeWatcher agendaId={id} runId={run.id} />}
-      <h1 className="text-2xl font-semibold tracking-tight">Meeting review</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold tracking-tight">Meeting review</h1>
+        {!run.endedAt && <LeaveReportButton agendaId={id} runId={run.id} />}
+      </div>
 
       <div className="overflow-x-auto rounded-lg border">
         <table className="w-full text-sm">
