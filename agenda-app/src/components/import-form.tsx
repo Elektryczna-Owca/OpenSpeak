@@ -71,7 +71,7 @@ export function ImportForm({
           required
           rows={14}
           className="font-mono text-sm"
-          placeholder={`title,min,expected,max,person,sub label,sub min,sub expected,sub max\nOpening,2,3,5,,,,,\nPrepared speeches,2,3,4,,Speaker,5,6,7`}
+          placeholder={`title,min,green,yellow,red,max,person,sub label,sub min,sub green,sub yellow,sub red,sub max\nOpening,2,2,3,4.5,5,,,,,,,\nPrepared speeches,2,2,3,3.5,4,,Speaker,5,5,6,7,7.5`}
           aria-invalid={!!state.errors?.csv}
         />
         {state.errors?.csv && (
@@ -82,9 +82,10 @@ export function ImportForm({
           </ul>
         )}
         <p className="text-sm text-muted-foreground">
-          First row is a header. Recognized columns: title, min, expected, max,
-          person, sub label, sub min, sub expected, sub max — in any order;
-          title and expected are required. Comma, semicolon, or tab delimited
+          First row is a header. Recognized columns: title, min, green, yellow,
+          red, max, person, sub label, sub min, sub green, sub yellow, sub red,
+          sub max — in any order; title and at least one time are required (old
+          min / expected / max files still import). Comma, semicolon, or tab delimited
           (pasting cells from a spreadsheet works). Times are minutes in half-minute
           steps. A person name adds that participant and assigns the item.
         </p>

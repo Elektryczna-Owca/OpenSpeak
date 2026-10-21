@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { TimeInputs } from '@/components/time-inputs'
+import { ITEM_TIME_FIELDS, SUB_TIME_FIELDS, itemTimes, subTimes } from '@/lib/item-times'
 import { PersonSelect } from '@/components/person-select'
 import { SpecialItemPicker } from '@/components/special-item-picker'
 import type { SpecialItemOption } from '@/lib/special-item-csv'
@@ -126,59 +128,12 @@ export function ItemEditDialog({
             )}
           </div>
           <div className="space-y-1.5">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor={`min-${item.id}`}>Min (min)</Label>
-                <Input
-                  id={`min-${item.id}`}
-                  name="minMinutes"
-                  type="number"
-                  min={0.5}
-                  max={600}
-                  step={0.5}
-                  placeholder="—"
-                  defaultValue={item.minMinutes ?? ''}
-                  aria-invalid={!!state.errors?.minMinutes}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`duration-${item.id}`}>Expected (min)</Label>
-                <Input
-                  id={`duration-${item.id}`}
-                  name="durationMinutes"
-                  type="number"
-                  min={0.5}
-                  max={600}
-                  step={0.5}
-                  defaultValue={item.durationMinutes}
-                  required
-                  aria-invalid={!!state.errors?.durationMinutes}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`max-${item.id}`}>Max (min)</Label>
-                <Input
-                  id={`max-${item.id}`}
-                  name="maxMinutes"
-                  type="number"
-                  min={0.5}
-                  max={600}
-                  step={0.5}
-                  placeholder="—"
-                  defaultValue={item.maxMinutes ?? ''}
-                  aria-invalid={!!state.errors?.maxMinutes}
-                />
-              </div>
-            </div>
-            {(state.errors?.durationMinutes ||
-              state.errors?.minMinutes ||
-              state.errors?.maxMinutes) && (
-              <p className="text-sm text-destructive">
-                {state.errors.durationMinutes?.[0] ??
-                  state.errors.minMinutes?.[0] ??
-                  state.errors.maxMinutes?.[0]}
-              </p>
-            )}
+            <TimeInputs
+              idPrefix={`time-${item.id}`}
+              fields={ITEM_TIME_FIELDS}
+              defaults={itemTimes(item)}
+              errors={state.errors}
+            />
           </div>
           {people.length > 0 && (
             <PersonSelect
@@ -205,60 +160,14 @@ export function ItemEditDialog({
                 aria-invalid={!!state.errors?.subLabel}
               />
             </div>
-            <div className="grid grid-cols-3 gap-3">
-              <div className="space-y-1.5">
-                <Label htmlFor={`subMin-${item.id}`}>Min (min)</Label>
-                <Input
-                  id={`subMin-${item.id}`}
-                  name="subMinMinutes"
-                  type="number"
-                  min={0.5}
-                  max={600}
-                  step={0.5}
-                  placeholder="—"
-                  defaultValue={item.subMinMinutes ?? ''}
-                  aria-invalid={!!state.errors?.subMinMinutes}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`subExpected-${item.id}`}>Expected (min)</Label>
-                <Input
-                  id={`subExpected-${item.id}`}
-                  name="subExpectedMinutes"
-                  type="number"
-                  min={0.5}
-                  max={600}
-                  step={0.5}
-                  placeholder="—"
-                  defaultValue={item.subExpectedMinutes ?? ''}
-                  aria-invalid={!!state.errors?.subExpectedMinutes}
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`subMax-${item.id}`}>Max (min)</Label>
-                <Input
-                  id={`subMax-${item.id}`}
-                  name="subMaxMinutes"
-                  type="number"
-                  min={0.5}
-                  max={600}
-                  step={0.5}
-                  placeholder="—"
-                  defaultValue={item.subMaxMinutes ?? ''}
-                  aria-invalid={!!state.errors?.subMaxMinutes}
-                />
-              </div>
-            </div>
-            {(state.errors?.subExpectedMinutes ||
-              state.errors?.subMinMinutes ||
-              state.errors?.subMaxMinutes ||
-              state.errors?.subLabel) && (
-              <p className="text-sm text-destructive">
-                {state.errors.subExpectedMinutes?.[0] ??
-                  state.errors.subMinMinutes?.[0] ??
-                  state.errors.subMaxMinutes?.[0] ??
-                  state.errors.subLabel?.[0]}
-              </p>
+            <TimeInputs
+              idPrefix={`subtime-${item.id}`}
+              fields={SUB_TIME_FIELDS}
+              defaults={subTimes(item)}
+              errors={state.errors}
+            />
+            {state.errors?.subLabel && (
+              <p className="text-sm text-destructive">{state.errors.subLabel[0]}</p>
             )}
           </fieldset>
           <DialogFooter>

@@ -87,7 +87,7 @@ export function SpecialItemForm(props: Props) {
           rows={14}
           className="font-mono text-sm"
           defaultValue={props.mode === 'edit' ? props.defaultCsv : ''}
-          placeholder={`group,value,min,expected,max\nPresentation Mastery,PM (L1) Ice Breaker,4,5,6\nPresentation Mastery,PM (L2) Effective Body Language,5,6,7`}
+          placeholder={`group,value,min,green,yellow,red,max\nPresentation Mastery,PM (L1) Ice Breaker,4,4,5,6,6.5\nPresentation Mastery,PM (L2) Effective Body Language,5,5,6,7,7.5`}
           aria-invalid={!!state.errors?.csv}
         />
         {state.errors?.csv && (
@@ -101,10 +101,10 @@ export function SpecialItemForm(props: Props) {
           </ul>
         )}
         <p className="text-sm text-muted-foreground">
-          Header row with value (required), and optionally group, min, expected,
-          max — in any order; comma, semicolon, or tab delimited. Group clusters
-          values in the picker. Times are minutes in half-minute steps; an empty
-          expected defaults to the midpoint of min and max. Values must be unique.
+          Header row with value (required), and optionally group, min, green,
+          yellow, red, max — in any order; comma, semicolon, or tab delimited.
+          Group clusters values in the picker. Times are minutes in half-minute
+          steps. Old min / expected / max files still load. Values must be unique.
         </p>
       </div>
       <div className="flex items-center gap-3">

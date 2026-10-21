@@ -1,21 +1,34 @@
 import { z } from 'zod'
-import { checkOrdering, optionalLabel, optionalMinutes } from '@/lib/item-times'
-import { csvField, detectDelimiter, normalizeHeader, splitLine } from '@/lib/agenda-csv'
+import {
+  ITEM_TIME_FIELDS,
+  TIME_KEYS,
+  type TimeFields,
+  checkOrdering,
+  itemTimes,
+  optionalLabel,
+  optionalMinutes,
+} from '@/lib/item-times'
+import {
+  csvField,
+  detectDelimiter,
+  legacyOf,
+  normalizeHeader,
+  splitLine,
+} from '@/lib/agenda-csv'
 
 // Parses the value list of a special item (e.g. Pathways projects). Same CSV
 // dialect as agenda CSV (delimiter auto-detect, quoting, case/space-insensitive
-// header). Columns: group, value, min, expected, max — only value is required.
+// header). Columns: group, value, min, green, yellow, red, max — only value is
+// required.
 // - group is optional and only clusters values in the picker;
-// - times are optional; if expected is empty but min and max are set, it
-//   defaults to their midpoint (snapped to half minutes);
+// - times are optional and follow the shared ordering rules;
+// - legacy files with an "expected" column (and no green/yellow/red) still
+//   load, converted like legacy agenda CSV;
 // - value labels must be unique within the list.
 
-export type SpecialItemValue = {
+export type SpecialItemValue = TimeFields & {
   group: string | null
   value: string
-  minMinutes: number | null
-  expectedMinutes: number | null
-  maxMinutes: number | null
 }
 
 // What the item forms need to offer a special item in the picker.
@@ -25,22 +38,19 @@ export type SpecialItemOption = {
   values: SpecialItemValue[]
 }
 
-type ColumnKey = 'group' | 'value' | 'min' | 'expected' | 'max'
+type ColumnKey = 'group' | 'value' | 'expected' | (typeof TIME_KEYS)[number]
 
 const COLUMNS: Record<string, ColumnKey> = {
   group: 'group',
   value: 'value',
-  min: 'min',
   expected: 'expected',
-  max: 'max',
+  ...Object.fromEntries(TIME_KEYS.map(k => [k, k])),
 }
 
 const FIELD_DISPLAY: Record<string, string> = {
   group: 'group',
   value: 'value',
-  minMinutes: 'min',
-  expectedMinutes: 'expected',
-  maxMinutes: 'max',
+  ...Object.fromEntries(TIME_KEYS.map(k => [ITEM_TIME_FIELDS[k], k])),
 }
 
 const RowSchema = z
@@ -48,43 +58,20 @@ const RowSchema = z
     group: optionalLabel,
     value: z.string().min(1, 'is required').max(200),
     minMinutes: optionalMinutes,
-    expectedMinutes: optionalMinutes,
+    greenMinutes: optionalMinutes,
+    yellowMinutes: optionalMinutes,
+    redMinutes: optionalMinutes,
     maxMinutes: optionalMinutes,
   })
-  .transform(data =>
-    data.expectedMinutes == null && data.minMinutes != null && data.maxMinutes != null
-      ? {
-          ...data,
-          expectedMinutes: Math.round(data.minMinutes + data.maxMinutes) / 2,
-        }
-      : data,
-  )
   .superRefine((data, ctx) => {
-    if (data.expectedMinutes == null) {
-      if (data.minMinutes != null || data.maxMinutes != null) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['expectedMinutes'],
-          message: 'is required when only one of min/max is set',
-        })
-      }
-      return
-    }
-    checkOrdering(
-      ctx,
-      data.minMinutes,
-      data.expectedMinutes,
-      data.maxMinutes,
-      'minMinutes',
-      'maxMinutes',
-    )
+    checkOrdering(ctx, itemTimes(data), ITEM_TIME_FIELDS)
   })
 
-const CSV_HEADER = 'group,value,min,expected,max'
+const CSV_HEADER = 'group,value,min,green,yellow,red,max'
 
 export function serializeSpecialItemCsv(values: SpecialItemValue[]): string {
   const rows = values.map(v =>
-    [v.group, v.value, v.minMinutes, v.expectedMinutes, v.maxMinutes]
+    [v.group, v.value, v.minMinutes, v.greenMinutes, v.yellowMinutes, v.redMinutes, v.maxMinutes]
       .map(csvField)
       .join(','),
   )
@@ -115,6 +102,7 @@ export function parseSpecialItemCsv(text: string): {
     }
   }
 
+  const legacy = columns.includes('expected')
   const dataRows = numbered.slice(1)
   if (dataRows.length === 0) {
     return { values: [], errors: ['No values found below the header row'] }
@@ -125,18 +113,25 @@ export function parseSpecialItemCsv(text: string): {
   const seen = new Map<string, number>()
   for (const { line, no } of dataRows) {
     const cells = splitLine(line, delim)
-    const raw: Record<ColumnKey, string> = { group: '', value: '', min: '', expected: '', max: '' }
+    const raw: Partial<Record<ColumnKey, string>> = {}
     columns.forEach((key, i) => {
       if (key) raw[key] = (cells[i] ?? '').trim()
     })
+    const field = (key: ColumnKey) => raw[key] ?? ''
 
-    const parsed = RowSchema.safeParse({
-      group: raw.group,
-      value: raw.value,
-      minMinutes: raw.min,
-      expectedMinutes: raw.expected,
-      maxMinutes: raw.max,
-    })
+    const input: Record<string, string> = {
+      group: field('group'),
+      value: field('value'),
+    }
+    for (const key of TIME_KEYS) input[ITEM_TIME_FIELDS[key]] = field(key)
+    if (legacy) {
+      const old = legacyOf(field('min'), field('expected'), field('max'))
+      for (const key of ['green', 'yellow', 'red'] as const) {
+        if (!field(key)) input[ITEM_TIME_FIELDS[key]] = old[key]
+      }
+    }
+
+    const parsed = RowSchema.safeParse(input)
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {
         const field = String(issue.path[0] ?? '')

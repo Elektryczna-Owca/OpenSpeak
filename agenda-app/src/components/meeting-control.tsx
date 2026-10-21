@@ -18,10 +18,12 @@ import {
   type NextSegment,
 } from '@/actions/run-actions'
 import { formatElapsed, timerColorClass } from '@/lib/timer-color'
+import { hasSubItem, subAsItemFields } from '@/lib/item-times'
 import { type DisplayMode, type RunState, computeRunTargets } from '@/lib/run-state'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { useMaxTimeAlert } from '@/components/use-max-alert'
 import { Thresholds } from '@/components/meeting-display'
+import { MeetingControlTable } from '@/components/meeting-control-table'
 import { Button } from '@/components/ui/button'
 import {
   ChevronLeft,
@@ -125,6 +127,8 @@ function SegmentCommentField({
   )
 }
 
+const VIEW_KEY = 'openspeak-control-view'
+
 const personSelectClass =
   'h-10 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 dark:bg-input/30'
 
@@ -153,6 +157,24 @@ export function MeetingControl({
   const elapsed = useElapsedSeconds(segment)
   useMaxTimeAlert(segment, elapsed)
   const paused = segment?.pausedAt != null
+  // Remote (big buttons, one thing at a time) or Table (the whole agenda as a
+  // timer sheet). A per-device preference, so it lives in localStorage.
+  const [view, setView] = useState<'remote' | 'table'>('remote')
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(VIEW_KEY) === 'table') setView('table')
+    } catch {
+      // storage blocked — stay on the remote
+    }
+  }, [])
+  function chooseView(next: 'remote' | 'table') {
+    setView(next)
+    try {
+      localStorage.setItem(VIEW_KEY, next)
+    } catch {
+      // not remembered — fine
+    }
+  }
   const skipConfirm = useTapConfirm()
   const endConfirm = useTapConfirm()
   const backConfirm = useTapConfirm()
@@ -206,7 +228,7 @@ export function MeetingControl({
     between &&
     !segment.itemDone &&
     currentItem &&
-    currentItem.subExpectedMinutes != null
+    hasSubItem(currentItem)
       ? {
           itemId: currentItem.id,
           kind: 'sub',
@@ -307,8 +329,25 @@ export function MeetingControl({
     })
   }
 
+  const endButton = (
+    <Button
+      size="sm"
+      variant={endConfirm.arming ? 'destructive' : 'ghost'}
+      className={endConfirm.arming ? '' : 'text-destructive hover:text-destructive'}
+      onClick={() => endConfirm.tap(() => advance(null))}
+      disabled={pending}
+    >
+      <Square className="h-4 w-4" />
+      {endConfirm.arming ? 'Tap again to end' : 'End meeting'}
+    </Button>
+  )
+
   return (
-    <div className="mx-auto flex max-w-sm flex-col items-center gap-6 py-6">
+    <div
+      className={`mx-auto flex flex-col items-center gap-6 py-6 ${
+        view === 'table' ? 'max-w-6xl' : 'max-w-sm'
+      }`}
+    >
       <div className="flex w-full items-center justify-between">
         <Link
           href={`/agendas/${agendaId}`}
@@ -366,6 +405,45 @@ export function MeetingControl({
         </div>
       </div>
 
+      <div className="flex w-full items-center gap-1 rounded-lg border p-1">
+        {(
+          [
+            { id: 'remote', label: 'Remote' },
+            { id: 'table', label: 'Table' },
+          ] as const
+        ).map(({ id, label }) => (
+          <Button
+            key={id}
+            type="button"
+            size="sm"
+            variant={view === id ? 'default' : 'ghost'}
+            className="flex-1"
+            onClick={() => chooseView(id)}
+          >
+            {label}
+          </Button>
+        ))}
+      </div>
+
+      {view === 'table' && (
+        <>
+          <MeetingControlTable
+            items={items}
+            people={people}
+            state={state}
+            elapsed={elapsed}
+            pending={pending}
+            onStart={advance}
+            onStop={() => finish(false)}
+            onTogglePause={togglePause}
+            onAssignSegmentPerson={assignPerson}
+          />
+          {endButton}
+        </>
+      )}
+
+      {view === 'remote' && (
+        <>
       {between && (
         <>
           <div className="text-center">
@@ -380,13 +458,7 @@ export function MeetingControl({
                 <p className="mt-1 text-lg text-muted-foreground">
                   {subLabel} {nextSubTarget.subIndex}
                 </p>
-                <Thresholds
-                  segment={{
-                    minMinutes: currentItem.subMinMinutes,
-                    expectedMinutes: currentItem.subExpectedMinutes,
-                    maxMinutes: currentItem.subMaxMinutes,
-                  }}
-                />
+                <Thresholds segment={subAsItemFields(currentItem)} />
               </>
             ) : (
               <>
@@ -394,13 +466,7 @@ export function MeetingControl({
                   {nextItem?.title ?? 'All items finished'}
                 </h1>
                 {nextItem && (
-                  <Thresholds
-                    segment={{
-                      minMinutes: nextItem.minMinutes,
-                      expectedMinutes: nextItem.durationMinutes,
-                      maxMinutes: nextItem.maxMinutes,
-                    }}
-                  />
+                  <Thresholds segment={nextItem} />
                 )}
               </>
             )}
@@ -554,12 +620,7 @@ export function MeetingControl({
           className={`font-mono text-6xl font-semibold tabular-nums transition-colors ${
             paused
               ? 'text-muted-foreground'
-              : timerColorClass(
-                  elapsed,
-                  segment.minMinutes,
-                  segment.expectedMinutes,
-                  segment.maxMinutes,
-                )
+              : timerColorClass(elapsed, segment)
           }`}
         >
           {formatElapsed(elapsed)}
@@ -583,7 +644,7 @@ export function MeetingControl({
         >
           {inSubLoop
             ? `Finish ${subLabel.toLowerCase()} ${segment.subIndex}`
-            : currentItem?.subExpectedMinutes != null
+            : currentItem && hasSubItem(currentItem)
               ? `Continue ${currentItem.title} - ${subLabel.toLowerCase()} 1`
               : `Finish ${currentItem?.title ?? 'agenda item'}`}
         </Button>
@@ -609,7 +670,7 @@ export function MeetingControl({
       </div>
       )}
 
-      {!between && currentItem?.subExpectedMinutes != null && (
+      {!between && currentItem && hasSubItem(currentItem) && (
         <p className="text-sm text-muted-foreground">
           Up next:{' '}
           <span className="text-foreground">
@@ -618,7 +679,7 @@ export function MeetingControl({
         </p>
       )}
 
-      {!between && currentItem?.subExpectedMinutes == null && nextItem && (
+      {!between && !(currentItem && hasSubItem(currentItem)) && nextItem && (
         <p className="text-sm text-muted-foreground">
           Up next: <span className="text-foreground">{nextItem.title}</span>
         </p>
@@ -661,19 +722,10 @@ export function MeetingControl({
             : `Skip ${(between ? nextItem?.title : currentItem?.title) ?? 'agenda item'}`}
         </Button>
         )}
-        <Button
-          size="sm"
-          variant={endConfirm.arming ? 'destructive' : 'ghost'}
-          className={
-            endConfirm.arming ? '' : 'text-destructive hover:text-destructive'
-          }
-          onClick={() => endConfirm.tap(() => advance(null))}
-          disabled={pending}
-        >
-          <Square className="h-4 w-4" />
-          {endConfirm.arming ? 'Tap again to end' : 'End meeting'}
-        </Button>
+        {endButton}
       </div>
+        </>
+      )}
     </div>
   )
 }

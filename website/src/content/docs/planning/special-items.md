@@ -11,7 +11,7 @@ Special items live under **Special items** in the header. Like [templates](/plan
 
 Once at least one special item exists, the [agenda editor](/planning/agenda-editor/)'s add row and the item edit dialog gain a **Type** dropdown: **Regular item** (the default) or one of your special items. Choosing a special item shows a second dropdown with its values, grouped (e.g. by path for Pathways). Picking a value:
 
-- fills **Min / Expected / Max** with the value's times (values without times leave them as they are);
+- fills **Min / Green / Yellow / Red / Max** with the value's times (values without times leave them as they are);
 - fills the **title** with the special item's name (e.g. "Pathways project") — unless you already typed your own title;
 - fills the **description** with the value and its group (e.g. "Dynamic Leadership — Ice Breaker") — unless you already wrote your own description.
 
@@ -24,15 +24,15 @@ In the add row the chosen type stays selected after each add, so a block of prep
 A special item is a name plus a **values CSV** — paste it into the editor or use **Load CSV file**. It is validated on save, with errors listed per line:
 
 ```csv
-group,value,min,expected,max
-Presentation Mastery,PM (L1) Ice Breaker,4,5,6
-Presentation Mastery,PM (L3) Persuasive Speaking,5,6,7
-Dynamic Leadership,DL (L1) Ice Breaker,4,5,6
+group,value,min,green,yellow,red,max
+Presentation Mastery,PM (L1) Ice Breaker,4,4,5,5.5,6
+Presentation Mastery,PM (L3) Persuasive Speaking,5,5,6,6.5,7
+Dynamic Leadership,DL (L1) Ice Breaker,4,4,5,5.5,6
 ```
 
 - **value** is required and must be unique within the list;
 - **group** is optional and only clusters values in the dropdown;
-- **min / expected / max** are optional minutes in half-minute steps with `min ≤ expected ≤ max`; if expected is empty but min and max are set, it defaults to their midpoint.
+- **min / green / yellow / red / max** are optional minutes in half-minute steps with `min ≤ green ≤ yellow ≤ red ≤ max`. Old lists with an `expected` column still load (green = min, yellow = expected, red 30 seconds before max).
 
 Header names, delimiters and quoting follow the same rules as the [agenda CSV](/reference/csv-columns/): case and spaces in headers don't matter, columns may come in any order, and comma, semicolon and tab delimiters all work.
 

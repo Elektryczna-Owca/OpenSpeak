@@ -7,6 +7,15 @@ import { formatElapsed, timerColorClass, timerStage } from '@/lib/timer-color'
 import { type RunState, computeRunTargets } from '@/lib/run-state'
 import { cumulativeStartMinutes, makeStartLabel } from '@/lib/schedule'
 import { BASE_PATH } from '@/lib/base-path'
+import {
+  type TimeFields,
+  formatTimes,
+  hasSubItem,
+  itemPlanned,
+  itemTimes,
+  subAsItemFields,
+  subPlanned,
+} from '@/lib/item-times'
 import { useElapsedSeconds, useRunState } from '@/components/use-run-state'
 import { MeetingFocus } from '@/components/meeting-focus'
 import { QRCodeSVG } from 'qrcode.react'
@@ -156,7 +165,7 @@ export function MeetingDisplay({
     between &&
     !segment.itemDone &&
     currentItem &&
-    currentItem.subExpectedMinutes != null
+    hasSubItem(currentItem)
       ? inSubLoop
         ? (segment.subIndex ?? 1) + 1
         : 1
@@ -258,12 +267,7 @@ export function MeetingDisplay({
             className={`font-mono text-8xl font-semibold tabular-nums transition-colors ${
               between || paused
                 ? 'text-muted-foreground'
-                : timerColorClass(
-                    elapsed,
-                    segment.minMinutes,
-                    segment.expectedMinutes,
-                    segment.maxMinutes,
-                  )
+                : timerColorClass(elapsed, segment)
             }`}
           >
             {formatElapsed(between ? 0 : elapsed)}
@@ -274,21 +278,9 @@ export function MeetingDisplay({
             </p>
           )}
           {between && upNextSubIndex != null && currentItem ? (
-            <Thresholds
-              segment={{
-                minMinutes: currentItem.subMinMinutes,
-                expectedMinutes: currentItem.subExpectedMinutes,
-                maxMinutes: currentItem.subMaxMinutes,
-              }}
-            />
+            <Thresholds segment={subAsItemFields(currentItem)} />
           ) : between && nextItem ? (
-            <Thresholds
-              segment={{
-                minMinutes: nextItem.minMinutes,
-                expectedMinutes: nextItem.durationMinutes,
-                maxMinutes: nextItem.maxMinutes,
-              }}
-            />
+            <Thresholds segment={nextItem} />
           ) : (
             <Thresholds segment={segment} />
           )}
@@ -334,13 +326,13 @@ export function MeetingDisplay({
                   {item.title}
                 </span>
                 <span className="shrink-0 text-sm text-muted-foreground">
-                  {item.durationMinutes} min
+                  {itemPlanned(item)} min
                 </span>
               </span>
-              {item.subExpectedMinutes != null && (
+              {hasSubItem(item) && (
                 <span className="flex items-center gap-1 text-sm text-muted-foreground/80">
                   <CornerDownRight className="h-3 w-3 shrink-0" />
-                  {item.subLabel || 'Sub-item'}: {item.subExpectedMinutes} min each
+                  {item.subLabel || 'Sub-item'}: {subPlanned(item)} min each
                 </span>
               )}
             </li>
@@ -361,12 +353,7 @@ export function MeetingDisplay({
           stage={
             between
               ? 'idle'
-              : timerStage(
-                  elapsed,
-                  segment.minMinutes,
-                  segment.expectedMinutes,
-                  segment.maxMinutes,
-                )
+              : timerStage(elapsed, segment)
           }
           paused={!between && paused}
           nextLabel={focusNextItem?.title ?? null}
@@ -428,19 +415,9 @@ export function MeetingDisplay({
 export function Thresholds({
   segment,
 }: {
-  segment: {
-    minMinutes: number | null
-    expectedMinutes: number | null
-    maxMinutes: number | null
-  }
+  segment: TimeFields
 }) {
-  const parts = [
-    segment.minMinutes != null ? `min ${segment.minMinutes}` : null,
-    segment.expectedMinutes != null ? `expected ${segment.expectedMinutes}` : null,
-    segment.maxMinutes != null ? `max ${segment.maxMinutes}` : null,
-  ].filter(Boolean)
-  if (parts.length === 0) return null
-  return (
-    <p className="mt-2 text-sm text-muted-foreground">{parts.join(' · ')} min</p>
-  )
+  const text = formatTimes(itemTimes(segment))
+  if (!text) return null
+  return <p className="mt-2 text-sm text-muted-foreground">{text} min</p>
 }

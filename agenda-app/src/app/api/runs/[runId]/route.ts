@@ -14,8 +14,7 @@ export async function GET(
     where: { id: runId },
     include: {
       segments: {
-        orderBy: { position: 'desc' },
-        take: 1,
+        orderBy: { position: 'asc' },
         include: { person: { select: { name: true, isGuest: true } } },
       },
     },
@@ -23,7 +22,7 @@ export async function GET(
   if (!run) {
     return Response.json({ error: 'not found' }, { status: 404 })
   }
-  const segment = run.segments[0] ?? null
+  const segment = run.segments.at(-1) ?? null
   return Response.json({
     endedAt: run.endedAt?.toISOString() ?? null,
     enforcedDisplayMode: run.enforcedDisplayMode as DisplayMode | null,
@@ -31,5 +30,7 @@ export async function GET(
     // "between items" state (previous item finished, next not yet started).
     peopleCount: await prisma.person.count({ where: { agendaId: run.agendaId } }),
     segment: segment ? serializeSegment(segment) : null,
+    // Every segment so far, for the control page's table view.
+    segments: run.segments.map(serializeSegment),
   })
 }

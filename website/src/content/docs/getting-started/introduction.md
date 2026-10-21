@@ -7,7 +7,7 @@ OpenSpeak is an open-source web application for planning and running **structure
 
 ## The 30-second mental model
 
-1. **Build an agenda** — an ordered list of items, each with a *min / expected / max* time and, optionally, a person responsible for it.
+1. **Build an agenda** — an ordered list of items, each with a *min / green / yellow / red / max* time and, optionally, a person responsible for it.
 2. **Run the meeting** — put the **display screen** on a projector, keep the **control screen** open on a phone. The timer changes color as time passes (green → yellow → red), and nothing ever advances until someone taps a button.
 3. **Read the report** — after the meeting (or during it), see the actual time spent on every item and every speaker, compared to the plan.
 

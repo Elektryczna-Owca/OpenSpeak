@@ -1,78 +1,85 @@
 import { z } from 'zod'
-import { checkOrdering, checkSubItem, optionalLabel, optionalMinutes } from '@/lib/item-times'
+import {
+  ITEM_TIME_FIELDS,
+  SUB_TIME_FIELDS,
+  TIME_KEYS,
+  type SubTimeFields,
+  type TimeFields,
+  type TimeKey,
+  checkItemTimes,
+  checkSubItem,
+  legacyTimes,
+  optionalLabel,
+  optionalMinutes,
+} from '@/lib/item-times'
 
 // Parses agenda CSV pasted by the user (or stored in a Template). Format:
 // - delimiter auto-detected from the header line: comma, semicolon, or tab
 //   (tab means cells pasted straight from Excel / Google Sheets work);
 // - quoted fields supported ("a, b", doubled "" for a literal quote);
 // - first row is a header; columns are matched case-insensitively ignoring
-//   spaces/underscores/dashes: title, min, expected, max, person, sub label,
-//   sub min, sub expected, sub max, url. Unknown columns are ignored;
-// - per row: title + expected required, times follow the shared item rules.
+//   spaces/underscores/dashes: title, min, green, yellow, red, max, person,
+//   sub label, sub min, sub green, sub yellow, sub red, sub max, url. Unknown
+//   columns are ignored;
+// - legacy files with an "expected" column (and no green/yellow/red) still
+//   import: min becomes min+green, expected yellow, red is 30s before max;
+// - per row: at least one time, following the shared item rules.
 
-export type ParsedCsvItem = {
-  title: string
-  minMinutes: number | null
-  durationMinutes: number
-  maxMinutes: number | null
-  personName: string | null
-  subLabel: string | null
-  subMinMinutes: number | null
-  subExpectedMinutes: number | null
-  subMaxMinutes: number | null
-  url: string | null
-}
+export type ParsedCsvItem = TimeFields &
+  SubTimeFields & {
+    title: string
+    personName: string | null
+    subLabel: string | null
+    url: string | null
+  }
 
-type ColumnKey =
-  | 'title'
-  | 'min'
-  | 'expected'
-  | 'max'
-  | 'person'
-  | 'sublabel'
-  | 'submin'
-  | 'subexpected'
-  | 'submax'
-  | 'url'
+type TimeColumn = TimeKey | `sub${TimeKey}`
+type ColumnKey = 'title' | 'person' | 'sublabel' | 'url' | 'expected' | 'subexpected' | TimeColumn
 
 const COLUMN_ALIASES: Record<string, ColumnKey> = {
   title: 'title',
-  min: 'min',
-  expected: 'expected',
-  max: 'max',
   person: 'person',
   sublabel: 'sublabel',
-  submin: 'submin',
-  subexpected: 'subexpected',
-  submax: 'submax',
   url: 'url',
+  expected: 'expected',
+  subexpected: 'subexpected',
+  ...Object.fromEntries(
+    TIME_KEYS.flatMap(k => [
+      [k, k],
+      [`sub${k}`, `sub${k}`],
+    ]),
+  ),
 }
 
 // Human names for error messages, keyed by the row-schema field the issue
 // attaches to.
 const FIELD_DISPLAY: Record<string, string> = {
   title: 'title',
-  minMinutes: 'min',
-  durationMinutes: 'expected',
-  maxMinutes: 'max',
   personName: 'person',
   subLabel: 'sub label',
-  subMinMinutes: 'sub min',
-  subExpectedMinutes: 'sub expected',
-  subMaxMinutes: 'sub max',
   url: 'url',
+  ...Object.fromEntries(
+    TIME_KEYS.flatMap(k => [
+      [ITEM_TIME_FIELDS[k], k],
+      [SUB_TIME_FIELDS[k], `sub ${k}`],
+    ]),
+  ),
 }
 
 const RowSchema = z
   .object({
     title: z.string().min(1, 'is required').max(200),
     minMinutes: optionalMinutes,
-    durationMinutes: optionalMinutes,
+    greenMinutes: optionalMinutes,
+    yellowMinutes: optionalMinutes,
+    redMinutes: optionalMinutes,
     maxMinutes: optionalMinutes,
     personName: optionalLabel,
     subLabel: optionalLabel,
     subMinMinutes: optionalMinutes,
-    subExpectedMinutes: optionalMinutes,
+    subGreenMinutes: optionalMinutes,
+    subYellowMinutes: optionalMinutes,
+    subRedMinutes: optionalMinutes,
     subMaxMinutes: optionalMinutes,
     url: z.preprocess(
       v => (v === '' || v === null || v === undefined ? null : v),
@@ -84,36 +91,14 @@ const RowSchema = z
     ),
   })
   .superRefine((data, ctx) => {
-    if (data.durationMinutes == null) {
-      ctx.addIssue({ code: 'custom', path: ['durationMinutes'], message: 'is required' })
-      return
-    }
-    checkOrdering(
-      ctx,
-      data.minMinutes,
-      data.durationMinutes,
-      data.maxMinutes,
-      'minMinutes',
-      'maxMinutes',
-    )
+    checkItemTimes(ctx, data)
     checkSubItem(ctx, data)
   })
 
-export type SerializableAgendaItem = {
-  title: string
-  minMinutes: number | null
-  durationMinutes: number
-  maxMinutes: number | null
-  personName: string | null
-  subLabel: string | null
-  subMinMinutes: number | null
-  subExpectedMinutes: number | null
-  subMaxMinutes: number | null
-  url: string | null
-}
+export type SerializableAgendaItem = ParsedCsvItem
 
 const CSV_HEADER =
-  'title,min,expected,max,person,sub label,sub min,sub expected,sub max,url'
+  'title,min,green,yellow,red,max,person,sub label,sub min,sub green,sub yellow,sub red,sub max,url'
 
 export function csvField(value: string | number | null): string {
   if (value == null) return ''
@@ -127,12 +112,16 @@ export function serializeAgendaCsv(items: SerializableAgendaItem[]): string {
     [
       item.title,
       item.minMinutes,
-      item.durationMinutes,
+      item.greenMinutes,
+      item.yellowMinutes,
+      item.redMinutes,
       item.maxMinutes,
       item.personName,
       item.subLabel,
       item.subMinMinutes,
-      item.subExpectedMinutes,
+      item.subGreenMinutes,
+      item.subYellowMinutes,
+      item.subRedMinutes,
       item.subMaxMinutes,
       item.url,
     ]
@@ -190,6 +179,15 @@ export function splitLine(line: string, delim: string): string[] {
   return fields
 }
 
+// Old-style cells → strings for green / yellow / red; cells that don't parse
+// as a number are left for the row schema to report.
+export function legacyOf(min: string, expected: string, max: string) {
+  const num = (v: string) => (v !== '' && Number.isFinite(Number(v)) ? Number(v) : null)
+  const t = legacyTimes(num(min), num(expected), num(max))
+  const str = (n: number | null) => (n == null ? '' : String(n))
+  return { green: min ? min : str(t.green), yellow: expected, red: str(t.red) }
+}
+
 export function parseAgendaCsv(text: string): {
   items: ParsedCsvItem[]
   errors: string[]
@@ -211,14 +209,13 @@ export function parseAgendaCsv(text: string): {
   )
 
   const errors: string[] = []
-  if (!columns.includes('title') || !columns.includes('expected')) {
+  if (!columns.includes('title')) {
     return {
       items: [],
-      errors: [
-        'The first row must be a header including at least "title" and "expected" columns',
-      ],
+      errors: ['The first row must be a header including at least a "title" column'],
     }
   }
+  const legacy = columns.includes('expected') || columns.includes('subexpected')
 
   const dataRows = numbered.slice(1)
   if (dataRows.length === 0) {
@@ -228,44 +225,42 @@ export function parseAgendaCsv(text: string): {
   const items: ParsedCsvItem[] = []
   for (const { line, no } of dataRows) {
     const cells = splitLine(line, delim)
-    const raw: Record<ColumnKey, string> = {
-      title: '',
-      min: '',
-      expected: '',
-      max: '',
-      person: '',
-      sublabel: '',
-      submin: '',
-      subexpected: '',
-      submax: '',
-      url: '',
-    }
+    const raw: Partial<Record<ColumnKey, string>> = {}
     columns.forEach((key, i) => {
       if (key) raw[key] = (cells[i] ?? '').trim()
     })
+    const field = (key: ColumnKey) => raw[key] ?? ''
 
-    const parsed = RowSchema.safeParse({
-      title: raw.title,
-      minMinutes: raw.min,
-      durationMinutes: raw.expected,
-      maxMinutes: raw.max,
-      personName: raw.person,
-      subLabel: raw.sublabel,
-      subMinMinutes: raw.submin,
-      subExpectedMinutes: raw.subexpected,
-      subMaxMinutes: raw.submax,
-      url: raw.url,
-    })
+    const input: Record<string, string> = {
+      title: field('title'),
+      personName: field('person'),
+      subLabel: field('sublabel'),
+      url: field('url'),
+    }
+    for (const key of TIME_KEYS) {
+      input[ITEM_TIME_FIELDS[key]] = field(key)
+      input[SUB_TIME_FIELDS[key]] = field(`sub${key}`)
+    }
+    if (legacy) {
+      // Old min / expected / max: only fill what the file doesn't say itself.
+      const old = legacyOf(field('min'), field('expected'), field('max'))
+      const oldSub = legacyOf(field('submin'), field('subexpected'), field('submax'))
+      for (const key of ['green', 'yellow', 'red'] as const) {
+        if (!field(key)) input[ITEM_TIME_FIELDS[key]] = old[key]
+        if (!field(`sub${key}`)) input[SUB_TIME_FIELDS[key]] = oldSub[key]
+      }
+    }
+
+    const parsed = RowSchema.safeParse(input)
     if (!parsed.success) {
       for (const issue of parsed.error.issues) {
-        const field = String(issue.path[0] ?? '')
-        const name = FIELD_DISPLAY[field] ?? field
+        const fieldName = String(issue.path[0] ?? '')
+        const name = FIELD_DISPLAY[fieldName] ?? fieldName
         errors.push(`Line ${no}: ${name} — ${issue.message}`)
       }
       continue
     }
-    // durationMinutes is guaranteed non-null by the superRefine above.
-    items.push({ ...parsed.data, durationMinutes: parsed.data.durationMinutes! })
+    items.push(parsed.data)
   }
 
   return { items: errors.length > 0 ? [] : items, errors }

@@ -1,6 +1,7 @@
 'use client'
 
 import { personLabel } from '@/lib/person-label'
+import { hasSubItem, itemPlanned, subPlanned } from '@/lib/item-times'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Card, CardContent } from '@/components/ui/card'
@@ -71,10 +72,10 @@ export function AgendaItemCard({
                 'Unassigned'
               )}
             </p>
-            {item.subExpectedMinutes != null && (
+            {hasSubItem(item) && (
               <p className="flex items-center gap-1 text-sm text-muted-foreground truncate">
                 <CornerDownRight className="h-3.5 w-3.5 shrink-0" />
-                {item.subLabel || 'Sub-item'}: {item.subExpectedMinutes} min
+                {item.subLabel || 'Sub-item'}: {subPlanned(item)} min
                 {(item.subMinMinutes != null || item.subMaxMinutes != null) && (
                   <span className="text-muted-foreground/70">
                     {' · '}
@@ -86,7 +87,7 @@ export function AgendaItemCard({
           </div>
           <div className="flex items-center gap-1 text-sm text-muted-foreground whitespace-nowrap">
             <Clock className="h-4 w-4" />
-            {item.durationMinutes} min
+            {itemPlanned(item)} min
             {(item.minMinutes != null || item.maxMinutes != null) && (
               <span className="text-muted-foreground/70">
                 {' · '}

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { totalPlanned } from '@/lib/item-times'
 import { apiPath } from '@/lib/base-path'
 import { AgendaBoard } from '@/components/agenda-board'
 import { AddItemForm } from '@/components/add-item-form'
@@ -34,7 +35,7 @@ export default async function AgendaPage({
     await prisma.specialItem.findMany({ orderBy: { name: 'asc' } })
   ).map(s => ({ id: s.id, name: s.name, values: parseSpecialItemCsv(s.csv).values }))
 
-  const totalMin = agenda.items.reduce((sum, i) => sum + i.durationMinutes, 0)
+  const totalMin = totalPlanned(agenda.items)
 
   return (
     <div className="space-y-6">

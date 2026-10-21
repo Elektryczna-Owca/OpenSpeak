@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { personLabel } from '@/lib/person-label'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
+import { hasSubItem, itemPlanned, subPlanned, totalPlanned } from '@/lib/item-times'
 import { DeleteRunButton } from '@/components/delete-run-button'
 import { MeetingDisplay } from '@/components/meeting-display'
 import { RunStartWatcher } from '@/components/run-start-watcher'
@@ -74,7 +75,7 @@ export default async function RunPage({
     item,
     startLabel: startLabelAt(startMinutes[i]),
   }))
-  const totalMin = agenda.items.reduce((sum, i) => sum + i.durationMinutes, 0)
+  const totalMin = totalPlanned(agenda.items)
 
   return (
     <div className="flex flex-col items-center gap-8 py-8">
@@ -120,7 +121,7 @@ export default async function RunPage({
               <tr className="text-left text-xs tracking-wide text-muted-foreground uppercase">
                 <th className="px-4 py-2 font-medium">Start</th>
                 <th className="px-4 py-2 font-medium">Item</th>
-                <th className="px-4 py-2 text-right font-medium">Expected</th>
+                <th className="px-4 py-2 text-right font-medium">Planned</th>
               </tr>
             </thead>
             <tbody>
@@ -137,16 +138,16 @@ export default async function RunPage({
                         — {personLabel(item.person)}
                       </span>
                     )}
-                    {item.subExpectedMinutes != null && (
+                    {hasSubItem(item) && (
                       <span className="flex items-center gap-1 text-xs text-muted-foreground/80">
                         <CornerDownRight className="h-3 w-3 shrink-0" />
-                        {item.subLabel || 'Sub-item'}: {item.subExpectedMinutes}{' '}
+                        {item.subLabel || 'Sub-item'}: {subPlanned(item)}{' '}
                         min each
                       </span>
                     )}
                   </td>
                   <td className="px-4 py-2 text-right whitespace-nowrap text-muted-foreground">
-                    {item.durationMinutes} min
+                    {itemPlanned(item)} min
                   </td>
                 </tr>
               ))}

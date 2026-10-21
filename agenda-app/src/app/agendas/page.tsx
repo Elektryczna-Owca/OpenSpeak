@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { totalPlanned } from '@/lib/item-times'
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatMeetingStart } from '@/lib/datetime'
@@ -11,7 +12,15 @@ export default async function AgendasPage() {
   const agendas = await prisma.agenda.findMany({
     orderBy: { updatedAt: 'desc' },
     include: {
-      items: { select: { durationMinutes: true } },
+      items: {
+        select: {
+          minMinutes: true,
+          greenMinutes: true,
+          yellowMinutes: true,
+          redMinutes: true,
+          maxMinutes: true,
+        },
+      },
     },
   })
 
@@ -50,10 +59,7 @@ export default async function AgendasPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {agendas.map(agenda => {
-            const totalMin = agenda.items.reduce(
-              (sum, i) => sum + i.durationMinutes,
-              0,
-            )
+            const totalMin = totalPlanned(agenda.items)
             return (
               <Link
                 key={agenda.id}

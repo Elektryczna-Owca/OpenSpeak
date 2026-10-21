@@ -43,11 +43,11 @@ No. Every report row is a [snapshot taken when that segment started](/running/re
 
 ### My CSV won't import.
 
-Import is [all-or-nothing](/planning/csv-import/#format-rules): one bad row blocks everything, and each problem is listed with its line and field. The usual suspects: missing `title` or `expected` (both required on every row), times that aren't whole or half minutes (0.5–600), or a sub-item value without a `sub expected`. See the [CSV reference](/reference/csv-columns/).
+Import is [all-or-nothing](/planning/csv-import/#format-rules): one bad row blocks everything, and each problem is listed with its line and field. The usual suspects: a missing `title`, or a row with no time at all, times that aren't whole or half minutes (0.5–600), or a sub-item value without a `sub expected`. See the [CSV reference](/reference/csv-columns/).
 
 ### Why did the schedule drift once the speeches started?
 
-Speaker rounds are open-ended, so the [planned schedule counts only each item's own expected time](/concepts/sub-item-loops/#one-planning-caveat), not "number of speakers × time" — it can't know how many speakers will turn up. The display shows the next item's planned start so the room can see the drift.
+Speaker rounds are open-ended, so the [planned schedule counts only each item's own planned time](/concepts/sub-item-loops/#one-planning-caveat), not "number of speakers × time" — it can't know how many speakers will turn up. The display shows the next item's planned start so the room can see the drift.
 
 ## Scope
 

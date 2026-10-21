@@ -31,13 +31,12 @@ export default async function ControlPage({
     where: { agendaId: id, endedAt: null },
     include: {
       segments: {
-        orderBy: { position: 'desc' },
-        take: 1,
+        orderBy: { position: 'asc' },
         include: { person: { select: { name: true, isGuest: true } } },
       },
     },
   })
-  const openSegment = openRun?.segments[0]
+  const openSegment = openRun?.segments.at(-1)
 
   if (openRun && openSegment) {
     return (
@@ -51,6 +50,7 @@ export default async function ControlPage({
           endedAt: null,
           enforcedDisplayMode: openRun.enforcedDisplayMode as DisplayMode | null,
           segment: serializeSegment(openSegment),
+          segments: openRun.segments.map(serializeSegment),
         }}
       />
     )

@@ -39,7 +39,7 @@ Gotchas:
 
 ### Data model (`prisma/schema.prisma`)
 
-`Agenda` → ordered `AgendaItem[]` (by `position`) and `Person[]` (participants). An item may carry an optional **sub-item loop** config (`subLabel`, `subMin/Expected/MaxMinutes`) — e.g. "Speaker" rounds where each participant gets their own timed slot. An item may also be linked to a **special item** (`specialItemId` + `specialValue`): a global, named value list with times (e.g. Pathways projects) stored as CSV like `Template` — format in `src/lib/special-item-csv.ts`, managed under `/special-items`, picked via `special-item-picker.tsx` in the add row and edit dialog, which only pre-fills title/times. A meeting execution is a `MeetingRun` → `RunSegment[]`; each segment **snapshots** the label and min/expected/max thresholds at creation so later item edits don't rewrite history.
+`Agenda` → ordered `AgendaItem[]` (by `position`) and `Person[]` (participants). An item may carry an optional **sub-item loop** config (`subLabel`, `subMin/Green/Yellow/Red/MaxMinutes`) — e.g. "Speaker" rounds where each participant gets their own timed slot. An item may also be linked to a **special item** (`specialItemId` + `specialValue`): a global, named value list with times (e.g. Pathways projects) stored as CSV like `Template` — format in `src/lib/special-item-csv.ts`, managed under `/special-items`, picked via `special-item-picker.tsx` in the add row and edit dialog, which only pre-fills title/times. A meeting execution is a `MeetingRun` → `RunSegment[]`; each segment **snapshots** the label and min/green/yellow/red/max thresholds at creation so later item edits don't rewrite history.
 
 ### Meeting run state machine (the core domain)
 
@@ -57,11 +57,11 @@ All viewers poll `GET /api/runs/[runId]` every second (`useRunState` in `src/com
 
 ### The three run surfaces
 
-- `/agendas/[id]/control` — phone-sized remote (`meeting-control.tsx`); the **only** surface that mutates the run. Destructive taps (skip, end meeting) use the two-tap arm pattern (`useTapConfirm`). Plays the max-time beep (`use-max-alert.ts`) — sound lives here because this page reliably has user gestures to unlock audio.
+- `/agendas/[id]/control` — phone-sized remote (`meeting-control.tsx`) with a switchable table view (`meeting-control-table.tsx`, a timer sheet with a Start/Stop per row, driven from `RunState.segments`); the **only** surface that mutates the run. Destructive taps (skip, end meeting) use the two-tap arm pattern (`useTapConfirm`). Plays the max-time beep (`use-max-alert.ts`) — sound lives here because this page reliably has user gestures to unlock audio.
 - `/agendas/[id]/run` — read-only projector display (`meeting-display.tsx`) that follows along by polling; with no open run it shows the planned schedule (start times from `src/lib/schedule.ts`) and past runs.
 - `/agendas/[id]/runs/[runId]` — the report; also works mid-run as a "report so far". Idle time between explicitly-started segments is summed into an "in between" row.
 
-Timer colors (`src/lib/timer-color.ts`): white → green at min → yellow at expected → red 30s before max; fixed regardless of color theme.
+Times: every item/sub-item has five optional thresholds `min ≤ green ≤ yellow ≤ red ≤ max` (rules + helpers in `src/lib/item-times.ts`; planned duration = red, falling back to yellow/max/green/min). Timer colors (`src/lib/timer-color.ts`): white → green → yellow → red as each of those times is reached; max sounds the beep; min/max bound the "within" verdict. Colors are fixed regardless of color theme. CSV parsers still accept the legacy `min,expected,max` format.
 
 ### Conventions
 

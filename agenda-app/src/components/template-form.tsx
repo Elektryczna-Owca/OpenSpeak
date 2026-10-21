@@ -51,7 +51,7 @@ export function TemplateForm(props: Props) {
           rows={14}
           className="font-mono text-sm"
           defaultValue={props.mode === 'edit' ? props.defaultCsv : ''}
-          placeholder={`title,min,expected,max,sub label,sub min,sub expected,sub max\nOpening,2,3,5,,,,\nPrepared speeches,2,3,4,Speaker,5,6,7`}
+          placeholder={`title,min,green,yellow,red,max,sub label,sub min,sub green,sub yellow,sub red,sub max\nOpening,2,2,3,4.5,5,,,,,,\nPrepared speeches,2,2,3,3.5,4,Speaker,5,5,6,7,7.5`}
           aria-invalid={!!state.errors?.csv}
         />
         {state.errors?.csv && (
@@ -62,8 +62,9 @@ export function TemplateForm(props: Props) {
           </ul>
         )}
         <p className="text-sm text-muted-foreground">
-          Same format as the import page: header row with title, min, expected,
-          max, person, sub label, sub min, sub expected, sub max. The CSV is
+          Same format as the import page: header row with title, min, green,
+          yellow, red, max, person, sub label, sub min, sub green, sub yellow,
+          sub red, sub max. The CSV is
           validated on save.
         </p>
       </div>

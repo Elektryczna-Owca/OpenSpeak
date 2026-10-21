@@ -20,7 +20,9 @@ export type RunSegmentState = {
   label: string
   comment: string | null
   minMinutes: number | null
-  expectedMinutes: number | null
+  greenMinutes: number | null
+  yellowMinutes: number | null
+  redMinutes: number | null
   maxMinutes: number | null
   startedAt: string
   endedAt: string | null
@@ -43,7 +45,9 @@ export function serializeSegment(
     label: segment.label,
     comment: segment.comment,
     minMinutes: segment.minMinutes,
-    expectedMinutes: segment.expectedMinutes,
+    greenMinutes: segment.greenMinutes,
+    yellowMinutes: segment.yellowMinutes,
+    redMinutes: segment.redMinutes,
     maxMinutes: segment.maxMinutes,
     startedAt: segment.startedAt.toISOString(),
     endedAt: segment.endedAt?.toISOString() ?? null,
@@ -58,6 +62,9 @@ export type RunState = {
   endedAt: string | null
   enforcedDisplayMode: DisplayMode | null
   segment: RunSegmentState | null
+  // All segments of the run in order (the last is `segment`); only the
+  // control page's table view needs them.
+  segments?: RunSegmentState[]
   // Number of participants in the agenda; the control page refreshes its
   // roster when it changes (e.g. a guest registered via the QR code).
   peopleCount?: number

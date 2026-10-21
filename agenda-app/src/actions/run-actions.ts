@@ -31,7 +31,9 @@ function segmentSnapshot(item: AgendaItem, next: NextSegment) {
       subIndex: index,
       label: `${item.subLabel ?? 'Sub-item'} ${index}`,
       minMinutes: item.subMinMinutes,
-      expectedMinutes: item.subExpectedMinutes,
+      greenMinutes: item.subGreenMinutes,
+      yellowMinutes: item.subYellowMinutes,
+      redMinutes: item.subRedMinutes,
       maxMinutes: item.subMaxMinutes,
     }
   }
@@ -41,7 +43,9 @@ function segmentSnapshot(item: AgendaItem, next: NextSegment) {
     subIndex: null,
     label: item.title,
     minMinutes: item.minMinutes,
-    expectedMinutes: item.durationMinutes,
+    greenMinutes: item.greenMinutes,
+    yellowMinutes: item.yellowMinutes,
+    redMinutes: item.redMinutes,
     maxMinutes: item.maxMinutes,
   }
 }

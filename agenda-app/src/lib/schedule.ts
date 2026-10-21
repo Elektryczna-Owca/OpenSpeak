@@ -1,17 +1,17 @@
 // Planned timing of agenda items: each item's start is the agenda's scheduled
-// start (or a +H:MM offset when none is set) plus the expected durations of
+// start (or a +H:MM offset when none is set) plus the planned durations of
 // everything before it. Sub-item loops are open-ended, so only each item's
-// own expected time counts.
+// own planned time counts.
+
+import { type TimeFields, itemTimes, plannedMinutes } from '@/lib/item-times'
 
 // Minutes from meeting start to each item's planned start (running sum of
-// expected durations).
-export function cumulativeStartMinutes(
-  items: { durationMinutes: number }[],
-): number[] {
+// planned durations).
+export function cumulativeStartMinutes(items: TimeFields[]): number[] {
   let acc = 0
   return items.map(item => {
     const start = acc
-    acc += item.durationMinutes
+    acc += plannedMinutes(itemTimes(item))
     return start
   })
 }

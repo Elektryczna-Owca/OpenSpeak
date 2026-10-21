@@ -2,11 +2,11 @@
 
 import { prisma } from '@/lib/prisma'
 import {
-  checkOrdering,
+  checkItemTimes,
   checkSubItem,
+  hasSubItem,
   optionalLabel,
   optionalMinutes,
-  requiredMinutes,
 } from '@/lib/item-times'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -32,8 +32,10 @@ const ItemSchema = z
       .transform(v => (v === '' ? null : v))
       .nullable()
       .optional(),
-    durationMinutes: requiredMinutes,
     minMinutes: optionalMinutes,
+    greenMinutes: optionalMinutes,
+    yellowMinutes: optionalMinutes,
+    redMinutes: optionalMinutes,
     maxMinutes: optionalMinutes,
     personId: z
       .string()
@@ -42,7 +44,9 @@ const ItemSchema = z
       .optional(),
     subLabel: optionalLabel,
     subMinMinutes: optionalMinutes,
-    subExpectedMinutes: optionalMinutes,
+    subGreenMinutes: optionalMinutes,
+    subYellowMinutes: optionalMinutes,
+    subRedMinutes: optionalMinutes,
     subMaxMinutes: optionalMinutes,
     specialItemId: z
       .string()
@@ -58,14 +62,7 @@ const ItemSchema = z
     if (data.specialItemId && data.specialValue == null) {
       ctx.addIssue({ code: 'custom', path: ['specialValue'], message: 'Pick a value' })
     }
-    checkOrdering(
-      ctx,
-      data.minMinutes,
-      data.durationMinutes,
-      data.maxMinutes,
-      'minMinutes',
-      'maxMinutes',
-    )
+    checkItemTimes(ctx, data)
     checkSubItem(ctx, data)
   })
 
@@ -74,12 +71,16 @@ export type ItemFormState = {
     title?: string[]
     url?: string[]
     description?: string[]
-    durationMinutes?: string[]
     minMinutes?: string[]
+    greenMinutes?: string[]
+    yellowMinutes?: string[]
+    redMinutes?: string[]
     maxMinutes?: string[]
     subLabel?: string[]
     subMinMinutes?: string[]
-    subExpectedMinutes?: string[]
+    subGreenMinutes?: string[]
+    subYellowMinutes?: string[]
+    subRedMinutes?: string[]
     subMaxMinutes?: string[]
     specialValue?: string[]
     _form?: string[]
@@ -87,18 +88,17 @@ export type ItemFormState = {
   ok?: boolean
 }
 
-// If the sub-item has no expected time it is considered absent — clear its
-// other fields so a disabled sub-item never leaves stray label/min/max values.
+// If the sub-item has no times it is considered absent — clear its label so a
+// disabled sub-item never leaves a stray one behind.
 function normalizeSub<T extends {
   subLabel: string | null
   subMinMinutes: number | null
-  subExpectedMinutes: number | null
+  subGreenMinutes: number | null
+  subYellowMinutes: number | null
+  subRedMinutes: number | null
   subMaxMinutes: number | null
 }>(data: T): T {
-  if (data.subExpectedMinutes == null) {
-    return { ...data, subLabel: null, subMinMinutes: null, subMaxMinutes: null }
-  }
-  return data
+  return hasSubItem(data) ? data : { ...data, subLabel: null }
 }
 
 // Returns the special item link only if the special item exists; a regular
@@ -140,13 +140,17 @@ export async function addItemAction(
     title: formData.get('title'),
     url: formData.get('url'),
     description: formData.get('description') ?? undefined,
-    durationMinutes: formData.get('durationMinutes'),
     minMinutes: formData.get('minMinutes'),
+    greenMinutes: formData.get('greenMinutes'),
+    yellowMinutes: formData.get('yellowMinutes'),
+    redMinutes: formData.get('redMinutes'),
     maxMinutes: formData.get('maxMinutes'),
     personId: formData.get('personId'),
     subLabel: formData.get('subLabel'),
     subMinMinutes: formData.get('subMinMinutes'),
-    subExpectedMinutes: formData.get('subExpectedMinutes'),
+    subGreenMinutes: formData.get('subGreenMinutes'),
+    subYellowMinutes: formData.get('subYellowMinutes'),
+    subRedMinutes: formData.get('subRedMinutes'),
     subMaxMinutes: formData.get('subMaxMinutes'),
     specialItemId: formData.get('specialItemId'),
     specialValue: formData.get('specialValue'),
@@ -178,13 +182,17 @@ export async function updateItemAction(
     title: formData.get('title'),
     url: formData.get('url'),
     description: formData.get('description') ?? undefined,
-    durationMinutes: formData.get('durationMinutes'),
     minMinutes: formData.get('minMinutes'),
+    greenMinutes: formData.get('greenMinutes'),
+    yellowMinutes: formData.get('yellowMinutes'),
+    redMinutes: formData.get('redMinutes'),
     maxMinutes: formData.get('maxMinutes'),
     personId: formData.get('personId'),
     subLabel: formData.get('subLabel'),
     subMinMinutes: formData.get('subMinMinutes'),
-    subExpectedMinutes: formData.get('subExpectedMinutes'),
+    subGreenMinutes: formData.get('subGreenMinutes'),
+    subYellowMinutes: formData.get('subYellowMinutes'),
+    subRedMinutes: formData.get('subRedMinutes'),
     subMaxMinutes: formData.get('subMaxMinutes'),
     specialItemId: formData.get('specialItemId'),
     specialValue: formData.get('specialValue'),

@@ -7,7 +7,7 @@ Some agenda items aren't a single timed block — they're a *round*: several pre
 
 ## How it works
 
-Give the item a **sub-item label** (say, `Speaker`) and the sub-item's own **min / expected / max** times. During the meeting:
+Give the item a **sub-item label** (say, `Speaker`) and the sub-item's own **min / green / yellow / red / max** times. During the meeting:
 
 1. The **item's own slot runs first**, on the item's own thresholds — for example, the Toastmaster's introduction to the "Prepared speeches" section.
 2. Then the controller starts **Speaker 1**. When they finish, **Speaker 2**, and so on — each round is a fresh timer with the *sub-item's* thresholds, its own colors, its own max-time beep, and its own row in the report.
@@ -20,9 +20,9 @@ If the agenda has [participants](/concepts/participants/), the control screen sh
 In the item's edit dialog, fill in the **Sub-item** section:
 
 - **Label** — what one slot is called: "Speaker", "Participant", "Evaluator"… (defaults to "Sub-item" if left blank).
-- **Min / Expected / Max** — the per-slot time limits.
+- **Min / Green / Yellow / Red / Max** — the per-slot times.
 
-The loop is **active only when the sub-item's Expected time is set**. Clearing that Expected time turns the loop off and wipes its label, min, and max.
+The loop is **active as soon as any sub-item time is set**. Clearing all of them turns the loop off and wipes its label.
 
 ## Example: a Toastmasters meeting
 
@@ -37,4 +37,4 @@ The built-in [Toastmasters template](/planning/templates/) uses sub-item loops f
 
 ## One planning caveat
 
-Because a round can have any number of slots, the planned schedule on the display screen counts only the item's **own** expected time — it can't know how many speakers will show up. Expect the real schedule to drift once a big round starts; the display always shows the next item's planned start so the room can see the drift.
+Because a round can have any number of slots, the planned schedule on the display screen counts only the item's **own** planned time — it can't know how many speakers will show up. Expect the real schedule to drift once a big round starts; the display always shows the next item's planned start so the room can see the drift.

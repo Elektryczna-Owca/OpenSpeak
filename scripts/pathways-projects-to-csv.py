@@ -7,16 +7,17 @@ per project, labelled like "PM (L1) Ice Breaker (4-6 min)". The output is the
 CSV the Special items page imports (see
 website/src/content/docs/reference/csv-columns.md):
 
-    group,value,min,expected,max
-    Presentation Mastery,PM (L1) Ice Breaker,4,5,6
+    group,value,min,green,yellow,red,max
+    Presentation Mastery,PM (L1) Ice Breaker,4,4,5,5.5,6
 
 Usage:
     python3 scripts/pathways-projects-to-csv.py page.html > pathways.csv
     python3 scripts/pathways-projects-to-csv.py page.html -o pathways.csv
 
 Notes:
-- The trailing "(min-max min)" is moved into the min/max columns; expected is
-  their midpoint, snapped to the half minutes OpenSpeak requires.
+- The trailing "(min-max min)" becomes min/green (the low end) and max, with
+  yellow at their midpoint (snapped to the half minutes OpenSpeak requires)
+  and red 30 seconds before max.
 - Projects without a time range are kept with empty time columns.
 - Disabled helper options (spacers, sub-headings, rules) are skipped.
 """
@@ -62,13 +63,14 @@ def main():
         if time:
             lo, hi = float(time.group(1)), float(time.group(2))
             expected = round((lo + hi) / 2 * 2) / 2
-            rows.append([group, label[: time.start()].strip(), fmt(lo), fmt(expected), fmt(hi)])
+            red = max(hi - 0.5, expected)
+            rows.append([group, label[: time.start()].strip(), fmt(lo), fmt(lo), fmt(expected), fmt(red), fmt(hi)])
         else:
-            rows.append([group, label, '', '', ''])
+            rows.append([group, label, '', '', '', '', ''])
 
     out = open(args.output, 'w', encoding='utf-8', newline='') if args.output else sys.stdout
     writer = csv.writer(out, lineterminator='\n')
-    writer.writerow(['group', 'value', 'min', 'expected', 'max'])
+    writer.writerow(['group', 'value', 'min', 'green', 'yellow', 'red', 'max'])
     writer.writerows(rows)
     if args.output:
         out.close()

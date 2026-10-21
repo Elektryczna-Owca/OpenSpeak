@@ -9,7 +9,7 @@ Open any agenda from the **Agendas** list to land in its editor. The top of the 
 
 ## Adding items quickly
 
-The row at the bottom of the item list is built for speed: **title → Min → Expected → Max → assignee → Add**. Only the title and **Expected** (pre-filled with 10 minutes) are required. After each add, the form clears and refocuses the title field, so entering a full agenda is one uninterrupted typing session.
+The row at the bottom of the item list is built for speed: **title → assignee → Add**, with the **Min / Green / Yellow / Red / Max** times in a row beneath. Only the title and at least one time (**Red** is pre-filled with 10 minutes) are required. After each add, the form clears and refocuses the title field, so entering a full agenda is one uninterrupted typing session.
 
 The assignee dropdown appears once the agenda has [participants](/concepts/participants/).
 
@@ -25,9 +25,9 @@ The pencil icon opens the full edit dialog:
 - **Title**
 - **Description** — optional notes on the item (edit dialog only); shown on the display screen under the title.
 - **URL** — optional; shown as a QR code during the meeting. Must be a complete URL including `https://`.
-- **Min / Expected / Max** — minutes, half-minute steps, `min ≤ expected ≤ max` (the dialog tells you exactly which rule you broke).
+- **Min / Green / Yellow / Red / Max** — minutes, half-minute steps, `min ≤ green ≤ yellow ≤ red ≤ max` over whichever are set (the dialog tells you exactly which rule you broke).
 - **Assignee**
-- **Sub-item** — label plus its own min/expected/max; active only when the sub-item's Expected is set. See [Sub-item loops](/concepts/sub-item-loops/).
+- **Sub-item** — label plus its own five times; active when any of them is set. See [Sub-item loops](/concepts/sub-item-loops/).
 
 ## Reordering
 

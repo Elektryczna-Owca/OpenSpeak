@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic'
 
 // Downloads a special item's value list as CSV that the special item form
 // re-imports. Re-serialized (not the stored text) so the file always has the
-// canonical header and explicit expected times.
+// canonical header and explicit times.
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },

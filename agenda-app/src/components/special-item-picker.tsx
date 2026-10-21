@@ -3,6 +3,7 @@
 import { Fragment, useRef, useState } from 'react'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { ITEM_TIME_FIELDS, hasAnyTime, itemPlanned, itemTimes } from '@/lib/item-times'
 import type { SpecialItemOption, SpecialItemValue } from '@/lib/special-item-csv'
 
 const selectClass =
@@ -33,7 +34,7 @@ function describeValue(v: SpecialItemValue) {
 // Switches an item form between a regular item and one picked from a special
 // item list. Submits `specialItemId` and `specialValue`; picking a value fills
 // the form's title (the special item's name) and description (the value, with
-// its group) — unless the user typed their own — and min/expected/max inputs,
+// its group) — unless the user typed their own — and five time inputs,
 // which stay editable.
 export function SpecialItemPicker({
   idPrefix,
@@ -93,10 +94,10 @@ export function SpecialItemPicker({
       description.value = describeValue(picked)
       autoDescription.current = description.value
     }
-    if (picked.expectedMinutes != null) {
-      setField(form, 'minMinutes', String(picked.minMinutes ?? ''))
-      setField(form, 'durationMinutes', String(picked.expectedMinutes))
-      setField(form, 'maxMinutes', String(picked.maxMinutes ?? ''))
+    if (hasAnyTime(itemTimes(picked))) {
+      for (const field of Object.values(ITEM_TIME_FIELDS)) {
+        setField(form, field, String(picked[field] ?? ''))
+      }
     }
   }
 
@@ -158,8 +159,7 @@ export function SpecialItemPicker({
               const options = values.map(v => (
                 <option key={v.value} value={v.value}>
                   {v.value}
-                  {v.expectedMinutes != null &&
-                    ` (${v.minMinutes != null && v.maxMinutes != null ? `${v.minMinutes}–${v.maxMinutes}` : v.expectedMinutes} min)`}
+                  {hasAnyTime(itemTimes(v)) && ` (${itemPlanned(v)} min)`}
                 </option>
               ))
               return group ? (

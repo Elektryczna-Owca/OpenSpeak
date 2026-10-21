@@ -7,6 +7,13 @@ The control screen is a phone-sized remote with big touch targets — and the **
 
 Give it to whoever plays timekeeper. Several people can have it open at once; the last tap wins.
 
+## Remote and Table views
+
+A **Remote | Table** switch under the display-mode buttons picks how the screen works (it remembers your choice on that device).
+
+- **Remote** — the big-button view described below: one thing at a time.
+- **Table** — the whole agenda as a timer sheet, like the FreeToastHost online timer sheet: one row per item with **Role / Item**, **Name**, **Min / Green / Yellow / Red / Max**, **Actual time**, **Within**, and a **Start / Stop** button. Starting any row ends whatever is running, so you can go in any order; a running row shows the live time on a green / yellow / red background, and **Within** is *Y* when the time is between min and max and *N* otherwise. Items with a [sub-item loop](/concepts/sub-item-loops/) get an indented row per round plus a ready-to-start next one, and the Name dropdown records who it was. Starting a row that already has time asks first and adds to the recorded time. The pause button and **End meeting** (two taps) are there too; the max-time beep works in both views.
+
 ## Before the meeting
 
 One big button: **Start meeting**. Tapping it starts the first agenda item's timer immediately — there is no countdown or separate arming step. (If the agenda has no items yet, the page says so instead.)
